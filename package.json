@@ -1,11 +1,20 @@
 {
   "name": "tiny-atom",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "standard && mocha"
   },
-  "author": "",
-  "license": "ISC"
+  "contributors": [
+    "Karolis Narkevicius <karolis@qubit.com>",
+    "Alan Clarke <alan@qubit.com>"
+  ],
+  "license": "ISC",
+  "devDependencies": {
+    "@briancavalier/assert": "^3.4.0",
+    "mocha": "^3.2.0",
+    "np": "^2.12.0",
+    "standard": "^9.0.0"
+  }
 }

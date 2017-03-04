@@ -1,6 +1,6 @@
 # tiny-atom
 
-Minimalistic state management – 24 LOC.
+Minimal, yet awesome, state management.
 
 ## Usage
 
@@ -45,4 +45,91 @@ function render () {
 }
 
 render()
+```
+
+## API
+
+### `createAtom(initialState, reduce, onChange)`
+
+Creates an atom, which is an object of shape `{ get, split }`.
+
+* `initialState` - should be an object, defaults to `{}`
+* `reduce` - a function of signature `(get, set, action)`
+  * `get` - get current state
+  * `set` - extend the state with this new value
+  * `action` - an object of shape `{ type, payload }`
+* `onChange` - a function called with the new state on each state change
+
+### `atom.get`
+
+Returns current state.
+
+### `atom.split`
+
+Can be used in 2 ways.
+
+* `atom.split(change)` - a shortcut, directly extend the state with the `change` object, doesn't go via reducer.
+* `atom.split(type, payload)` – dispatch an action to the reducer.
+
+### Examples
+
+```js
+const atom = createAtom({ sing: 0, rock: 0 }, reducer, render)
+
+function render () {
+  // pass atom.get() and atom.split to your components
+}
+
+function reducer (get, set, { type, payload }) {
+  if (type === 'sing') set({ sing: get().sing + 1 })
+  if (type === 'rock') set({ rock: get().rock + payload })
+
+  // async action
+  if (type === 'fetch') {
+    if (get().loading) return
+    set({ loading: true })
+    fetch('http://httpbin.org/post', {
+      method: 'POST',
+      body: JSON.stringify({ sing: 2, rock: 7 })
+    })
+      .then(res => res.json())
+      .then(res => {
+        // merge local state with remote state
+        const state = get()
+        const data = JSON.parse(res.data)
+        set({
+          loading: false,
+          sing: state.sing + data.sing,
+          rock: state.rock + data.rock
+        })
+      })
+  }
+}
+
+atom.get()
+  // -> { sing: 0, rock: 0 }
+
+atom.split({ active: true })
+atom.get()
+  // -> { sing: 0, rock: 0, active: true }
+
+atom.split('sing')
+atom.get()
+  // -> { sing: 1, rock: 0, active: true }
+
+atom.split('rock', 5)
+atom.get()
+  // -> { sing: 1, rock: 5, active: true }
+
+atom.split({ active: false, sing: 0, rock: 0 })
+atom.get()
+  // -> { sing: 0, rock: 0, active: false }
+
+atom.split('fetch')
+atom.get()
+  // -> { sing: 0, rock: 0, active: false, loading: true }
+
+// later, render gets called with updated state
+atom.get()
+  // -> { sing: 2, rock: 7, active: false, loading: false }
 ```
