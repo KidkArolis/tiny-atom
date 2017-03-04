@@ -1,8 +1,12 @@
 # tiny-atom
 
-Minimal, yet awesome, state management.
+Minimal, yet awesome, state management. Only 26 LOC, but does everything you'd need to power an app of any size.
 
 ## Usage
+
+    $ yarn add tiny-atom
+
+Example with `preact`:
 
 ```js
 const React = require('preact')
@@ -59,6 +63,8 @@ Creates an atom, which is an object of shape `{ get, split }`.
   * `set` - extend the state with this new value
   * `action` - an object of shape `{ type, payload }`
 * `onChange` - a function called with the new state on each state change
+
+A note on `set` - when calling set in the reducer, it typically extends the state with the new object passed to set. But if you'd like to mutate the object simply pass the same state object to `set` and it will record that as the new state.
 
 ### `atom.get`
 
