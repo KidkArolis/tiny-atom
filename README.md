@@ -4,7 +4,7 @@ Minimalistic state management – 24 LOC.
 
 ## Usage
 
-```
+```js
 const React = require('preact')
 const createAtom = require('tiny-atom') // not on npm yet!
 
