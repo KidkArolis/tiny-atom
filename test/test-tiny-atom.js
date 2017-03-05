@@ -55,7 +55,8 @@ test('async reducer', (done) => {
     }
   }
 
-  function onChange (state) {
+  function onChange (atom) {
+    let state = atom.get()
     changes.push(1)
     if (changes.length === 1) eq(state, { count: 1 })
     if (changes.length === 2) eq(state, { count: 2, async: true })
@@ -72,7 +73,8 @@ test('onChange listener', () => {
   const history = []
   const atom = createAtom({ count: 0 }, null, onChange)
 
-  function onChange (state) {
+  function onChange (atom) {
+    let state = atom.get()
     history.push(state)
   }
 

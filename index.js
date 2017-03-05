@@ -12,6 +12,8 @@
  */
 module.exports = function createAtom (initialState, reduce, onChange) {
   var state = initialState || {}
+  var atom = { get: get, split: split }
+  return atom
 
   function get () {
     return state
@@ -21,7 +23,7 @@ module.exports = function createAtom (initialState, reduce, onChange) {
     state === nextState
       ? state = nextState
       : state = Object.assign({}, state, nextState)
-    onChange && onChange(state)
+    onChange && onChange(atom)
     return state
   }
 
@@ -33,6 +35,4 @@ module.exports = function createAtom (initialState, reduce, onChange) {
       set(type)
     }
   }
-
-  return { get: get, split: split }
 }
