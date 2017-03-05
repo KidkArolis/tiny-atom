@@ -29,8 +29,12 @@ function evolve (get, set, action) {
   }
 }
 
-function render (atom) {
-  console.log('new state', atom.get())
+function render (atom, details) {
+  console.log('change', {
+    id: details.id,
+    action: details.action,
+    state: atom.get()
+  })
 }
 
 atom.split({ count: 5 })
@@ -101,7 +105,9 @@ Create an atom.
   * `get()` - get current state
   * `set(update)` - extend the state with this new value
   * `action` - an object of shape `{ type, payload }`
-* `render(atom)` - a function called on each state change
+* `render(atom, details)` - a function called on each state change
+  * `atom` - atom itself
+  * `details` - an object of shape { id, action }, purely for debugging
 
 A note on `set` - when calling set in `evolve`, it extends the state using Object.assign. But if you'd like to mutate the object simply pass the same state object to `set` and it will record that as the new state.
 

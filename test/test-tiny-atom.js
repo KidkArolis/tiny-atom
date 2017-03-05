@@ -105,3 +105,71 @@ test('can be used in a mutating manner', () => {
   eq(atom.get(), { count: 3 })
   assert(atom.get() === initialState)
 })
+
+test('onChange provides action details', (done) => {
+  const history = []
+  const atom = createAtom({ count: 0 }, reduce, onChange)
+
+  function reduce (get, set, { type, payload }) {
+    ({
+      inc: () => set({ count: get().count + payload }),
+      dec: () => set({ count: get().count - payload }),
+      asyncInc: () => {
+        set({ loading: true })
+        setTimeout(() => {
+          set({ count: get().count + payload, loading: false, done: true })
+        }, 1)
+      }
+    }[type]())
+  }
+
+  function onChange (atom, details) {
+    history.push({ id: details.id, action: details.action, state: atom.get() })
+
+    if (atom.get().done) {
+      eq(history, [{
+        id: 1,
+        action: { type: null, payload: { count: 1 } },
+        state: { count: 1 }
+      }, {
+        id: 2,
+        action: { type: 'dec', payload: 1 },
+        state: { count: 0 }
+      }, {
+        id: 3,
+        action: { type: 'inc', payload: 2 },
+        state: { count: 2 }
+      }, {
+        id: 4,
+        action: { type: 'asyncInc', payload: 10 },
+        state: { count: 2, loading: true }
+      }, {
+        id: 5,
+        action: { type: 'inc', payload: 100 },
+        state: { count: 102, loading: true }
+      }, {
+        id: 4,
+        action: { type: 'asyncInc', payload: 10 },
+        state: { count: 112, loading: false, done: true }
+      }])
+      done()
+    }
+  }
+
+  atom.split({ count: 1 })
+  atom.split('dec', 1)
+  atom.split('inc', 2)
+  atom.split('asyncInc', 10)
+  atom.split('inc', 100)
+})
+
+test('custom extend - undocumented feature', () => {
+  const extend = (x, oldState, newState) => oldState + newState
+  const atom = createAtom(5, null, null, extend)
+
+  atom.split(1)
+  eq(atom.get(), 6)
+
+  atom.split(1)
+  eq(atom.get(), 7)
+})
