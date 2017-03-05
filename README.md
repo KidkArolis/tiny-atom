@@ -103,24 +103,24 @@ render()
 
 ### `createAtom(initialState, reduce, onChange)`
 
-Creates an atom, which is an object of shape `{ get, split }`.
+Create an atom.
 
 * `initialState` - should be an object, defaults to `{}`
-* `reduce` - a function of signature `(get, set, action)`
-  * `get` - get current state
-  * `set` - extend the state with this new value
+* `reduce(get, set, action)` - a function that will receive actions and update the state
+  * `get()` - get current state
+  * `set(update)` - extend the state with this new value
   * `action` - an object of shape `{ type, payload }`
-* `onChange` - a function called on each state change
+* `onChange(atom)` - a function called on each state change
 
-A note on `set` - when calling set in the reducer, it typically extends the state with the new object passed to set. But if you'd like to mutate the object simply pass the same state object to `set` and it will record that as the new state.
+A note on `set` - when calling set in the reducer, it extends the state using Object.assign. But if you'd like to mutate the object simply pass the same state object to `set` and it will record that as the new state.
 
 ### `atom.get`
 
-Returns current state.
+Return current state.
 
 ### `atom.split`
 
-Can be used in 2 ways.
+Can be used in 2 ways:
 
-* `atom.split(change)` - a shortcut, directly extend the state with the `change` object, doesn't go via reducer.
+* `atom.split(update)` - a shortcut to directly extend the state with the `update` object, doesn't go via reducer.
 * `atom.split(type, payload)` – dispatch an action to the reducer.
