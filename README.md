@@ -11,9 +11,9 @@ Minimal, yet awesome, state management.
 ```js
 const createAtom = require('tiny-atom')
 
-const atom = createAtom({ count: 0 }, reduce, onChange)
+const atom = createAtom({ count: 0 }, evolve, render)
 
-function reduce (get, set, action) {
+function evolve (get, set, action) {
   const state = get()
   const { type, payload } = action
 
@@ -33,7 +33,7 @@ function reduce (get, set, action) {
   }
 }
 
-function onChange (atom) {
+function render (atom) {
   console.log('new state', atom.get())
 }
 
@@ -60,9 +60,9 @@ atom.split('decrement', 2)
 const React = require('preact')
 const createAtom = require('tiny-atom')
 
-const atom = createAtom({ count: 0 }, reduce, render)
+const atom = createAtom({ count: 0 }, evolve, render)
 
-function reduce (get, set, action) {
+function evolve (get, set, action) {
   const state = get()
   const { type, payload } = action
 
@@ -101,18 +101,18 @@ render()
 
 ## API
 
-### `createAtom(initialState, reduce, onChange)`
+### `createAtom(initialState, evolve, render)`
 
 Create an atom.
 
 * `initialState` - should be an object, defaults to `{}`
-* `reduce(get, set, action)` - a function that will receive actions and update the state
+* `evolve(get, set, action)` - a function that will receive actions and control the evolution of the state
   * `get()` - get current state
   * `set(update)` - extend the state with this new value
   * `action` - an object of shape `{ type, payload }`
-* `onChange(atom)` - a function called on each state change
+* `render(atom)` - a function called on each state change
 
-A note on `set` - when calling set in the reducer, it extends the state using Object.assign. But if you'd like to mutate the object simply pass the same state object to `set` and it will record that as the new state.
+A note on `set` - when calling set in `evolve`, it extends the state using Object.assign. But if you'd like to mutate the object simply pass the same state object to `set` and it will record that as the new state.
 
 ### `atom.get`
 
@@ -122,5 +122,5 @@ Return current state.
 
 Can be used in 2 ways:
 
-* `atom.split(update)` - a shortcut to directly extend the state with the `update` object, doesn't go via reducer.
-* `atom.split(type, payload)` – dispatch an action to the reducer.
+* `atom.split(update)` - a shortcut to directly extend the state with the `update` object, doesn't go via `evolve`.
+* `atom.split(type, payload)` – dispatch an action to `evolve`.
