@@ -21,10 +21,6 @@ function evolve (get, set, action) {
     set({ count: state.count + payload })
   }
 
-  if (type === 'decrement') {
-    set({ count: state.count - payload })
-  }
-
   if (type === 'asyncIncrement') {
     set({ loading: true })
     setTimeout(() => {
@@ -39,19 +35,14 @@ function render (atom) {
 
 atom.split({ count: 5 })
   // -> { count: 5 }
-
 atom.split('increment', 5)
   // -> { count: 10 }
-
-atom.split('decrement', 3)
-  // -> { count: 7 }
-
-atom.split('asyncIncrement', 1)
-  // -> { count: 7, loading: true }
-atom.split('decrement', 2)
-  // -> { count: 5, loading: true }
+atom.split('asyncIncrement', 3)
+  // -> { count: 10, loading: true }
+atom.split('increment', 2)
+  // -> { count: 12, loading: true }
   // -> 1 second later...
-  // -> { count: 6, loading: false }
+  // -> { count: 15, loading: false }
 ```
 
 ### Preact example
