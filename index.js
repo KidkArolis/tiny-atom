@@ -10,10 +10,10 @@
  * atom.split('increment', { by: 2 }) // pass action with payload
  * atom.split({ count: 0 }) // set new state value directly, extends
  */
-module.exports = function createAtom (initialState, evolve, render, merge) {
+module.exports = function createAtom (initialState, evolve, render, extend) {
   var actionCount = 0
   var state = initialState || {}
-  merge = merge || Object.assign
+  extend = extend || Object.assign
   var atom = { get: get, split: split }
   return atom
 
@@ -25,7 +25,7 @@ module.exports = function createAtom (initialState, evolve, render, merge) {
     return function set (nextState) {
       state === nextState
         ? state = nextState
-        : state = merge({}, state, nextState)
+        : state = extend({}, state, nextState)
       render && render(atom, { id: id, action: action })
       return state
     }
