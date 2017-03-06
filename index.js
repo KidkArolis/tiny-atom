@@ -1,8 +1,8 @@
 /**
  * Minimal state management.
  *
- * const reducer = (get, set, action) => set({ counter: get().counter + 1 })
- * const atom = createAtom({ counter: 1 }, reduce, render)
+ * const evolve = (get, set, action) => set({ counter: get().counter + 1 })
+ * const atom = createAtom({ counter: 1 }, evolve, render)
  *
  * atom.get() // { counter: 1 }
  * atom.split('increment') // pass action
@@ -10,7 +10,7 @@
  * atom.split({ counter: 0 }) // set new state value directly, extends
  *
  */
-module.exports = function createAtom (initialState, reduce, onChange) {
+module.exports = function createAtom (initialState, evolve, render) {
   var state = initialState || {}
   var atom = { get: get, split: split }
   return atom
@@ -23,14 +23,14 @@ module.exports = function createAtom (initialState, reduce, onChange) {
     state === nextState
       ? state = nextState
       : state = Object.assign({}, state, nextState)
-    onChange && onChange(atom)
+    render && render(atom)
     return state
   }
 
   function split (type, payload) {
     if (typeof type === 'string') {
       var action = { type: type, payload: payload }
-      reduce(get, set, action)
+      evolve(get, set, action)
     } else {
       set(type)
     }
