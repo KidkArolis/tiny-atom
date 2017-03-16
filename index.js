@@ -23,9 +23,7 @@ module.exports = function createAtom (initialState, evolve, render, extend) {
 
   function set (nextState, action, seq) {
     var prevState = state
-    state === nextState
-      ? state = nextState
-      : state = extend({}, state, nextState)
+    state = extend({}, state, nextState)
     render && render(atom, {
       seq: seq,
       action: action || { payload: nextState },
