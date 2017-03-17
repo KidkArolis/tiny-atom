@@ -25,9 +25,9 @@ test('does not mutate the state object', () => {
 test('reducer', () => {
   const atom = createAtom({ count: 0 }, reduce)
 
-  function reduce (get, set, { type, payload }) {
+  function reduce (get, split, { type, payload }) {
     if (type === 'increment') {
-      set({ count: get().count + (payload || 1) })
+      split({ count: get().count + (payload || 1) })
     }
   }
 
@@ -42,15 +42,12 @@ test('async reducer', (done) => {
   const changes = []
   const atom = createAtom({ count: 0 }, reduce, onChange)
 
-  function reduce (get, set, { type, payload }) {
-    let state = get()
-    let swap = next => { state = set(next) }
-
+  function reduce (get, split, { type, payload }) {
     if (type === 'increment') {
-      swap({ count: state.count + 1 })
+      split({ count: get().count + 1 })
       setTimeout(() => {
-        swap({ count: state.count + 1, async: true })
-        swap({ done: true })
+        split({ count: get().count + 1, async: true })
+        split({ done: true })
       }, 1)
     }
   }
@@ -61,6 +58,7 @@ test('async reducer', (done) => {
     if (changes.length === 1) eq(state, { count: 1 })
     if (changes.length === 2) eq(state, { count: 2, async: true })
     if (state.done) {
+      eq(state, { count: 2, async: true, done: true })
       eq(changes, [1, 1, 1])
       done()
     }
@@ -93,11 +91,11 @@ test('can be used in a mutating manner', () => {
   const initialState = { count: 0 }
   const atom = createAtom(initialState, reduce)
 
-  function reduce (get, set, { type, payload }) {
+  function reduce (get, split, { type, payload }) {
     const state = get()
     if (type === 'increment') {
       state.count += payload
-      set(state)
+      split(state)
     }
   }
 
@@ -110,47 +108,72 @@ test('onChange provides action details', (done) => {
   const history = []
   const atom = createAtom({ count: 0 }, reduce, onChange)
 
-  function reduce (get, set, { type, payload }) {
+  function reduce (get, split, { type, payload }) {
     ({
-      inc: () => set({ count: get().count + payload }),
-      dec: () => set({ count: get().count - payload }),
+      inc: () => split({ count: get().count + payload }),
+      dec: () => split({ count: get().count - payload }),
       asyncInc: () => {
-        set({ loading: true })
+        split({ loading: true })
         setTimeout(() => {
-          set({ count: get().count + payload, loading: false, done: true })
+          split('inc', 1)
+          split({ count: get().count + payload, loading: false, done: true })
         }, 1)
       }
     }[type]())
   }
 
   function onChange (atom, details) {
-    history.push({ id: details.id, action: details.action, state: atom.get() })
+    history.push(Object.assign(details, { state: atom.get() }))
 
     if (atom.get().done) {
       eq(history, [{
-        id: 1,
-        action: { type: null, payload: { count: 1 } },
+        seq: 1,
+        action: { payload: { count: 1 } },
+        update: { count: 1 },
+        prev: { count: 0 },
         state: { count: 1 }
       }, {
-        id: 2,
+        seq: 2,
         action: { type: 'dec', payload: 1 },
+        update: { count: 0 },
+        prev: { count: 1 },
         state: { count: 0 }
       }, {
-        id: 3,
+        seq: 3,
         action: { type: 'inc', payload: 2 },
+        update: { count: 2 },
+        prev: { count: 0 },
         state: { count: 2 }
       }, {
-        id: 4,
-        action: { type: 'asyncInc', payload: 10 },
-        state: { count: 2, loading: true }
+        seq: 4,
+        action: { payload: { count: 4 } },
+        update: { count: 4 },
+        prev: { count: 2 },
+        state: { count: 4 }
       }, {
-        id: 5,
+        seq: 5,
+        action: { type: 'asyncInc', payload: 10 },
+        update: { loading: true },
+        prev: { count: 4 },
+        state: { count: 4, loading: true }
+      }, {
+        seq: 6,
         action: { type: 'inc', payload: 100 },
-        state: { count: 102, loading: true }
+        update: { count: 104 },
+        prev: { count: 4, loading: true },
+        state: { count: 104, loading: true }
       }, {
-        id: 4,
+        seq: 7,
+        action: { type: 'inc', payload: 1 },
+        update: { count: 105 },
+        prev: { count: 104, loading: true },
+        state: { count: 105, loading: true }
+      }, {
+        seq: 5,
         action: { type: 'asyncInc', payload: 10 },
-        state: { count: 112, loading: false, done: true }
+        update: { count: 115, loading: false, done: true },
+        prev: { count: 105, loading: true },
+        state: { count: 115, loading: false, done: true }
       }])
       done()
     }
@@ -159,6 +182,7 @@ test('onChange provides action details', (done) => {
   atom.split({ count: 1 })
   atom.split('dec', 1)
   atom.split('inc', 2)
+  atom.split({ count: 4 })
   atom.split('asyncInc', 10)
   atom.split('inc', 100)
 })

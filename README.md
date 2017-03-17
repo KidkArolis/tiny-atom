@@ -13,18 +13,18 @@ const createAtom = require('tiny-atom')
 
 const atom = createAtom({ count: 0 }, evolve, render)
 
-function evolve (get, set, action) {
+function evolve (get, split, action) {
   const state = get()
   const { type, payload } = action
 
   if (type === 'increment') {
-    set({ count: state.count + payload })
+    split({ count: state.count + payload })
   }
 
   if (type === 'asyncIncrement') {
-    set({ loading: true })
+    split({ loading: true })
     setTimeout(() => {
-      set({ count: get().count + payload, loading: false })
+      split({ count: get().count + payload, loading: false })
     }, 1000)
   }
 }
@@ -57,21 +57,21 @@ const createAtom = require('tiny-atom')
 
 const atom = createAtom({ count: 0 }, evolve, render)
 
-function evolve (get, set, action) {
+function evolve (get, split, action) {
   const state = get()
   const { type, payload } = action
 
   if (type === 'increment') {
     // mutate – performant if you need to avoid GC
     state.count += payload
-    set(state)
+    split(state)
 
     // or don't mutate – performant if you want to avoid subtree rerenders
-    set({ count: state.count + payload })
+    split({ count: state.count + payload })
 
     // or do it async
     setTimeout(() => {
-      set({ count: get().count + payload })
+      split({ count: get().count + payload })
     }, 1000)
   }
 }
@@ -101,15 +101,13 @@ render()
 Create an atom.
 
 * `initialState` - should be an object, defaults to `{}`
-* `evolve(get, set, action)` - a function that will receive actions and control the evolution of the state
+* `evolve(get, split, action)` - a function that will receive actions and control the evolution of the state
   * `get()` - get current state
-  * `set(update)` - extend the state with this new value
+  * `split(update)` or `split(type, payload)` - see `atom.split`
   * `action` - an object of shape `{ type, payload }`
 * `render(atom, details)` - a function called on each state change
   * `atom` - atom itself
-  * `details` - an object of shape { id, action }, purely for debugging
-
-A note on `set` - when calling set in `evolve`, it extends the state using Object.assign. But if you'd like to mutate the object simply pass the same state object to `set` and it will record that as the new state.
+  * `details` - an object of shape { seq, action, update, prev }, should be used mostly for debugging, but could also be an integration point
 
 ### `atom.get`
 
@@ -117,7 +115,8 @@ Return current state.
 
 ### `atom.split`
 
-Can be used in 2 ways:
+Can be used in 3 ways:
 
-* `atom.split(update)` - a shortcut to directly extend the state with the `update` object, doesn't go via `evolve`.
-* `atom.split(type, payload)` – dispatch an action to `evolve`.
+* `atom.split(update)` - a shortcut to directly extend the state with the `update` object, doesn't go via `evolve`, extends using Object.assign.
+* `atom.split(type, payload)` - dispatch an action to `evolve`.
+* `atom.split(state*)` - if you mutate state and pass the same reference to split, it will record the new state without Object.assign and will trigger a render.
