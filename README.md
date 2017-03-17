@@ -62,11 +62,7 @@ function evolve (get, split, action) {
   const { type, payload } = action
 
   if (type === 'increment') {
-    // mutate – performant if you need to avoid GC
-    state.count += payload
-    split(state)
-
-    // or don't mutate – performant if you want to avoid subtree rerenders
+    // sync
     split({ count: state.count + payload })
 
     // or do it async
@@ -119,4 +115,9 @@ Can be used in 3 ways:
 
 * `atom.split(update)` - a shortcut to directly extend the state with the `update` object, doesn't go via `evolve`, extends using Object.assign.
 * `atom.split(type, payload)` - dispatch an action to `evolve`.
-* `atom.split(state*)` - if you mutate state and pass the same reference to split, it will record the new state without Object.assign and will trigger a render.
+
+### Advanced
+
+Tiny Atom's constructor takes a 4th argument, a function `extend` with signature `(empty, prev, next)`. This function is called each time the old state `prev` needs to be extended with the patch `next`. Default implementation is just `Object.assign(empty, prev, next)`.
+
+You can use this hook to use a different data structure for your state, such as Immutable. Or you could use it to extend the state instead of cloning, by changing it to `Object.assign(prev, next)` if that makes performance or architectural difference.

@@ -89,7 +89,11 @@ test('onChange listener', () => {
 
 test('can be used in a mutating manner', () => {
   const initialState = { count: 0 }
-  const atom = createAtom(initialState, reduce)
+  const atom = createAtom(initialState, reduce, () => {}, mutate)
+
+  function mutate (empty, prev, next) {
+    return Object.assign(prev, next)
+  }
 
   function reduce (get, split, { type, payload }) {
     const state = get()
