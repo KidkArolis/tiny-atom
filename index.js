@@ -10,12 +10,16 @@
  * atom.split('increment', { by: 2 }) // action with payload
  * atom.split({ count: 0 }) // update state directly
  */
-module.exports = function createAtom (initialState, evolve, render, extend) {
+module.exports = function createAtom (initialState, evolve, render, merge) {
   var actionSeq = 0
   var state = initialState || {}
-  extend = extend || Object.assign
+  merge = merge || defaultMerge
   var atom = { get: get, split: createSplit() }
   return atom
+
+  function defaultMerge (prev, next) {
+    return Object.assign({}, prev, next)
+  }
 
   function get () {
     return state
@@ -23,7 +27,7 @@ module.exports = function createAtom (initialState, evolve, render, extend) {
 
   function set (nextState, action, seq) {
     var prevState = state
-    state = extend({}, state, nextState)
+    state = merge(state, nextState)
     render && render(atom, {
       seq: seq,
       action: action || { payload: nextState },

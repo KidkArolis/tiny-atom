@@ -111,13 +111,13 @@ Return current state.
 
 ### `atom.split`
 
-Can be used in 3 ways:
+Can be used in 2 ways:
 
 * `atom.split(update)` - a shortcut to directly extend the state with the `update` object, doesn't go via `evolve`, extends using Object.assign.
 * `atom.split(type, payload)` - dispatch an action to `evolve`.
 
 ### Advanced
 
-Tiny Atom's constructor takes a 4th argument, a function `extend` with signature `(empty, prev, next)`. This function is called each time the old state `prev` needs to be extended with the patch `next`. Default implementation is just `Object.assign(empty, prev, next)`.
+Tiny Atom's constructor takes a 4th argument, a function `merge` with signature `(prevState, nextState)`. This function is called each time the old state `prevState` needs to merge a possibly partial update `nextState`. Default implementation is `Object.assign({}, prev, next)`.
 
-You can use this hook to use a different data structure for your state, such as Immutable. Or you could use it to extend the state instead of cloning, by changing it to `Object.assign(prev, next)` if that makes performance or architectural difference.
+You can use this hook to use a different data structure for your state, such as Immutable.js. Or you could use it to extend the state instead of cloning `Object.assign(prev, next)` if that makes performance or architectural difference.
