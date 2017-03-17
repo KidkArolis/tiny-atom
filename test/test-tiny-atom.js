@@ -191,8 +191,8 @@ test('onChange provides action details', (done) => {
   atom.split('inc', 100)
 })
 
-test('custom extend - undocumented feature', () => {
-  const extend = (x, oldState, newState) => oldState + newState
+test('custom merge', () => {
+  const extend = (oldState, newState) => oldState + newState
   const atom = createAtom(5, null, null, extend)
 
   atom.split(1)
