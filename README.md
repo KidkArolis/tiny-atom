@@ -52,7 +52,7 @@ atom.split('increment', 2)
 ### Preact example
 
 ```js
-const React = require('preact')
+const Preact = require('preact')
 const createAtom = require('tiny-atom')
 
 const atom = createAtom({ count: 0 }, evolve, render)
@@ -84,7 +84,7 @@ function App ({ atom, split }) {
 }
 
 function render () {
-  React.render(<App atom={atom.get()} split={atom.split} />, document.body, document.body.lastChild)
+  Preact.render(<App atom={atom.get()} split={atom.split} />, document.body, document.body.lastElementChild)
 }
 
 render()
