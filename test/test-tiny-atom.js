@@ -201,3 +201,57 @@ test('custom merge', () => {
   atom.split(1)
   eq(atom.get(), 7)
 })
+
+test('split with action returns promise with new state as resolution value', () => {
+  const initialState = { count: 0 }
+  const atom = createAtom(initialState, reduce, () => {})
+
+  function reduce (get, split, { type, payload }) {
+    const state = get()
+    if (type === 'asyncIncrement') {
+      state.count += payload
+      split(state)
+      return new Promise((resolve, reject) => setTimeout(resolve, 100))
+    }
+  }
+
+  return atom.split('asyncIncrement', 3).then((state) => {
+    eq({ count: 3 }, state)
+  })
+})
+
+test('split with action returns promise that rejects when action throws', () => {
+  const initialState = { count: 0 }
+  const atom = createAtom(initialState, reduce, () => {})
+
+  function reduce (get, split, { type, payload }) {
+    const state = get()
+    if (type === 'asyncIncrement') {
+      state.count += payload
+      split(state)
+      throw Error('oopsie')
+    }
+  }
+
+  return atom.split('asyncIncrement', 3).catch((err) => {
+    eq(Error('oopsie'), err)
+  })
+})
+
+test('split with action returns promise that rejects when action rejects', () => {
+  const initialState = { count: 0 }
+  const atom = createAtom(initialState, reduce, () => {})
+
+  function reduce (get, split, { type, payload }) {
+    const state = get()
+    if (type === 'asyncIncrement') {
+      state.count += payload
+      split(state)
+      return new Promise((resolve, reject) => setTimeout(() => reject(Error('oopsie')), 100))
+    }
+  }
+
+  return atom.split('asyncIncrement', 3).catch((err) => {
+    eq(Error('oopsie'), err)
+  })
+})

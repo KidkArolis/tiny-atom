@@ -45,7 +45,13 @@ module.exports = function createAtom (initialState, evolve, render, merge) {
       } else {
         actionSeq++
         var action = { type: type, payload: payload }
-        evolve(get, createSplit(action, actionSeq), action)
+        return new Promise((resolve, reject) => {
+          try {
+            resolve(evolve(get, createSplit(action, actionSeq), action))
+          } catch (e) {
+            reject(e)
+          }
+        }).then(() => state)
       }
     }
   }
