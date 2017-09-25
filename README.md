@@ -114,7 +114,7 @@ Return current state.
 Can be used in 2 ways:
 
 * `atom.split(update)` - a shortcut to directly extend the state with the `update` object, doesn't go via `evolve`, extends using Object.assign.
-* `atom.split(type, payload)` - dispatch an action to `evolve`.
+* `atom.split(type, payload)` - dispatch an action to `evolve`, returns the value from the action reducer.
 
 ### Advanced
 

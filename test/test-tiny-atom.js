@@ -201,3 +201,19 @@ test('custom merge', () => {
   atom.split(1)
   eq(atom.get(), 7)
 })
+
+test('split with action returns return value of action', () => {
+  const initialState = { count: 0 }
+  const atom = createAtom(initialState, reduce, () => {})
+
+  function reduce (get, split, { type, payload }) {
+    const state = get()
+    if (type === 'someIncrement') {
+      state.count += payload
+      split(state)
+      return 1
+    }
+  }
+
+  return eq(1, atom.split('someIncrement', 3))
+})

@@ -45,7 +45,7 @@ module.exports = function createAtom (initialState, evolve, render, merge) {
       } else {
         actionSeq++
         var action = { type: type, payload: payload }
-        evolve(get, createSplit(action, actionSeq), action)
+        return evolve(get, createSplit(action, actionSeq), action)
       }
     }
   }
