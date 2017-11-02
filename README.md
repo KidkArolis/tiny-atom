@@ -1,6 +1,20 @@
-# tiny-atom
+<h1 align="center">
+  <br>
+  <img src="https://user-images.githubusercontent.com/324440/32469476-cf1a8918-c34a-11e7-8ad2-c7a0c33d373c.png" alt="tiny atom logo" title="tiny atom logo" width='140px'>
+  <br>
+  <br>
+</h1>
 
-Minimal, yet awesome, state management.
+<h5 align="center">Minimal, yet awesome, state management.</h5>
+<br />
+
+* single store with little boilerplate
+* small API surface - simple to understand, simple to adapt
+* Only 532 bytes - perfect for size sensitive applications
+* Batteries included, ships with
+  * preact bindings
+  * console logger
+  * redux devtools integration
 
 ## Usage
 
@@ -92,7 +106,7 @@ render()
 
 ## API
 
-### `createAtom(initialState, evolve, render)`
+### `createAtom(initialState, evolve, render, options)`
 
 Create an atom.
 
@@ -103,7 +117,9 @@ Create an atom.
   * `action` - an object of shape `{ type, payload }`
 * `render(atom, details)` - a function called on each state change
   * `atom` - atom itself
-  * `details` - an object of shape { seq, action, update, prev }, should be used mostly for debugging, but could also be an integration point
+* `options`
+  * `debug` - a function which gets passed `{ type, atom, action, sourceActions, prevState }` on each `action` and each `update`.
+  * 'merge' - a function with signature `(prevState, nextState) => state`, called each time a possible partial update `nextState` needs to be merged into the old state `prevState`. Default implementation is `Object.assign({}, prev, next)`. You can use this hook to use a different data structure for your state, such as Immutable.js. Or you could use it to extend the state instead of cloning `Object.assign(prev, next)` if that makes performance or architectural difference.
 
 ### `atom.get`
 
@@ -113,11 +129,5 @@ Return current state.
 
 Can be used in 2 ways:
 
-* `atom.split(update)` - a shortcut to directly extend the state with the `update` object, doesn't go via `evolve`, extends using Object.assign.
+* `atom.split(update)` - a shortcut to directly update the state with the `update` object, doesn't go via `evolve`.
 * `atom.split(type, payload)` - dispatch an action to `evolve`.
-
-### Advanced
-
-Tiny Atom's constructor takes a 4th argument, a function `merge` with signature `(prevState, nextState)`. This function is called each time the old state `prevState` needs to merge a possibly partial update `nextState`. Default implementation is `Object.assign({}, prev, next)`.
-
-You can use this hook to use a different data structure for your state, such as Immutable.js. Or you could use it to extend the state instead of cloning `Object.assign(prev, next)` if that makes performance or architectural difference.

@@ -3,10 +3,11 @@ const createAtom = require('..')
 
 suite('tiny-atom')
 
-test('can be used with no reducer or onChange listener', () => {
-  const atom = createAtom({ count: 0 })
-  eq(atom.get(), { count: 0 })
+test('can be used with no initial state, reducer or render listener', () => {
+  const atom = createAtom()
+  eq(atom.get(), {})
   atom.split({ count: 5 })
+  atom.split('action')
   eq(atom.get(), { count: 5 })
 })
 
@@ -89,7 +90,7 @@ test('onChange listener', () => {
 
 test('can be used in a mutating manner', () => {
   const initialState = { count: 0 }
-  const atom = createAtom(initialState, reduce, () => {}, mutate)
+  const atom = createAtom(initialState, reduce, () => {}, { merge: mutate })
 
   function mutate (empty, prev, next) {
     return Object.assign(prev, next)
@@ -108,9 +109,9 @@ test('can be used in a mutating manner', () => {
   assert(atom.get() === initialState)
 })
 
-test('onChange provides action details', (done) => {
+test('debug provides action and update details', (done) => {
   const history = []
-  const atom = createAtom({ count: 0 }, reduce, onChange)
+  const atom = createAtom({ count: 0 }, reduce, null, { debug })
 
   function reduce (get, split, { type, payload }) {
     ({
@@ -126,59 +127,101 @@ test('onChange provides action details', (done) => {
     }[type]())
   }
 
-  function onChange (atom, details) {
-    history.push(Object.assign(details, { state: atom.get() }))
+  function debug (info) {
+    history.push(Object.assign(info, { currState: atom.get() }))
 
     if (atom.get().done) {
       eq(history, [{
-        seq: 1,
+        type: 'update',
         action: { payload: { count: 1 } },
-        update: { count: 1 },
-        prev: { count: 0 },
-        state: { count: 1 }
+        sourceActions: [],
+        atom: atom,
+        prevState: { count: 0 },
+        currState: { count: 1 }
       }, {
-        seq: 2,
-        action: { type: 'dec', payload: 1 },
-        update: { count: 0 },
-        prev: { count: 1 },
-        state: { count: 0 }
+        type: 'action',
+        action: { seq: 1, type: 'dec', payload: 1 },
+        sourceActions: [],
+        atom: atom,
+        currState: { count: 1 }
       }, {
-        seq: 3,
-        action: { type: 'inc', payload: 2 },
-        update: { count: 2 },
-        prev: { count: 0 },
-        state: { count: 2 }
+        type: 'update',
+        action: { payload: { count: 0 } },
+        sourceActions: [{ seq: 1, type: 'dec', payload: 1 }],
+        atom: atom,
+        prevState: { count: 1 },
+        currState: { count: 0 }
       }, {
-        seq: 4,
+        type: 'action',
+        action: { seq: 2, type: 'inc', payload: 2 },
+        sourceActions: [],
+        atom: atom,
+        currState: { count: 0 }
+      }, {
+        type: 'update',
+        action: { payload: { count: 2 } },
+        sourceActions: [{ seq: 2, type: 'inc', payload: 2 }],
+        atom: atom,
+        prevState: { count: 0 },
+        currState: { count: 2 }
+      }, {
+        type: 'update',
         action: { payload: { count: 4 } },
-        update: { count: 4 },
-        prev: { count: 2 },
-        state: { count: 4 }
+        sourceActions: [],
+        atom: atom,
+        prevState: { count: 2 },
+        currState: { count: 4 }
       }, {
-        seq: 5,
-        action: { type: 'asyncInc', payload: 10 },
-        update: { loading: true },
-        prev: { count: 4 },
-        state: { count: 4, loading: true }
+        type: 'action',
+        action: { seq: 3, type: 'asyncInc', payload: 10 },
+        sourceActions: [],
+        atom: atom,
+        currState: { count: 4 }
       }, {
-        seq: 6,
-        action: { type: 'inc', payload: 100 },
-        update: { count: 104 },
-        prev: { count: 4, loading: true },
-        state: { count: 104, loading: true }
+        type: 'update',
+        action: { payload: { loading: true } },
+        sourceActions: [{ seq: 3, type: 'asyncInc', payload: 10 }],
+        atom: atom,
+        prevState: { count: 4 },
+        currState: { count: 4, loading: true }
       }, {
-        seq: 7,
-        action: { type: 'inc', payload: 1 },
-        update: { count: 105 },
-        prev: { count: 104, loading: true },
-        state: { count: 105, loading: true }
+        type: 'action',
+        action: { seq: 4, type: 'inc', payload: 100 },
+        sourceActions: [],
+        atom: atom,
+        currState: { count: 4, loading: true }
       }, {
-        seq: 5,
-        action: { type: 'asyncInc', payload: 10 },
-        update: { count: 115, loading: false, done: true },
-        prev: { count: 105, loading: true },
-        state: { count: 115, loading: false, done: true }
-      }])
+        type: 'update',
+        action: { payload: { count: 104 } },
+        sourceActions: [{ seq: 4, type: 'inc', payload: 100 }],
+        atom: atom,
+        prevState: { count: 4, loading: true },
+        currState: { count: 104, loading: true }
+      }, {
+        type: 'action',
+        action: { seq: 5, type: 'inc', payload: 1 },
+        sourceActions: [{ seq: 3, type: 'asyncInc', payload: 10 }],
+        atom: atom,
+        currState: { count: 104, loading: true }
+      }, {
+        type: 'update',
+        action: { payload: { count: 105 } },
+        sourceActions: [
+          { seq: 3, type: 'asyncInc', payload: 10 },
+          { seq: 5, type: 'inc', payload: 1 }
+        ],
+        atom: atom,
+        prevState: { count: 104, loading: true },
+        currState: { count: 105, loading: true }
+      }, {
+        type: 'update',
+        action: { payload: { count: 115, loading: false, done: true } },
+        sourceActions: [{ seq: 3, type: 'asyncInc', payload: 10 }],
+        atom: atom,
+        prevState: { count: 105, loading: true },
+        currState: { count: 115, loading: false, done: true }
+      }]
+      )
       done()
     }
   }
@@ -192,8 +235,8 @@ test('onChange provides action details', (done) => {
 })
 
 test('custom merge', () => {
-  const extend = (oldState, newState) => oldState + newState
-  const atom = createAtom(5, null, null, extend)
+  const merge = (oldState, newState) => oldState + newState
+  const atom = createAtom(5, null, null, { merge })
 
   atom.split(1)
   eq(atom.get(), 6)
