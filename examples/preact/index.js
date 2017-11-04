@@ -1,4 +1,5 @@
 const Preact = require('preact')
+const { connectViaExtension } = require('remotedev')
 const createAtom = require('../..')
 const { Provider, connect } = require('../../preact')
 
@@ -11,6 +12,10 @@ function evolve (get, split, action) {
   if (type === 'increment') {
     // sync
     split({ count: state.count + payload })
+  }
+
+  if (typeof action === 'function') {
+    action(get, split)
   }
 }
 
@@ -33,12 +38,29 @@ const App = connect(state => ({ doubleCount: state.count * 2, count: state.count
   }
 })
 
-function render () {
+// window.__REDUX_DEVTOOLS_EXTENSION__.connect()
+// window.devToolsExtension.subscribe(message => {
+//   console.log(message)
+// })
+
+function render (a, { action, currState } = {}) {
+  if (action) {
+    // window.devToolsExtension(action.type, { state: currState })
+    // Send changes to the remote monitor
+    remotedev.send(action, a.get())
+  }
   Preact.render((
     <Provider atom={atom}>
       <App />
     </Provider>
   ), document.body, document.body.lastElementChild)
 }
+
+const remotedev = connectViaExtension()
+remotedev.subscribe(message => {
+  if (message.type === 'DISPATCH' && message.payload.type === 'JUMP_TO_ACTION') {
+    atom.split(JSON.parse(message.state))
+  }
+})
 
 render()

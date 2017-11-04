@@ -51,8 +51,10 @@ module.exports = function createAtom (initialState, evolve, render, options) {
   function createSplit (sourceAction, seq) {
     return function split (type, payload) {
       if (typeof type === 'function') {
+        // actionSeq++
+        // return type(get, createSplit({ name: type.name || 'anonymous', fn: type }, seq))
         actionSeq++
-        return type(get, createSplit({ name: type.name || 'anonymous', fn: type }, seq))
+        evolve(get, createSplit(type, actionSeq), type)
       } else if (typeof type !== 'string') {
         if (!sourceAction) actionSeq++
         return set(type, sourceAction, seq || actionSeq)

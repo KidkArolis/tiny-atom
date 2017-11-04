@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "preact": "^8.2.6"
+    "preact": "^8.2.6",
+    "remotedev": "^0.2.7"
   }
 }
