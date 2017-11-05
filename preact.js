@@ -21,15 +21,16 @@ var Provider = (function (superclass) {
   return Provider
 }(Preact.Component))
 
-function connect (mapStateToProps) {
+function connect (mapState, mapActions) {
   return function connectComponent (Component) {
     return function (props, context) {
       var atom = context.atom
       return Preact.h(Component, Object.assign(
         {},
         props,
-        mapStateToProps ? mapStateToProps(atom.get()) : { atom: atom.get() },
-        { split: atom.split }
+        mapState ? mapState(atom.get()) : { atom: atom.get() },
+        // TODO - pass mapped props to mapActions
+        mapActions ? mapActions(atom.split, props) : { split: atom.split }
       ))
     }
   }
