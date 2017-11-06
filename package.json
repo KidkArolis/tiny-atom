@@ -22,5 +22,8 @@
       "suite",
       "test"
     ]
+  },
+  "peerDependencies": {
+    "preact": "^8.2.6"
   }
 }
