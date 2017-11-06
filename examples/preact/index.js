@@ -2,10 +2,10 @@ const Preact = require('preact')
 const createAtom = require('../..')
 const { Provider, connect } = require('../../preact')
 const devtools = require('../../devtools')
+const log = require('../../log')
 
-const atom = createAtom({ count: 0 }, evolve, render, {
-  log: true,
-  debug: devtools
+const atom = window.atom = createAtom({ count: 0 }, evolve, render, {
+  debug: (info) => { log(info); devtools(info) }
 })
 
 function evolve (get, split, action) {
@@ -71,7 +71,7 @@ setTimeout(() => {
   }, 10)
 }, 10)
 
-function render (a, { action, currState } = {}) {
+function render () {
   Preact.render((
     <Provider atom={atom}>
       <App />

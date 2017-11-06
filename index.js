@@ -2,7 +2,7 @@
  * Minimal state management.
  *
  * const evolve = (get, split, action) => split({ count: get().count + 1 })
- * const render = (atom, details) => console.log(details, atom.get())
+ * const render = (atom) => console.log(atom.get())
  * const atom = createAtom({ count: 1 }, evolve, render)
  *
  * atom.get() // { count: 1 }
@@ -12,13 +12,13 @@
  */
 module.exports = function createAtom (initialState, evolve, render, options) {
   options = options || {}
+  evolve = evolve || function () {}
+  render = render || function () {}
   var actionSeq = 0
   var state = initialState || {}
   var merge = options.merge || defaultMerge
-  render = render || function () {}
-  var log = options.log
   var atom = { get: get, split: createSplit() }
-  var debug = options.debug ? options.debug(atom) : null
+  var debug = options.debug
   return atom
 
   function defaultMerge (prev, next) {
@@ -29,53 +29,32 @@ module.exports = function createAtom (initialState, evolve, render, options) {
     return state
   }
 
-  function set (nextState, sourceActions) {
-    var prevState = state
-    state = merge(state, nextState)
-
-    // var sourceAction = action
-    // action = action || { payload: nextState }
-
-    if (log) {
-      console.groupCollapsed(`%c${!sourceActions.length ? '••%c%c' : '  '} ${sourceActions.map((s, i, list) => list.length - 1 === i ? `%c${s.type}%c` : s.type).join(' → ')} `, 'font-weight: normal', 'color: black; font-weight: bold;', 'color: black; font-weight: normal', nextState || '')
-      console.log('actions', sourceActions || [])
-      console.log('patch', nextState)
-      console.log('prevState', prevState)
-      console.log('currState', atom.get())
-      console.groupEnd()
-    }
-
-    if (debug) {
-      debug({ type: 'update', atom: atom, sourceActions: sourceActions, patch: nextState, prevState: prevState })
-    }
-
-    render(atom)
-
-    return state
-  }
-
   function createSplit (sourceActions) {
+    sourceActions = sourceActions || []
     return function split (type, payload) {
-      actionSeq++
+      var action, prevState
       if (typeof type === 'string') {
-        var action = { type: type, payload: payload, seq: actionSeq }
+        action = { seq: ++actionSeq, type: type }
+        if (payload) action.payload = payload
+        observe('action', action, sourceActions)
         var split = createSplit((sourceActions || []).concat([action]))
-
-        if (log) {
-          console.groupCollapsed(`%c${!sourceActions ? '•' : ' '}• ${(sourceActions || []).concat([action]).map((s, i, list) => list.length - 1 === i ? `%c${s.type}%c` : s.type).join(' → ')}`, 'font-weight: normal', 'color: black; font-weight: bold;', 'color: black; font-weight: normal', action.payload || '')
-          console.log('actions', (sourceActions || []).concat([action]))
-          console.groupEnd()
-        }
-
-        if (debug) {
-          debug({ type: 'action', atom: atom, action: action, sourceActions: sourceActions })
-        }
-
         evolve(get, split, action)
       } else {
-        var nextState = type
-        return set(nextState, sourceActions || [])
+        action = { payload: type }
+        prevState = state
+        state = merge(state, action.payload)
+        observe('update', action, sourceActions, prevState)
+        render(atom)
+        return state
       }
+    }
+  }
+
+  function observe (type, action, sourceActions, prevState) {
+    if (debug) {
+      var info = { type: type, action: action, sourceActions: sourceActions, atom: atom }
+      if (prevState) info.prevState = prevState
+      debug(info)
     }
   }
 }

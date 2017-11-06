@@ -5,6 +5,7 @@ var Provider = (function (superclass) {
     superclass.apply(this, arguments)
   }
 
+  /* eslint-disable no-proto */
   if (superclass) Provider.__proto__ = superclass
   Provider.prototype = Object.create(superclass && superclass.prototype)
 
@@ -25,13 +26,16 @@ function connect (mapState, mapActions) {
   return function connectComponent (Component) {
     return function (props, context) {
       var atom = context.atom
-      return Preact.h(Component, Object.assign(
-        {},
+      props = Object.assign(
+        { atom: atom.get(), split: atom.split },
         props,
-        mapState ? mapState(atom.get()) : { atom: atom.get() },
-        // TODO - pass mapped props to mapActions
-        mapActions ? mapActions(atom.split, props) : { split: atom.split }
-      ))
+        mapState ? mapState(atom.get()) : {}
+      )
+      props = Object.assign(
+        props,
+        mapActions ? mapActions(atom.split, props) : {}
+      )
+      return Preact.h(Component, props)
     }
   }
 }
