@@ -1,5 +1,5 @@
 {
-  "name": "preact-example",
+  "name": "react-example",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
@@ -7,9 +7,10 @@
     "start": "../../node_modules/.bin/jetpack ."
   },
   "dependencies": {
-    "preact": "^8.2.6"
+    "react": "^16.1.0",
+    "react-dom": "^16.1.0"
   },
   "jetpack": {
-    "jsx": "Preact.h"
+    "jsx": "React.createElement"
   }
 }
