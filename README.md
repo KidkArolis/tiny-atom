@@ -12,6 +12,7 @@
 * tiny size - 0.5KB
 * single store modified via actions
 * batteries included
+  * react bindings
   * preact bindings
   * console logger
   * redux devtools integration
@@ -64,12 +65,16 @@ atom.split('increment', 2)
 
 ![image](https://user-images.githubusercontent.com/324440/32691553-3e7767f4-c701-11e7-91b2-bf80fc918c71.png)
 
-## Preact example
+## React/Preact example
 
 ```js
-const Preact = require('preact')
 const createAtom = require('tiny-atom')
-const { ProvideAtom, ConnectAtom } = require('tiny-atom/preact')
+const React = require('react')
+const ReactDOM = require('react-dom')
+const { ProvideAtom, ConnectAtom } = require('tiny-atom/react')
+// or with preact
+// const Preact = require('preact')
+// const { ProvideAtom, ConnectAtom } = require('tiny-atom/preact')
 
 const atom = createAtom({ count: 0 }, evolve, render)
 
@@ -92,21 +97,20 @@ const App = () => (
   <ConnectAtom map={mapAtom} render={({ count, increment }) => (
     <div>
       <h1>count is {count}</h1>
-      <button onclick={() => increment(1)}>Increment</button>
+      <button onClick={() => increment(1)}>Increment</button>
     </div>
   )} />
 )
 
 function render () {
-  Preact.render((
+  ReactDOM.render((
     <ProvideAtom atom={atom}>
       <App />
     </ProvideAtom>
-  ), document.body, document.body.lastElementChild)
+  ), document.getElementById('root'))
 }
 
 render()
-
 ```
 
 ## API

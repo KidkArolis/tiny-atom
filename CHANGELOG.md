@@ -5,6 +5,7 @@
 * Bundled logger via `{ debug: require('tiny-atom/log') }`.
 * Redux devtools via `{ debug: require('tiny-atom/devtools') }`.
 * Preact bindings `const { ProvideAtom, ConnectAtom } = require('tiny-atom/preact')`.
+* React bindings `const { ProvideAtom, ConnectAtom } = require('tiny-atom/react')`.
 * Add MIT license.
 
 ## 0.4.0
