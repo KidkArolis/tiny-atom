@@ -1,0 +1,36 @@
+- title: Overview
+  items:
+    - title: Intro
+      link: /
+    - title: Usage
+      link: /usage
+    - title: API Reference
+      link: /api-reference
+    - title: Approach
+      link: /approach
+    - title: Alternatives
+      link: /alternatives
+    - title: Best practises
+      link: /best-practises
+    - title: Console logger
+      link: /console-logger
+    - title: Devtools
+      link: /devtools
+
+
+- title: Guides
+  items:
+    - title: Using with react
+      link: /using-with-react
+    - title: Using with preact
+      link: /using-with-preact
+    - title: Using with a router
+      link: /using-with-router
+    - title: Using with zaphod
+      link: /using-with-zaphod
+    - title: Using with immutable.js
+      link: /using-with-immutable
+    - title: Hot reloading
+      link: /hot-reloading
+    - title: Local storage
+      link: /local-storage
