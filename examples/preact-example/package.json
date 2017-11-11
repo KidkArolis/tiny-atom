@@ -1,0 +1,19 @@
+{
+  "name": "preact",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "jetpack .",
+    "bootstrap": "yarn && yarn --cwd ../.."
+  },
+  "dependencies": {
+    "preact": "^8.2.6"
+  },
+  "devDependencies": {
+    "jetpack": "^0.3.1"
+  },
+  "jetpack": {
+    "jsx": "Preact.h"
+  }
+}
