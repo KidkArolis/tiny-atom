@@ -6,9 +6,8 @@
   "scripts": {
     "start": "../../node_modules/.bin/jetpack ."
   },
-  "dependencies": {
-    "preact": "^8.2.6"
-  },
+  "dependencies": {},
+  "devDependencies": {},
   "jetpack": {
     "jsx": "Preact.h"
   }
