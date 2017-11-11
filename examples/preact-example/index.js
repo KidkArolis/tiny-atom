@@ -11,35 +11,39 @@ const atom = window.atom = createAtom({ count: 0 }, evolve, render, {
   }
 })
 
-function evolve (get, split, action) {
-  const state = get()
-  const { type, payload } = action
+const actions = {
+  increment: (get, split, payload) => {
+    split({ count: get().count + payload })
+  },
 
-  if (type === 'increment') {
-    split({ count: state.count + payload })
-  }
-
-  if (type === 'decrement') {
+  decrement: (get, split, payload) => {
     split({ count: get().count - payload })
-  }
+  },
 
-  if (type === 'asyncIncrement') {
+  asyncIncrement: (get, split, payload) => {
     split('asyncIncrementNested', payload)
-  }
+  },
 
-  if (type === 'asyncIncrementNested') {
+  asyncIncrementNested: (get, split, payload) => {
     split('increment', payload)
-    console.log(action)
-    setTimeout(() => split({
-      count: get().count + payload,
-      extra: get().extra + 1
-    }), 1000)
-    split('decrement', 1)
-  }
+    setTimeout(() => {
+      split({
+        count: get().count + payload,
+        extra: (get().extra || 'a') + 'a'
+      })
+      setTimeout(() => {
+        split('decrement', 1)
+      }, 1000)
+    }, 1000)
+  },
 
-  if (type === 'track') {
+  track: (get, split, payload) => {
     // track is a side effect, no store updates
   }
+}
+
+function evolve (get, split, action) {
+  actions[action.type](get, split, action.payload)
 }
 
 const mapState = state => ({
@@ -61,6 +65,7 @@ const App = connect(mapState, mapActions)(({ count, doubleCount, split, asyncInc
     <button onClick={dec}>Decrement</button>
     <button onClick={asyncIncrement(2)}>Async increment</button>
     <button onClick={() => split('track')}>Track</button>
+    <button onClick={() => split({ rnd: Math.random() })}>Random</button>
   </div>
 })
 
