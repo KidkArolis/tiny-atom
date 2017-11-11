@@ -1,49 +1,49 @@
-const { eq, assert } = require('@briancavalier/assert')
+const { equal, notEqual, deepEqual } = require('assert')
 const createAtom = require('..')
 
 suite('tiny-atom')
 
-test('can be used with no initial state, reducer or render listener', () => {
+test('can be used with no initial state, evolve or render listener', () => {
   const atom = createAtom()
-  eq(atom.get(), {})
+  deepEqual(atom.get(), {})
   atom.split({ count: 5 })
   atom.split('action')
-  eq(atom.get(), { count: 5 })
+  deepEqual(atom.get(), { count: 5 })
 })
 
 test('does not mutate the state object', () => {
   const initialState = { count: 0 }
   const atom = createAtom(initialState)
 
-  eq(atom.get(), { count: 0 })
-  assert(atom.get() === initialState)
+  deepEqual(atom.get(), { count: 0 })
+  equal(atom.get(), initialState)
 
   atom.split({ count: 5 })
-  eq(atom.get(), { count: 5 })
-  assert(atom.get() !== initialState)
+  deepEqual(atom.get(), { count: 5 })
+  notEqual(atom.get(), initialState)
 })
 
-test('reducer', () => {
-  const atom = createAtom({ count: 0 }, reduce)
+test('evolve', () => {
+  const atom = createAtom({ count: 0 }, evolve)
 
-  function reduce (get, split, { type, payload }) {
+  function evolve (get, split, { type, payload }) {
     if (type === 'increment') {
       split({ count: get().count + (payload || 1) })
     }
   }
 
   atom.split('increment')
-  eq(atom.get(), { count: 1 })
+  deepEqual(atom.get(), { count: 1 })
 
   atom.split('increment', 5)
-  eq(atom.get(), { count: 6 })
+  deepEqual(atom.get(), { count: 6 })
 })
 
-test('async reducer', (done) => {
+test('async evolve', (done) => {
   const changes = []
-  const atom = createAtom({ count: 0 }, reduce, onChange)
+  const atom = createAtom({ count: 0 }, evolve, onChange)
 
-  function reduce (get, split, { type, payload }) {
+  function evolve (get, split, { type, payload }) {
     if (type === 'increment') {
       split({ count: get().count + 1 })
       setTimeout(() => {
@@ -56,11 +56,11 @@ test('async reducer', (done) => {
   function onChange (atom) {
     let state = atom.get()
     changes.push(1)
-    if (changes.length === 1) eq(state, { count: 1 })
-    if (changes.length === 2) eq(state, { count: 2, async: true })
+    if (changes.length === 1) deepEqual(state, { count: 1 })
+    if (changes.length === 2) deepEqual(state, { count: 2, async: true })
     if (state.done) {
-      eq(state, { count: 2, async: true, done: true })
-      eq(changes, [1, 1, 1])
+      deepEqual(state, { count: 2, async: true, done: true })
+      deepEqual(changes, [1, 1, 1])
       done()
     }
   }
@@ -81,7 +81,7 @@ test('onChange listener', () => {
   atom.split({ count: 2 })
   atom.split({ count: 3 })
 
-  eq(history, [
+  deepEqual(history, [
     { count: 1 },
     { count: 2 },
     { count: 3 }
@@ -90,13 +90,13 @@ test('onChange listener', () => {
 
 test('can be used in a mutating manner', () => {
   const initialState = { count: 0 }
-  const atom = createAtom(initialState, reduce, () => {}, { merge: mutate })
+  const atom = createAtom(initialState, evolve, () => {}, { merge: mutate })
 
   function mutate (empty, prev, next) {
     return Object.assign(prev, next)
   }
 
-  function reduce (get, split, { type, payload }) {
+  function evolve (get, split, { type, payload }) {
     const state = get()
     if (type === 'increment') {
       state.count += payload
@@ -105,15 +105,15 @@ test('can be used in a mutating manner', () => {
   }
 
   atom.split('increment', 3)
-  eq(atom.get(), { count: 3 })
-  assert(atom.get() === initialState)
+  deepEqual(atom.get(), { count: 3 })
+  equal(atom.get(), initialState)
 })
 
 test('debug provides action and update details', (done) => {
   const history = []
-  const atom = createAtom({ count: 0 }, reduce, null, { debug })
+  const atom = createAtom({ count: 0 }, evolve, null, { debug })
 
-  function reduce (get, split, { type, payload }) {
+  function evolve (get, split, { type, payload }) {
     ({
       inc: () => split({ count: get().count + payload }),
       dec: () => split({ count: get().count - payload }),
@@ -131,7 +131,7 @@ test('debug provides action and update details', (done) => {
     history.push(Object.assign(info, { currState: atom.get() }))
 
     if (atom.get().done) {
-      eq(history, [{
+      deepEqual(history, [{
         type: 'update',
         action: { payload: { count: 1 } },
         sourceActions: [],
@@ -239,8 +239,8 @@ test('custom merge', () => {
   const atom = createAtom(5, null, null, { merge })
 
   atom.split(1)
-  eq(atom.get(), 6)
+  deepEqual(atom.get(), 6)
 
   atom.split(1)
-  eq(atom.get(), 7)
+  deepEqual(atom.get(), 7)
 })

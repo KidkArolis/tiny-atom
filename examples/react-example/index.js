@@ -87,7 +87,7 @@ function render (atom) {
     <ProvideAtom atom={atom}>
       <App />
     </ProvideAtom>
-  ), document.getElementById('root'))
+  ), document.body)
 }
 
 render(atom)
