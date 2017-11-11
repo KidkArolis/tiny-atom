@@ -10,4 +10,4 @@ To develop
 
 To publish
 
-        npm run publish
+        npm run deploy

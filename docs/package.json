@@ -46,9 +46,12 @@
   "private": true,
   "scripts": {
     "build": "gatsby build",
-    "deploy": "gatsby build --prefix-paths && gh-pages -d public",
+    "deploy": "rm -rf public && gatsby build --prefix-paths && gh-pages -d public",
     "develop": "gatsby develop",
     "serve": "gatsby serve",
     "test": "standard"
+  },
+  "devDependencies": {
+    "gh-pages": "^1.0.0"
   }
 }

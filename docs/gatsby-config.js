@@ -4,6 +4,7 @@ module.exports = {
     siteUrl: `https://qubitproducts.github.io/tiny-atom`,
     description: `Minimal, yet awesome, state container.`
   },
+  pathPrefix: `/tiny-atom`,
   plugins: [
     {
       resolve: `gatsby-source-filesystem`,
