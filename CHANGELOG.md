@@ -4,7 +4,7 @@
 * **BREAKING** `render` callback no longer gets `details` passed to it, use the `debug` hook instead. Render is only called when state is updated, `debug` is called on both actions and updates.
 * Bundled logger via `{ debug: require('tiny-atom/log') }`.
 * Redux devtools via `{ debug: require('tiny-atom/devtools') }`.
-* Preact bindings `const { Provider, connect } = require('tiny-atom/preact')`.
+* Preact bindings `const { ProvideAtom, ConnectAtom } = require('tiny-atom/preact')`.
 * Add MIT license.
 
 ## 0.4.0
