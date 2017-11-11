@@ -1,6 +1,6 @@
-# preact-example
+# basic-example
 
-A small example of using `tiny-atom` with `preact`.
+A small example of using `tiny-atom` on it's own.
 
 ## Running
 

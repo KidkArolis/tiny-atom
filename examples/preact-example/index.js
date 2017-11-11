@@ -1,6 +1,6 @@
 const Preact = require('preact')
 const createAtom = require('../..')
-const { Provider, connect } = require('../../preact')
+const { ProvideAtom, ConnectAtom } = require('../../preact')
 const devtools = require('../../devtools')
 const log = require('../../log')
 
@@ -46,34 +46,46 @@ function evolve (get, split, action) {
   actions[action.type](get, split, action.payload)
 }
 
-const mapState = state => ({
+const mapAtom = (state, split) => ({
   doubleCount: state.count * 2,
-  count: state.count
-})
-
-const mapActions = split => ({
+  count: state.count,
+  split: split,
   inc: () => split('increment', 1),
   dec: () => split('decrement', 1),
   asyncIncrement: x => () => split('asyncIncrement', x)
 })
 
-const App = connect(mapState, mapActions)(({ count, doubleCount, split, asyncIncrement, inc, dec }) => {
-  return <div>
-    <h1>count: {count}</h1>
-    <h1>double: {doubleCount}</h1>
-    <button onClick={inc}>Increment</button>
-    <button onClick={dec}>Decrement</button>
-    <button onClick={asyncIncrement(2)}>Async increment</button>
-    <button onClick={() => split('track')}>Track</button>
-    <button onClick={() => split({ rnd: Math.random() })}>Random</button>
-  </div>
-})
+const App = () => (
+  <ConnectAtom map={mapAtom} render={({ count, doubleCount, split, asyncIncrement, inc, dec }) => (
+    <div>
+      <h1>count: {count}</h1>
+      <h1>double: {doubleCount}</h1>
+      <Nested multiplier={5}>
+        <Nested multiplier={10} />
+      </Nested>
+      <button onClick={inc}>Increment</button>
+      <button onClick={dec}>Decrement</button>
+      <button onClick={asyncIncrement(2)}>Async increment</button>
+      <button onClick={() => split('track')}>Track</button>
+      <button onClick={() => split({ rnd: Math.random() })}>Random</button>
+    </div>
+  )} />
+)
+
+const Nested = ({ multiplier, children }) => (
+  <ConnectAtom map={state => ({ count: state.count })} render={({ count }) => (
+    <div>
+      Nested component: { count * multiplier }
+      {children[0]}
+    </div>
+  )} />
+)
 
 function render (atom) {
   Preact.render((
-    <Provider atom={atom}>
+    <ProvideAtom atom={atom}>
       <App />
-    </Provider>
+    </ProvideAtom>
   ), document.body, document.body.lastElementChild)
 }
 

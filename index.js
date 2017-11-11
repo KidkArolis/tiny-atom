@@ -21,8 +21,8 @@ module.exports = function createAtom (initialState, evolve, render, options) {
   var atom = { get: get, split: createSplit() }
   return atom
 
-  function defaultMerge (prev, next) {
-    return Object.assign({}, prev, next)
+  function defaultMerge (state, update) {
+    return Object.assign({}, state, update)
   }
 
   function get () {
