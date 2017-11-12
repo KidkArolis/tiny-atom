@@ -24,6 +24,9 @@
     "standard5": "^2.0.0"
   },
   "standard": {
+    "ignore": [
+      "docs/public"
+    ],
     "global": [
       "suite",
       "test"
