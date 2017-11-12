@@ -1,5 +1,5 @@
 ---
-title: Using With Immutable
+title: Using with Immutable.js
 ---
 
 Coming soon.

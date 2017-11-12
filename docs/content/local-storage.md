@@ -1,5 +1,5 @@
 ---
-title: Saving state in local storage
+title: Local storage
 ---
 
 Coming soon.

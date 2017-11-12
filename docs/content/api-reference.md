@@ -1,18 +1,6 @@
 ---
-title: API Reference
+title: API reference
 ---
-
-<hr />
-
-* [tiny-atom](#createatominitialstate-evolve-render-options)
-* [tiny-atom/react](#createatominitialstate-evolve-render-options)
-* [tiny-atom/preact](#createatominitialstate-evolve-render-options)
-* [tiny-atom/log](#createatominitialstate-evolve-render-options)
-* [tiny-atom/devtools](#createatominitialstate-evolve-render-options)
-
-<hr />
-
-## Core
 
 ### `createAtom(initialState, evolve, render, options)`
 
