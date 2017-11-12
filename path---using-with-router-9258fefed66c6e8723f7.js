@@ -1,2 +1,2 @@
-webpackJsonp([0xa54b7e309aae],{520:function(t,e){t.exports={data:{markdownRemark:{html:"<p>Coming soon.</p>",excerpt:"Coming soon.",timeToRead:1,frontmatter:{title:"Using With Router"},parent:{__typename:"File",relativePath:"using-with-router.md"}}},pathContext:{slug:"/using-with-router/"}}}});
+webpackJsonp([0xa54b7e309aae],{522:function(t,e){t.exports={data:{markdownRemark:{html:"<p>Coming soon.</p>",excerpt:"Coming soon.",timeToRead:1,frontmatter:{title:"Using With Router"},parent:{__typename:"File",relativePath:"using-with-router.md"}}},pathContext:{slug:"/using-with-router/"}}}});
 //# sourceMappingURL=path---using-with-router-9258fefed66c6e8723f7.js.map
