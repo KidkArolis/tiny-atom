@@ -1,5 +1,5 @@
 ---
-title: Approach
+title: Patterns
 ---
 
 Coming soon.

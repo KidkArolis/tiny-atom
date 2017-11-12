@@ -2,13 +2,14 @@
 <br />
 
 * tiny api - easy to understand, easy to adapt
-* tiny size - 0.5KB
+* tiny in size - 0.5KB
 * single store modified via actions
+* uni-directional data flow
 * batteries included
-  * react bindings
-  * preact bindings
-  * console logger
-  * devtools integration
+  * [react bindings](/using-with-react)
+  * [preact bindings](/using-with-preact)
+  * [console logger](/console-logger)
+  * [devtools integration](/devtools)
 
 ## Installation
 

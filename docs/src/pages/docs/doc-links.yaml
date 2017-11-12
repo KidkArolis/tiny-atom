@@ -2,21 +2,25 @@
   items:
     - title: Intro
       link: /
-    - title: Usage
-      link: /usage
-    - title: API Reference
-      link: /api-reference
-    - title: Approach
-      link: /approach
-    - title: Alternatives
-      link: /alternatives
+    - title: For beginners
+      link: /for-beginners
+    - title: Prior art
+      link: /prior-art
+
+- title: Usage
+  items:
+    - title: Basics
+      link: /basics
     - title: Best practises
       link: /best-practises
+    - title: Patterns
+      link: /patterns
     - title: Console logger
       link: /console-logger
     - title: Devtools
       link: /devtools
-
+    - title: API Reference
+      link: /api-reference
 
 - title: Guides
   items:

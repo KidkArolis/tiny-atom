@@ -1,5 +1,5 @@
 ---
-title: Usage
+title: Basics
 ---
 
 This is a guide explaining how to think in Tiny Atom.
