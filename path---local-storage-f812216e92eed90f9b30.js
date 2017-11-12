@@ -1,2 +1,0 @@
-webpackJsonp([0xbf56a4f1bedb],{515:function(t,a){t.exports={data:{markdownRemark:{html:"<p>Coming soon.</p>",excerpt:"Coming soon.",timeToRead:1,frontmatter:{title:"Saving state in local storage"},parent:{__typename:"File",relativePath:"local-storage.md"}}},pathContext:{slug:"/local-storage/"}}}});
-//# sourceMappingURL=path---local-storage-f812216e92eed90f9b30.js.map
