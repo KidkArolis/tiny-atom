@@ -1,5 +1,5 @@
 ---
-title: Using with zaphod
+title: Using with Zaphod
 ---
 
 Coming soon.

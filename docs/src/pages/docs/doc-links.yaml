@@ -24,15 +24,15 @@
 
 - title: Guides
   items:
-    - title: Using with react
+    - title: Using with React
       link: /using-with-react
-    - title: Using with preact
+    - title: Using with Preact
       link: /using-with-preact
     - title: Using with a router
       link: /using-with-router
-    - title: Using with zaphod
+    - title: Using with Zaphod
       link: /using-with-zaphod
-    - title: Using with immutable.js
+    - title: Using with Immutable.js
       link: /using-with-immutable
     - title: Hot reloading
       link: /hot-reloading
