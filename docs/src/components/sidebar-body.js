@@ -56,7 +56,7 @@ const Section = props => (
     <h3
       css={{
         ...props.headerStyles,
-        marginTop: props.index === 0 ? 0 : rhythm(3 / 2)
+        marginTop: props.index === 0 ? 0 : rhythm(1.25)
       }}
     >
       {props.title}
