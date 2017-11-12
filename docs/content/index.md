@@ -56,3 +56,6 @@ atom.split('increment', 2)
   // -> 1 second later...
   // -> { count: 15, loading: false }
 ```
+
+* View https://n9lx4xv5jl.codesandbox.io/
+* Edit https://codesandbox.io/s/n9lx4xv5jl
