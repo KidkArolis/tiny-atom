@@ -1,2 +1,0 @@
-webpackJsonp([0x8ed1e0a7a4a4],{517:function(t,e){t.exports={data:{markdownRemark:{html:"<p>Coming soon.</p>",excerpt:"Coming soon.",timeToRead:1,frontmatter:{title:"Patterns"},parent:{__typename:"File",relativePath:"patterns.md"}}},pathContext:{slug:"/patterns/"}}}});
-//# sourceMappingURL=path---patterns-543ddc01f043099b9f33.js.map
