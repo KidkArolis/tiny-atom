@@ -55,7 +55,7 @@ The default update merge strategy in **Tiny Atom** is `Object.assign({}, state, 
 ```js
 function deepMerge (state, update) {
   const merged = assign({}, state, update)
-  update.forEach(Object.keys(update), key => {
+  Object.keys(update).forEach(key => {
     if (state &&
         update &&
         update[key] !== state[key] &&
