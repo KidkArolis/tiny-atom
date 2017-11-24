@@ -2,4 +2,16 @@
 title: Using with router
 ---
 
-Coming soon.
+
+
+/**
+               +-> router
+               |      +
+               |      |
+               |      v
+  router.push  |     store <-+
+               |      +      |
+               |      |      | dispatch
+               |      v      |
+               +-+ views  +--+
+*/
