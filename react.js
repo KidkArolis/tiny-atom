@@ -1,11 +1,8 @@
 var React = require('react')
 var Component = React.Component
 
-function propsValidation (props, propName, componentName) {
-  if (typeof props === 'object') {
-    return null
-  }
-  return new Error('Invalid prop ' + propName + ' supplied to componentName')
+function Any () {
+  return null
 }
 
 function ProvideAtom () { Component.apply(this, arguments) }
@@ -13,9 +10,7 @@ function ProvideAtom () { Component.apply(this, arguments) }
 ProvideAtom.__proto__ = Component
 ProvideAtom.prototype = Object.create(Component.prototype)
 ProvideAtom.prototype.constructor = ProvideAtom
-ProvideAtom.childContextTypes = {
-  atom: propsValidation
-}
+ProvideAtom.childContextTypes = { atom: Any }
 ProvideAtom.prototype.getChildContext = function getChildContext () {
   return { atom: this.props.atom }
 }
@@ -31,9 +26,7 @@ function ConnectAtom (props, context) {
   return render(data)
 }
 
-ConnectAtom.contextTypes = {
-  atom: propsValidation
-}
+ConnectAtom.contextTypes = { atom: Any }
 
 module.exports.ProvideAtom = ProvideAtom
 module.exports.ConnectAtom = ConnectAtom

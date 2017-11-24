@@ -5,20 +5,27 @@
  * const render = (atom) => console.log(atom.get())
  * const atom = createAtom({ count: 1 }, evolve, render)
  *
+ * atom.observe(atom => console.log(atom.get()))
+ *
  * atom.get() // { count: 1 }
  * atom.split('increment') // action
  * atom.split('increment', { by: 2 }) // action with payload
  * atom.split({ count: 0 }) // update state directly
  */
 module.exports = function createAtom (initialState, evolve, render, options) {
+  if (typeof render !== 'function') {
+    options = render
+    render = null
+  }
   options = options || {}
   evolve = evolve || function () {}
-  render = render || function () {}
   var actionSeq = 0
+  var listeners = []
   var state = initialState || {}
   var merge = options.merge || defaultMerge
   var debug = options.debug
-  var atom = { get: get, split: createSplit() }
+  if (render) observe(render)
+  var atom = { get: get, split: createSplit(), observe: observe }
   return atom
 
   function defaultMerge (state, update) {
@@ -29,6 +36,15 @@ module.exports = function createAtom (initialState, evolve, render, options) {
     return state
   }
 
+  function observe (f) {
+    listeners.push(f)
+    return function unobserve () {
+      if (listeners.indexOf(f) >= 0) {
+        listeners.splice(listeners.indexOf(f), 1)
+      }
+    }
+  }
+
   function createSplit (sourceActions) {
     sourceActions = sourceActions || []
     return function split (type, payload) {
@@ -36,20 +52,20 @@ module.exports = function createAtom (initialState, evolve, render, options) {
       if (typeof type === 'string') {
         action = { seq: ++actionSeq, type: type }
         if (payload) action.payload = payload
-        if (debug) observe('action', action, sourceActions)
+        if (debug) report('action', action, sourceActions)
         var split = createSplit(sourceActions.concat([action]))
         evolve(get, split, action)
       } else {
         action = { payload: type }
         prevState = state
         state = merge(state, action.payload)
-        if (debug) observe('update', action, sourceActions, prevState)
-        render(atom)
+        if (debug) report('update', action, sourceActions, prevState)
+        listeners.forEach(function (f) { f(atom) })
       }
     }
   }
 
-  function observe (type, action, sourceActions, prevState) {
+  function report (type, action, sourceActions, prevState) {
     var info = { type: type, action: action, sourceActions: sourceActions, atom: atom }
     if (prevState) info.prevState = prevState
     debug(info)
