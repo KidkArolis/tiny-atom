@@ -1,5 +1,6 @@
 var gray = 'color: #888'
-var black = 'color: #05823d'
+var green = 'color: #05823d'
+var blue = 'color: blue'
 
 module.exports = function log (info) {
   var prefix
@@ -13,8 +14,8 @@ module.exports = function log (info) {
 
   if (isAction) {
     prefix = !info.sourceActions.length ? '••' : ' •'
-    console.groupCollapsed(prefix + ' %c' + label, gray, black, info.action.payload || '')
-    console.log('type %caction', 'color: blue')
+    console.groupCollapsed(prefix + ' %c' + label, gray, green, info.action.payload || '')
+    console.log('type %caction', blue)
     console.log('action', info.action)
     console.log('source', info.sourceActions)
     console.groupEnd()
@@ -22,8 +23,8 @@ module.exports = function log (info) {
 
   if (isUpdate) {
     prefix = !info.sourceActions.length ? '••' : '  '
-    console.groupCollapsed(prefix + ' %c' + label, gray, black, info.action.payload || '')
-    console.log('type %cupdate', 'color: blue')
+    console.groupCollapsed(prefix + ' %c' + label, gray, green, info.action.payload || '')
+    console.log('type %cupdate', blue)
     console.log('action', info.action)
     console.log('source', info.sourceActions)
     console.log('patch', info.action.payload)

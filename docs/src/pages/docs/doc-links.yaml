@@ -11,14 +11,16 @@
   items:
     - title: Basics
       link: /basics
+    - title: Async actions
+      link: /async-actions
     - title: Best practises
       link: /best-practises
-    - title: Patterns
-      link: /patterns
     - title: Console logger
       link: /console-logger
     - title: Devtools
       link: /devtools
+    - title: Testing
+      link: /testing
     - title: API Reference
       link: /api-reference
 
@@ -36,5 +38,3 @@
       link: /using-with-immutable
     - title: Hot reloading
       link: /hot-reloading
-    - title: Local storage
-      link: /local-storage

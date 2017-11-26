@@ -143,11 +143,11 @@ const options = {
         display: `block`
       },
       '.gatsby-highlight::-webkit-scrollbar': {
-        width: `6px`,
-        height: `6px`
+        width: `5px`,
+        height: `5px`
       },
       '.gatsby-highlight::-webkit-scrollbar-thumb': {
-        background: '#f4d1c6'
+        background: '#bad4ff'
       },
       '.gatsby-highlight::-webkit-scrollbar-track': {
         background: `#e5edfa`,
