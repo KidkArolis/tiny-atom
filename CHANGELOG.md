@@ -1,3 +1,7 @@
+## 0.5.1
+
+* Updated docs and README
+
 ## 0.5.0
 
 * **BREAKING** Change `createAtom(initialState, evolve, render, merge)` -> `createAtom(initialState, evolve, render, options)`. Two options available - `merge` and `debug`.
