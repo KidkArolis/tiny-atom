@@ -1,2 +1,0 @@
-webpackJsonp([0xfd0fd20448c1],{510:function(e,t){e.exports={data:{markdownRemark:{html:'<p><img src="https://user-images.githubusercontent.com/324440/32691553-3e7767f4-c701-11e7-91b2-bf80fc918c71.png" alt="image"></p>',excerpt:"",timeToRead:1,frontmatter:{title:"Console logger"},parent:{__typename:"File",relativePath:"console-logger.md"}}},pathContext:{slug:"/console-logger/"}}}});
-//# sourceMappingURL=path---console-logger-df2242137251bdd7dfb9.js.map

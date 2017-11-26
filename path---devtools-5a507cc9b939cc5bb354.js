@@ -1,2 +1,0 @@
-webpackJsonp([0xfb36e5980d1f],{511:function(t,e){t.exports={data:{markdownRemark:{html:"<p>Coming soon.</p>",excerpt:"Coming soon.",timeToRead:1,frontmatter:{title:"Devtools"},parent:{__typename:"File",relativePath:"devtools.md"}}},pathContext:{slug:"/devtools/"}}}});
-//# sourceMappingURL=path---devtools-5a507cc9b939cc5bb354.js.map

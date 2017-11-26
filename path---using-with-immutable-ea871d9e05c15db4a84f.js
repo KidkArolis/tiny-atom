@@ -1,2 +1,0 @@
-webpackJsonp([0xdc5b7475edc3],{519:function(t,e){t.exports={data:{markdownRemark:{html:"<p>Coming soon.</p>",excerpt:"Coming soon.",timeToRead:1,frontmatter:{title:"Using with Immutable.js"},parent:{__typename:"File",relativePath:"using-with-immutable.md"}}},pathContext:{slug:"/using-with-immutable/"}}}});
-//# sourceMappingURL=path---using-with-immutable-ea871d9e05c15db4a84f.js.map

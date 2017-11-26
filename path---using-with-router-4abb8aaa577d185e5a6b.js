@@ -1,2 +1,0 @@
-webpackJsonp([0xa54b7e309aae],{522:function(t,e){t.exports={data:{markdownRemark:{html:"<p>Coming soon.</p>",excerpt:"Coming soon.",timeToRead:1,frontmatter:{title:"Using with router"},parent:{__typename:"File",relativePath:"using-with-router.md"}}},pathContext:{slug:"/using-with-router/"}}}});
-//# sourceMappingURL=path---using-with-router-4abb8aaa577d185e5a6b.js.map

@@ -1,16 +1,20 @@
 {
   "assetsByChunkName": {
+    "path---testing": [
+      "path---testing-423487c05a29ebfdeeb8.js",
+      "path---testing-423487c05a29ebfdeeb8.js.map"
+    ],
     "path---async-actions": [
-      "path---async-actions-e567149be8a3a3fb53a5.js",
-      "path---async-actions-e567149be8a3a3fb53a5.js.map"
+      "path---async-actions-8463b0b30f7f01da6014.js",
+      "path---async-actions-8463b0b30f7f01da6014.js.map"
     ],
     "component---src-templates-template-docs-markdown-js": [
-      "component---src-templates-template-docs-markdown-js-32c7b4f3cbb7221baa5f.js",
-      "component---src-templates-template-docs-markdown-js-32c7b4f3cbb7221baa5f.js.map"
+      "component---src-templates-template-docs-markdown-js-bda7eecc2392863b22f2.js",
+      "component---src-templates-template-docs-markdown-js-bda7eecc2392863b22f2.js.map"
     ],
     "path---using-with-zaphod": [
-      "path---using-with-zaphod-2dfc808ec8576b71896f.js",
-      "path---using-with-zaphod-2dfc808ec8576b71896f.js.map"
+      "path---using-with-zaphod-13d8080f1b12df5822cc.js",
+      "path---using-with-zaphod-13d8080f1b12df5822cc.js.map"
     ],
     "path---using-with-react": [
       "path---using-with-react-31046b560a9c9b0ac634.js",
@@ -25,28 +29,28 @@
       "path---prior-art-41bda77f2b9bf5e41932.js.map"
     ],
     "path---for-beginners": [
-      "path---for-beginners-e034f3485fc52abe2424.js",
-      "path---for-beginners-e034f3485fc52abe2424.js.map"
+      "path---for-beginners-92f12ca311b42d2459f9.js",
+      "path---for-beginners-92f12ca311b42d2459f9.js.map"
     ],
     "component---node-modules-gatsby-plugin-offline-app-shell-js": [
       "component---node-modules-gatsby-plugin-offline-app-shell-js-5c4c5a0f7af9dc69d6d7.js",
       "component---node-modules-gatsby-plugin-offline-app-shell-js-5c4c5a0f7af9dc69d6d7.js.map"
     ],
     "component---src-layouts-index-js": [
-      "component---src-layouts-index-js-f7f11dee754d8840a8a8.js",
-      "component---src-layouts-index-js-f7f11dee754d8840a8a8.js.map"
+      "component---src-layouts-index-js-3a82e8b5f2f6e6253559.js",
+      "component---src-layouts-index-js-3a82e8b5f2f6e6253559.js.map"
     ],
     "path---api-reference": [
-      "path---api-reference-bb4fed7c2b0e5ebd7a85.js",
-      "path---api-reference-bb4fed7c2b0e5ebd7a85.js.map"
+      "path---api-reference-e8d936776de88301ece5.js",
+      "path---api-reference-e8d936776de88301ece5.js.map"
     ],
     "path---index": [
       "path---index-c2b2a04cfa5d1dc756bc.js",
       "path---index-c2b2a04cfa5d1dc756bc.js.map"
     ],
     "path---basics": [
-      "path---basics-5bf2514715df511ab3fa.js",
-      "path---basics-5bf2514715df511ab3fa.js.map"
+      "path---basics-0bceace882b31628f14e.js",
+      "path---basics-0bceace882b31628f14e.js.map"
     ],
     "path---patterns": [
       "path---patterns-c3a776cb51ad55694438.js",
@@ -57,8 +61,8 @@
       "path---using-with-preact-c293a41037d6d12366b5.js.map"
     ],
     "component---src-pages-404-js": [
-      "component---src-pages-404-js-c1a100e7b2e4a0015989.js",
-      "component---src-pages-404-js-c1a100e7b2e4a0015989.js.map"
+      "component---src-pages-404-js-5a8372c0c7fec20e6a9d.js",
+      "component---src-pages-404-js-5a8372c0c7fec20e6a9d.js.map"
     ],
     "commons": [
       "commons-336451d79e23cdc800f2.js",
@@ -69,46 +73,42 @@
       "path---404-html-a0e39f21c11f6a62c5ab.js.map"
     ],
     "path---using-with-router": [
-      "path---using-with-router-4abb8aaa577d185e5a6b.js",
-      "path---using-with-router-4abb8aaa577d185e5a6b.js.map"
+      "path---using-with-router-3520915c36c0c154f0c6.js",
+      "path---using-with-router-3520915c36c0c154f0c6.js.map"
     ],
     "path---offline-plugin-app-shell-fallback": [
       "path---offline-plugin-app-shell-fallback-a0e39f21c11f6a62c5ab.js",
       "path---offline-plugin-app-shell-fallback-a0e39f21c11f6a62c5ab.js.map"
     ],
-    "path---local-storage": [
-      "path---local-storage-d24f01de2b6cbdded91f.js",
-      "path---local-storage-d24f01de2b6cbdded91f.js.map"
-    ],
     "path---hot-reloading": [
-      "path---hot-reloading-da53f8758a8729cf56e9.js",
-      "path---hot-reloading-da53f8758a8729cf56e9.js.map"
+      "path---hot-reloading-878a3b102f10af8e113b.js",
+      "path---hot-reloading-878a3b102f10af8e113b.js.map"
     ],
     "app": [
-      "app-ee6165f90baab5512e28.js",
+      "app-372c5703ed0d1a439844.js",
       "build-js-styles.css",
-      "app-ee6165f90baab5512e28.js.map",
+      "app-372c5703ed0d1a439844.js.map",
       "build-js-styles.css.map"
     ],
     "path---using-with-immutable": [
-      "path---using-with-immutable-ea871d9e05c15db4a84f.js",
-      "path---using-with-immutable-ea871d9e05c15db4a84f.js.map"
+      "path---using-with-immutable-5f9ed5648ee6120b0b7c.js",
+      "path---using-with-immutable-5f9ed5648ee6120b0b7c.js.map"
     ],
     "path---404": [
       "path---404-a0e39f21c11f6a62c5ab.js",
       "path---404-a0e39f21c11f6a62c5ab.js.map"
     ],
     "path---best-practises": [
-      "path---best-practises-531956fab794adfdbd21.js",
-      "path---best-practises-531956fab794adfdbd21.js.map"
+      "path---best-practises-f2f6f8a4429233ad7383.js",
+      "path---best-practises-f2f6f8a4429233ad7383.js.map"
     ],
     "path---devtools": [
-      "path---devtools-5a507cc9b939cc5bb354.js",
-      "path---devtools-5a507cc9b939cc5bb354.js.map"
+      "path---devtools-42ac1629ecd4bbe3cde9.js",
+      "path---devtools-42ac1629ecd4bbe3cde9.js.map"
     ],
     "path---console-logger": [
-      "path---console-logger-df2242137251bdd7dfb9.js",
-      "path---console-logger-df2242137251bdd7dfb9.js.map"
+      "path---console-logger-b9d68d7726dfbdbb1f12.js",
+      "path---console-logger-b9d68d7726dfbdbb1f12.js.map"
     ]
   }
 }
