@@ -29,14 +29,14 @@ class DefaultLayout extends React.Component {
       width: '100%',
       WebkitOverflowScrolling: `touch`,
       '::-webkit-scrollbar': {
-        width: `6px`,
-        height: `6px`
+        width: `5px`,
+        height: `5px`
       },
       '::-webkit-scrollbar-thumb': {
-        background: presets.lightPurple
+        background: '#bad4ff'
       },
       '::-webkit-scrollbar-track': {
-        background: presets.brandLighter
+        // background: presets.brandLighter
       },
       [presets.Tablet]: {
         width: rhythm(10),

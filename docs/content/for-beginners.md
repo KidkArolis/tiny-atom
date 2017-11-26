@@ -2,7 +2,9 @@
 title: For beginners
 ---
 
-This section explores one way how to build UIs without assuming a lot of prior knowledge. If you're already familiar with React and the flux pattern (e.g. Redux), check out the [Prior art](/prior-art) section.
+If you're comfortable with the basics of JavaScript, HTML and CSS, but you've never built a full web app, this section is for you. This section explores one way of building UIs.
+
+If you're already familiar with React and the flux pattern (e.g. Redux), you should check out the [Prior art](/prior-art) section.
 
 ## Part 1 - Functional approach to building UIs
 

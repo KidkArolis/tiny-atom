@@ -4,6 +4,14 @@ title: Best practises
 
 Some of this advice is fairly opinionated. Don't feel like you need to follow any of this strictly. It's just what we found to work really well when building apps with **Tiny Atom**.
 
+## Data vs State
+
+**Data** is typically application entities such as users, feeds, items, repos, tweets, hashtags, and so on.
+
+**State** is typically UI's state - such as selected feed id, currently displayed item, expanded tweet id and so on.
+
+It's common to keep *all* of the data and *some* of the state in your `atom`. For example, a component such as `datepicker` might be better off keeping it's open state or selected month state in it's own private state object as opposed to the global `atom`. But it really depends, you should use your best judgement and architectural goals.
+
 ## Debounce renders
 
 With **Tiny Atom** you register your render callback when creating the store.

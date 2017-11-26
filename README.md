@@ -21,13 +21,22 @@
 
     $ yarn add tiny-atom
 
+## Docs
+
+Full docs at [qubitproducts.github.io/tiny-atom](https://qubitproducts.github.io/tiny-atom).
+
+  * [Basics](https://qubitproducts.github.io/tiny-atom/basics)
+  * [Prior art](https://qubitproducts.github.io/tiny-atom/prior-art)
+  * [Using with React](https://qubitproducts.github.io/tiny-atom/using-with-react)
+  * * [Using with Preact](https://qubitproducts.github.io/tiny-atom/using-with-preact)
+  * [API Reference](https://qubitproducts.github.io/tiny-atom/api-reference)
+
 ## Example
 
 ```js
 const createAtom = require('tiny-atom')
-const log = require('tiny-atom/log')
 
-const atom = createAtom({ count: 0 }, evolve, render, { debug: log })
+const atom = createAtom({ count: 0 }, evolve, render)
 
 const actions = {
   increment: (get, split, x) => {
@@ -63,56 +72,6 @@ atom.split('increment', 2)
   // -> { count: 15, loading: false }
 ```
 
-![image](https://user-images.githubusercontent.com/324440/32691553-3e7767f4-c701-11e7-91b2-bf80fc918c71.png)
-
-## React/Preact example
-
-```js
-const createAtom = require('tiny-atom')
-const React = require('react')
-const ReactDOM = require('react-dom')
-const { ProvideAtom, ConnectAtom } = require('tiny-atom/react')
-// or with preact
-// const Preact = require('preact')
-// const { ProvideAtom, ConnectAtom } = require('tiny-atom/preact')
-
-const atom = createAtom({ count: 0 }, evolve, render)
-
-const actions = {
-  increment: (get, split, x) => {
-    split({ count: get().count + x })
-  }
-}
-
-function evolve (get, split, action) {
-  actions[action.type](get, split, action.payload)
-}
-
-const mapAtom = (state, split) => ({
-  count: state.count,
-  increment: x => split('increment', x)
-})
-
-const App = () => (
-  <ConnectAtom map={mapAtom} render={({ count, increment }) => (
-    <div>
-      <h1>count is {count}</h1>
-      <button onClick={() => increment(1)}>Increment</button>
-    </div>
-  )} />
-)
-
-function render () {
-  ReactDOM.render((
-    <ProvideAtom atom={atom}>
-      <App />
-    </ProvideAtom>
-  ), document.getElementById('root'))
-}
-
-render()
-```
-
 ## API
 
 ### `createAtom(initialState, evolve, render, options)`
@@ -121,17 +80,19 @@ Create an atom.
 
 * `initialState` - defaults to `{}`
 * `evolve(get, split, action)` - receives actions and controls the evolution of the state
-  * `get()` - get current state
-  * `split(update)` or `split(type, payload)` - see `atom.split`
+  * `get()` - get current state – see `atom.get`
+  * `split(update)` or `split(type, payload)` – see `atom.split`
   * `action` - an object of shape `{ type, payload }`
 * `render(atom)` - called on each state update
-* `options`
-  * `debug(info)` - called on each `action` and `update` with `{ type, atom, action, sourceActions, prevState }`
-  * 'merge(state, update)' - called each time `split(update)` is called. Default implementation is `(state, update) => Object.assign({}, state, update)`. You can use this hook to use a different data structure for your state, such as Immutable. Or you could use it to extend the state instead of cloning with `Object.assign(state, update)` if that makes performance or architectural difference.
+
+Available options:
+
+* `options.debug(info)` - called on each `action` and `update` with info object of shape `{ type, atom, action, sourceActions, prevState }`
+* `options.merge(state, update)` - called each time `split(update)` is called. Default implementation is `(state, update) => Object.assign({}, state, update)`. You can use this hook to use a different data structure for your state, such as Immutable. Or you could use it to extend the state instead of cloning with `Object.assign(state, update)` if that makes performance or architectural difference.
 
 ### `atom.get`
 
-Returns current state.
+Get current state.
 
 ### `atom.split`
 
