@@ -72,48 +72,14 @@ const App = () => (
   )} />
 )
 
-const Nested = class Nested extends Preact.Component {
-  componentWillMount () {
-    this.atom = createAtom(
-      { count: 2 },
-      (...args) => this.evolve(...args),
-      () => this.forceUpdate(),
-      {
-        debug: info => {
-          info.action = Object.assign({}, info.action)
-          info.action.type = 'INNER ' + info.action.type
-          log(info)
-        }
-      }
-    )
-  }
-
-  evolve (get, split, action) {
-    switch (action.type) {
-      case 'increment':
-        split({ count: get().count * 2 })
-        break
-      case 'decrement':
-        split({ count: get().count / 2 })
-        break
-    }
-  }
-
-  render ({ children }) {
-    return (
-      <ProvideAtom atom={this.atom}>
-        <ConnectAtom map={(state, split) => ({ count: state.count, split })} render={({ count, split }) => (
-          <div>
-            Nested component: { count }
-            <span onClick={() => split('increment')}>INC</span>
-            <span onClick={() => split('decrement')}>DEC</span>
-            {children[0]}
-          </div>
-        )} />
-      </ProvideAtom>
-    )
-  }
-}
+const Nested = ({ multiplier, children }) => (
+  <ConnectAtom map={state => ({ count: state.count })} render={({ count }) => (
+    <div>
+      Nested component: { count * multiplier }
+      {children[0]}
+    </div>
+  )} />
+)
 
 function render (atom) {
   Preact.render((
