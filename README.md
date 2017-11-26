@@ -23,12 +23,12 @@
 
 ## Docs
 
-Full docs at [qubitproducts.github.io/tiny-atom](https://qubitproducts.github.io/tiny-atom).
+Read the [full docs](https://qubitproducts.github.io/tiny-atom) or pick one of the highlights:
 
   * [Basics](https://qubitproducts.github.io/tiny-atom/basics)
   * [Prior art](https://qubitproducts.github.io/tiny-atom/prior-art)
   * [Using with React](https://qubitproducts.github.io/tiny-atom/using-with-react)
-  * * [Using with Preact](https://qubitproducts.github.io/tiny-atom/using-with-preact)
+  * [Using with Preact](https://qubitproducts.github.io/tiny-atom/using-with-preact)
   * [API Reference](https://qubitproducts.github.io/tiny-atom/api-reference)
 
 ## Example
