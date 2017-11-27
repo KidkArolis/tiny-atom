@@ -111,7 +111,7 @@ test('can be used in a mutating manner', () => {
 
 test('debug provides action and update details', (done) => {
   const history = []
-  const atom = createAtom({ count: 0 }, evolve, null, { debug })
+  const atom = createAtom({ count: 0 }, evolve, { debug })
 
   function evolve (get, split, { type, payload }) {
     ({
@@ -236,7 +236,7 @@ test('debug provides action and update details', (done) => {
 
 test('custom merge', () => {
   const merge = (oldState, newState) => oldState + newState
-  const atom = createAtom(5, null, null, { merge })
+  const atom = createAtom(5, null, { merge })
 
   atom.split(1)
   deepEqual(atom.get(), 6)
@@ -302,4 +302,49 @@ test('async action testability', async () => {
     { loading: false, error: 'Fetch failed' },
     { seq: 1, type: 'trackError', payload: err }
   ])
+})
+
+test('observe with no render', () => {
+  const observations = []
+  const atom = createAtom()
+
+  const unobserveA = atom.observe(atom => observations.push('a' + atom.get().v))
+  const unobserveB = atom.observe(atom => observations.push('b' + atom.get().v))
+
+  atom.split({ v: 6 })
+  deepEqual(observations, ['a6', 'b6'])
+
+  unobserveB()
+  unobserveB()
+  const unobserveC = atom.observe(atom => observations.push('c' + atom.get().v))
+
+  atom.split({ v: 7 })
+  deepEqual(observations, ['a6', 'b6', 'a7', 'c7'])
+
+  unobserveB()
+  unobserveA()
+  unobserveC()
+})
+
+test('observe with render', () => {
+  const observations = []
+  const render = atom => observations.push('r' + atom.get().v)
+  const atom = createAtom({}, null, render)
+
+  const unobserveA = atom.observe(atom => observations.push('a' + atom.get().v))
+  const unobserveB = atom.observe(atom => observations.push('b' + atom.get().v))
+
+  atom.split({ v: 6 })
+  deepEqual(observations, ['r6', 'a6', 'b6'])
+
+  unobserveB()
+  unobserveB()
+  const unobserveC = atom.observe(atom => observations.push('c' + atom.get().v))
+
+  atom.split({ v: 7 })
+  deepEqual(observations, ['r6', 'a6', 'b6', 'r7', 'a7', 'c7'])
+
+  unobserveB()
+  unobserveA()
+  unobserveC()
 })

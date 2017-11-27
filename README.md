@@ -85,6 +85,8 @@ Create an atom.
   * `action` - an object of shape `{ type, payload }`
 * `render(atom)` - called on each state update
 
+All parameters are optional, but typically you'll want to use at least initialState and evolve.
+
 Available options:
 
 * `options.debug(info)` - called on each `action` and `update` with info object of shape `{ type, atom, action, sourceActions, prevState }`
@@ -100,3 +102,7 @@ Can be used in 2 ways:
 
 * `atom.split(type, payload)` - send an action to `evolve`.
 * `atom.split(update)` - update the state with the `update` object, doesn't go via `evolve`.
+
+### `atom.observe`
+
+Register a callback for when atom changes. This can be used in addition or instead of the `render` callback. Returns the dispose function.

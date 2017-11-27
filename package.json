@@ -4,6 +4,7 @@
   "description": "Minimal, yet awesome, state management.",
   "main": "index.js",
   "scripts": {
+    "coverage": "nyc --reporter html mocha",
     "test": "standard && standard5 && nyc mocha"
   },
   "contributors": [
