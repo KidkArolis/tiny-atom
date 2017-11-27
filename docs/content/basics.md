@@ -86,4 +86,4 @@ render(atom)
 
 This is the initial render of the app. When a user clicks one of the Increment or Decrement buttons, the state will be updated and `render` will be called to rerender the app.
 
-There are many ways to bootstrap and structure an application. This flexibility can be useful. If you prefer an opinionated prepackaged way to create an app, check out [nebula](https://github.com/KidkArolis/nebula) - an application framework to puts together (p)react, tiny-atom and space-router libraries.
+There are many ways to bootstrap and structure an application. This flexibility can be useful. If you prefer an opinionated prepackaged way to create an app, check out [moonwave](https://github.com/KidkArolis/moonwave) - an application framework to puts together (p)react, tiny-atom and space-router libraries.

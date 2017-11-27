@@ -52,4 +52,4 @@ function render (atom) {
 }
 ```
 
-For a more thorough example and for reusable prepackaged solution, see [nebula](https://github.com/KidkArolis/nebula) - a small web application framework based on **Tiny Atom**.
+For a more thorough example and for reusable prepackaged solution, see [moonwave](https://github.com/KidkArolis/moonwave) - a small web application framework based on **Tiny Atom**.
