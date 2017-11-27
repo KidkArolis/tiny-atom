@@ -1,3 +1,7 @@
+## 1.0.0
+
+* No change.
+
 ## 0.6.0
 
 * Add `const dispose = atom.observe(atom => {})` - useful when passing atom around. Allows for separation of concerns where a self contained module can depend on atom changes as well as update atom.
