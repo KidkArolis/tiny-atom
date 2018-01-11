@@ -351,7 +351,6 @@ function incrementModule (molecule) {
   function increment (get, split, { payload }) {
     return split({ count1: get().count1 + (payload || 1) })
   }
-  return {}
 }
 
 function decrementModule (molecule) {
