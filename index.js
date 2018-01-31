@@ -51,7 +51,7 @@ module.exports = function createAtom (initialState, evolve, render, options) {
       var action, prevState
       if (typeof type === 'string') {
         action = { seq: ++actionSeq, type: type }
-        if (payload) action.payload = payload
+        if (typeof payload !== 'undefined') action.payload = payload
         if (debug) report('action', action, sourceActions)
         var split = createSplit(sourceActions.concat([action]))
         evolve(get, split, action)
