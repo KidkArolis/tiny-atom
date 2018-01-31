@@ -1,3 +1,7 @@
+## 1.0.1
+
+* Accept falsey action payloads such as `0` or `false`
+
 ## 1.0.0
 
 * No change.
