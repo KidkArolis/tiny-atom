@@ -1,4 +1,4 @@
-const { equal } = require('assert')
+const test = require('ava')
 const { JSDOM } = require('jsdom')
 const Preact = require('preact')
 const createAtom = require('..')
@@ -6,9 +6,7 @@ const { ProvideAtom, ConnectAtom } = require('../preact')
 
 const { h } = Preact
 
-suite('tiny-atom/preact')
-
-test('rendering', () => {
+test('usage with preact', t => {
   const dom = new JSDOM('<!doctype html><div id="root"></div>')
   global.window = dom.window
   global.document = dom.window.document
@@ -59,24 +57,24 @@ test('rendering', () => {
 
   render()
 
-  equal(document.getElementById('count-outer').innerHTML, '0')
-  equal(document.getElementById('count-inner').innerHTML, '0')
+  t.is(document.getElementById('count-outer').innerHTML, '0')
+  t.is(document.getElementById('count-inner').innerHTML, '0')
 
   atom.split('increment')
-  equal(document.getElementById('count-outer').innerHTML, '1')
-  equal(document.getElementById('count-inner').innerHTML, '10')
+  t.is(document.getElementById('count-outer').innerHTML, '1')
+  t.is(document.getElementById('count-inner').innerHTML, '10')
 
   atom.split('increment')
-  equal(document.getElementById('count-outer').innerHTML, '2')
-  equal(document.getElementById('count-inner').innerHTML, '20')
+  t.is(document.getElementById('count-outer').innerHTML, '2')
+  t.is(document.getElementById('count-inner').innerHTML, '20')
 
   document.getElementById('increment-outer').dispatchEvent(click(dom))
-  equal(document.getElementById('count-outer').innerHTML, '3')
-  equal(document.getElementById('count-inner').innerHTML, '30')
+  t.is(document.getElementById('count-outer').innerHTML, '3')
+  t.is(document.getElementById('count-inner').innerHTML, '30')
 
   document.getElementById('increment-inner').dispatchEvent(click(dom))
-  equal(document.getElementById('count-outer').innerHTML, '5')
-  equal(document.getElementById('count-inner').innerHTML, '50')
+  t.is(document.getElementById('count-outer').innerHTML, '5')
+  t.is(document.getElementById('count-inner').innerHTML, '50')
 })
 
 function click (dom) {

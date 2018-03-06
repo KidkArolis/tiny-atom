@@ -1,29 +1,27 @@
-const { equal, notEqual, deepEqual } = require('assert')
+const test = require('ava')
 const createAtom = require('..')
 
-suite('tiny-atom')
-
-test('can be used with no initial state, evolve or render listener', () => {
+test('can be used with no initial state, evolve or render listener', t => {
   const atom = createAtom()
-  deepEqual(atom.get(), {})
+  t.deepEqual(atom.get(), {})
   atom.split({ count: 5 })
   atom.split('action')
-  deepEqual(atom.get(), { count: 5 })
+  t.deepEqual(atom.get(), { count: 5 })
 })
 
-test('does not mutate the state object', () => {
+test('does not mutate the state object', t => {
   const initialState = { count: 0 }
   const atom = createAtom(initialState)
 
-  deepEqual(atom.get(), { count: 0 })
-  equal(atom.get(), initialState)
+  t.deepEqual(atom.get(), { count: 0 })
+  t.is(atom.get(), initialState)
 
   atom.split({ count: 5 })
-  deepEqual(atom.get(), { count: 5 })
-  notEqual(atom.get(), initialState)
+  t.deepEqual(atom.get(), { count: 5 })
+  t.not(atom.get(), initialState)
 })
 
-test('evolve', () => {
+test('evolve updates the state', t => {
   const atom = createAtom({ count: 0 }, evolve)
 
   function evolve (get, split, { type, payload }) {
@@ -33,13 +31,13 @@ test('evolve', () => {
   }
 
   atom.split('increment')
-  deepEqual(atom.get(), { count: 1 })
+  t.deepEqual(atom.get(), { count: 1 })
 
   atom.split('increment', 5)
-  deepEqual(atom.get(), { count: 6 })
+  t.deepEqual(atom.get(), { count: 6 })
 })
 
-test('async evolve', (done) => {
+test.cb('async evolve updates the state', t => {
   const changes = []
   const atom = createAtom({ count: 0 }, evolve, onChange)
 
@@ -56,19 +54,19 @@ test('async evolve', (done) => {
   function onChange (atom) {
     let state = atom.get()
     changes.push(1)
-    if (changes.length === 1) deepEqual(state, { count: 1 })
-    if (changes.length === 2) deepEqual(state, { count: 2, async: true })
+    if (changes.length === 1) t.deepEqual(state, { count: 1 })
+    if (changes.length === 2) t.deepEqual(state, { count: 2, async: true })
     if (state.done) {
-      deepEqual(state, { count: 2, async: true, done: true })
-      deepEqual(changes, [1, 1, 1])
-      done()
+      t.deepEqual(state, { count: 2, async: true, done: true })
+      t.deepEqual(changes, [1, 1, 1])
+      t.end()
     }
   }
 
   atom.split('increment')
 })
 
-test('onChange listener', () => {
+test('onChange listener receives updates', t => {
   const history = []
   const atom = createAtom({ count: 0 }, null, onChange)
 
@@ -81,14 +79,14 @@ test('onChange listener', () => {
   atom.split({ count: 2 })
   atom.split({ count: 3 })
 
-  deepEqual(history, [
+  t.deepEqual(history, [
     { count: 1 },
     { count: 2 },
     { count: 3 }
   ])
 })
 
-test('can be used in a mutating manner', () => {
+test('can be used in a mutating manner', t => {
   const initialState = { count: 0 }
   const atom = createAtom(initialState, evolve, () => {}, { merge: mutate })
 
@@ -105,11 +103,11 @@ test('can be used in a mutating manner', () => {
   }
 
   atom.split('increment', 3)
-  deepEqual(atom.get(), { count: 3 })
-  equal(atom.get(), initialState)
+  t.deepEqual(atom.get(), { count: 3 })
+  t.is(atom.get(), initialState)
 })
 
-test('debug provides action and update details', (done) => {
+test.cb('debug provides action and update details', t => {
   const history = []
   const atom = createAtom({ count: 0 }, evolve, { debug })
 
@@ -131,98 +129,8 @@ test('debug provides action and update details', (done) => {
     history.push(Object.assign(info, { currState: atom.get() }))
 
     if (atom.get().done) {
-      deepEqual(history, [{
-        type: 'update',
-        action: { payload: { count: 1 } },
-        sourceActions: [],
-        atom: atom,
-        prevState: { count: 0 },
-        currState: { count: 1 }
-      }, {
-        type: 'action',
-        action: { seq: 1, type: 'dec', payload: 1 },
-        sourceActions: [],
-        atom: atom,
-        currState: { count: 1 }
-      }, {
-        type: 'update',
-        action: { payload: { count: 0 } },
-        sourceActions: [{ seq: 1, type: 'dec', payload: 1 }],
-        atom: atom,
-        prevState: { count: 1 },
-        currState: { count: 0 }
-      }, {
-        type: 'action',
-        action: { seq: 2, type: 'inc', payload: 2 },
-        sourceActions: [],
-        atom: atom,
-        currState: { count: 0 }
-      }, {
-        type: 'update',
-        action: { payload: { count: 2 } },
-        sourceActions: [{ seq: 2, type: 'inc', payload: 2 }],
-        atom: atom,
-        prevState: { count: 0 },
-        currState: { count: 2 }
-      }, {
-        type: 'update',
-        action: { payload: { count: 4 } },
-        sourceActions: [],
-        atom: atom,
-        prevState: { count: 2 },
-        currState: { count: 4 }
-      }, {
-        type: 'action',
-        action: { seq: 3, type: 'asyncInc', payload: 10 },
-        sourceActions: [],
-        atom: atom,
-        currState: { count: 4 }
-      }, {
-        type: 'update',
-        action: { payload: { loading: true } },
-        sourceActions: [{ seq: 3, type: 'asyncInc', payload: 10 }],
-        atom: atom,
-        prevState: { count: 4 },
-        currState: { count: 4, loading: true }
-      }, {
-        type: 'action',
-        action: { seq: 4, type: 'inc', payload: 100 },
-        sourceActions: [],
-        atom: atom,
-        currState: { count: 4, loading: true }
-      }, {
-        type: 'update',
-        action: { payload: { count: 104 } },
-        sourceActions: [{ seq: 4, type: 'inc', payload: 100 }],
-        atom: atom,
-        prevState: { count: 4, loading: true },
-        currState: { count: 104, loading: true }
-      }, {
-        type: 'action',
-        action: { seq: 5, type: 'inc', payload: 1 },
-        sourceActions: [{ seq: 3, type: 'asyncInc', payload: 10 }],
-        atom: atom,
-        currState: { count: 104, loading: true }
-      }, {
-        type: 'update',
-        action: { payload: { count: 105 } },
-        sourceActions: [
-          { seq: 3, type: 'asyncInc', payload: 10 },
-          { seq: 5, type: 'inc', payload: 1 }
-        ],
-        atom: atom,
-        prevState: { count: 104, loading: true },
-        currState: { count: 105, loading: true }
-      }, {
-        type: 'update',
-        action: { payload: { count: 115, loading: false, done: true } },
-        sourceActions: [{ seq: 3, type: 'asyncInc', payload: 10 }],
-        atom: atom,
-        prevState: { count: 105, loading: true },
-        currState: { count: 115, loading: false, done: true }
-      }]
-      )
-      done()
+      t.snapshot(history)
+      t.end()
     }
   }
 
@@ -234,18 +142,18 @@ test('debug provides action and update details', (done) => {
   atom.split('inc', 100)
 })
 
-test('custom merge', () => {
+test('custom merge', t => {
   const merge = (oldState, newState) => oldState + newState
   const atom = createAtom(5, null, { merge })
 
   atom.split(1)
-  deepEqual(atom.get(), 6)
+  t.deepEqual(atom.get(), 6)
 
   atom.split(1)
-  deepEqual(atom.get(), 7)
+  t.deepEqual(atom.get(), 7)
 })
 
-test('async action testability', async () => {
+test('async actions are testable', async t => {
   // instead of stubbing real axios, we'll use fake axios instead
   let axios
   let changes
@@ -287,7 +195,7 @@ test('async action testability', async () => {
   setup()
   axios = { get: (path) => Promise.resolve({ data: [path, 'data'] }) }
   await actions.fetchMetrics(atom.get, atom.split, 57)
-  deepEqual(changes, [
+  t.deepEqual(changes, [
     { loading: true },
     { loading: false, metrics: ['/metrics/57', 'data'] }
   ])
@@ -297,14 +205,14 @@ test('async action testability', async () => {
   let err = new Error('Fetch failed')
   axios = { get: (path) => Promise.reject(err) }
   await actions.fetchMetrics(atom.get, atom.split, 57)
-  deepEqual(changes, [
+  t.deepEqual(changes, [
     { loading: true },
     { loading: false, error: 'Fetch failed' },
     { seq: 1, type: 'trackError', payload: err }
   ])
 })
 
-test('observe with no render', () => {
+test('observe with no render is an alternative approach to listening for updates', t => {
   const observations = []
   const atom = createAtom()
 
@@ -312,21 +220,21 @@ test('observe with no render', () => {
   const unobserveB = atom.observe(atom => observations.push('b' + atom.get().v))
 
   atom.split({ v: 6 })
-  deepEqual(observations, ['a6', 'b6'])
+  t.deepEqual(observations, ['a6', 'b6'])
 
   unobserveB()
   unobserveB()
   const unobserveC = atom.observe(atom => observations.push('c' + atom.get().v))
 
   atom.split({ v: 7 })
-  deepEqual(observations, ['a6', 'b6', 'a7', 'c7'])
+  t.deepEqual(observations, ['a6', 'b6', 'a7', 'c7'])
 
   unobserveB()
   unobserveA()
   unobserveC()
 })
 
-test('observe with render', () => {
+test('observe can also be used with render', t => {
   const observations = []
   const render = atom => observations.push('r' + atom.get().v)
   const atom = createAtom({}, null, render)
@@ -335,14 +243,14 @@ test('observe with render', () => {
   const unobserveB = atom.observe(atom => observations.push('b' + atom.get().v))
 
   atom.split({ v: 6 })
-  deepEqual(observations, ['r6', 'a6', 'b6'])
+  t.deepEqual(observations, ['r6', 'a6', 'b6'])
 
   unobserveB()
   unobserveB()
   const unobserveC = atom.observe(atom => observations.push('c' + atom.get().v))
 
   atom.split({ v: 7 })
-  deepEqual(observations, ['r6', 'a6', 'b6', 'r7', 'a7', 'c7'])
+  t.deepEqual(observations, ['r6', 'a6', 'b6', 'r7', 'a7', 'c7'])
 
   unobserveB()
   unobserveA()

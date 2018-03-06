@@ -4,8 +4,8 @@
   "description": "Minimal, yet awesome, state management.",
   "main": "index.js",
   "scripts": {
-    "coverage": "nyc --reporter html mocha",
-    "test": "standard && standard5 && nyc mocha"
+    "coverage": "nyc --reporter html ava",
+    "test": "standard && standard5 && nyc ava"
   },
   "contributors": [
     "Karolis Narkevicius <karolis@qubit.com>",
@@ -13,9 +13,9 @@
   ],
   "license": "ISC",
   "devDependencies": {
+    "ava": "^0.25.0",
     "jetpack": "^0.3.1",
     "jsdom": "^11.3.0",
-    "mocha": "^3.2.0",
     "np": "^2.16.1",
     "nyc": "^11.3.0",
     "preact": "^8.2.6",
