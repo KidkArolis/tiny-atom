@@ -16,10 +16,24 @@ ProvideAtom.prototype.render = function render (props) {
 function ConnectAtom (props, context) {
   var atom = context.atom
   var map = props.map
-  var render = props.render
+  var render = props.render || props.children[0]
   var data = map ? map(atom.get(), atom.split) : { state: atom.get(), split: atom.split }
   return render(data)
 }
 
+function connect (map) {
+  return function connectComponent (Component) {
+    return function Connected (props) {
+      return Preact.h(ConnectAtom, {
+        map: map,
+        render: function (mappedProps) {
+          return Preact.h(Component, Object.assign({}, props, mappedProps))
+        }
+      })
+    }
+  }
+}
+
 module.exports.ProvideAtom = ProvideAtom
 module.exports.ConnectAtom = ConnectAtom
+module.exports.connect = connect
