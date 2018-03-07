@@ -106,3 +106,5 @@ Can be used in 2 ways:
 ### `atom.observe`
 
 Register a callback for when atom changes. This can be used in addition or instead of the `render` callback. Returns the dispose function.
+
+For documentation on the set of (p)react components `<ProvideAtom />`, `<ConnectAtom />` and `connect` see the [react](https://qubitproducts.github.io/tiny-atom/using-with-react) or [preact](https://qubitproducts.github.io/tiny-atom/using-with-preact) docs.

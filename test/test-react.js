@@ -1,87 +1,21 @@
 const test = require('ava')
-const { JSDOM } = require('jsdom')
 const React = require('react')
 const ReactDOM = require('react-dom')
-const createAtom = require('..')
-const { ProvideAtom, ConnectAtom } = require('../react')
+const { ProvideAtom, ConnectAtom, connect } = require('../react')
+const testApp = require('./generic-app')
 
 const h = React.createElement
 
 test('usage with react', t => {
-  const dom = new JSDOM('<!doctype html><div id="root"></div>')
-  global.window = dom.window
-  global.document = dom.window.document
-  const root = document.getElementById('root')
+  const app = testApp({ h, ProvideAtom, ConnectAtom, connect })
 
-  const atom = createAtom({ count: 0 }, evolve, render)
-
-  function evolve (get, split, { type, payload }) {
-    if (type === 'increment') {
-      split({ count: get().count + (payload || 1) })
-    }
-  }
-
-  const App = () => (
-    h(ConnectAtom, {
-      map: (state, split) => ({
-        count: state.count,
-        inc: x => split('increment', x)
-      }),
-      render: ({ count, inc }) => (
-        h('div', {}, [
-          h('div', { id: 'count-outer', key: 'a' }, count),
-          h('button', { id: 'increment-outer', key: 'b', onClick: () => inc() }),
-          h(Child, { multiplier: 10, key: 'c' }, [])
-        ])
-      )
-    })
-  )
-
-  const Child = ({ multiplier }) => (
-    h(ConnectAtom, {
-      render: ({ state, split }) => (
-        h('div', {}, [
-          h('div', { id: 'count-inner', key: 'a' }, multiplier * state.count),
-          h('button', { id: 'increment-inner', key: 'b', onClick: () => split('increment', 2) })
-        ])
-      )
-    })
-  )
-
-  function render () {
+  app.render((App, atom, root) => {
     ReactDOM.render(
       h(ProvideAtom, { atom },
         h(App, {})
       )
     , root)
-  }
-
-  render()
-
-  t.is(document.getElementById('count-outer').innerHTML, '0')
-  t.is(document.getElementById('count-inner').innerHTML, '0')
-
-  atom.split('increment')
-  t.is(document.getElementById('count-outer').innerHTML, '1')
-  t.is(document.getElementById('count-inner').innerHTML, '10')
-
-  atom.split('increment')
-  t.is(document.getElementById('count-outer').innerHTML, '2')
-  t.is(document.getElementById('count-inner').innerHTML, '20')
-
-  document.getElementById('increment-outer').dispatchEvent(click(dom))
-  t.is(document.getElementById('count-outer').innerHTML, '3')
-  t.is(document.getElementById('count-inner').innerHTML, '30')
-
-  document.getElementById('increment-inner').dispatchEvent(click(dom))
-  t.is(document.getElementById('count-outer').innerHTML, '5')
-  t.is(document.getElementById('count-inner').innerHTML, '50')
-})
-
-function click (dom) {
-  return new dom.window.MouseEvent('click', {
-    'view': dom.window,
-    'bubbles': true,
-    'cancelable': true
   })
-}
+
+  app.assert(t)
+})

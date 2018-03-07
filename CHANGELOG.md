@@ -1,3 +1,8 @@
+## 1.1.0
+
+* In addition to `ConnectAtom` render prop style component, you can now also connect your components to the store using the `connect` HOC function. Import from `import { connect } from 'tiny-atom/react'` or `import { connect } from 'tiny-atom/preact'`
+* In addition to being able to pass a `render` prop to `ConnectAtom`, you can now also pass the render function as children: `<ConnectAtom>{(state, split) => {}}</ConnectAtom>`
+
 ## 1.0.1
 
 * Accept falsey action payloads such as `0` or `false`
