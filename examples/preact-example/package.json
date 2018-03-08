@@ -8,8 +8,5 @@
   },
   "dependencies": {
     "preact": "^8.2.6"
-  },
-  "jetpack": {
-    "jsx": "Preact.h"
   }
 }

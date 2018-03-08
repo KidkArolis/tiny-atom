@@ -1,9 +1,9 @@
 const React = require('react')
 const ReactDOM = require('react-dom')
-const createAtom = require('../..')
-const { ProvideAtom, ConnectAtom } = require('../../react')
-const devtools = require('../../devtools')
-const log = require('../../log')
+const createAtom = require('tiny-atom')
+const { ProvideAtom, ConnectAtom } = require('tiny-atom/react')
+const devtools = require('tiny-atom/devtools')
+const log = require('tiny-atom/log')
 
 const atom = window.atom = createAtom({ count: 0 }, evolve, render, {
   debug: (info) => {
@@ -87,7 +87,7 @@ function render (atom) {
     <ProvideAtom atom={atom}>
       <App />
     </ProvideAtom>
-  ), document.body)
+  ), document.getElementById('root'))
 }
 
 render(atom)

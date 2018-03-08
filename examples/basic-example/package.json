@@ -7,8 +7,5 @@
     "start": "../../node_modules/.bin/jetpack ."
   },
   "dependencies": {},
-  "devDependencies": {},
-  "jetpack": {
-    "jsx": "Preact.h"
-  }
+  "devDependencies": {}
 }

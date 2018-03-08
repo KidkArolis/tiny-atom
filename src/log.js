@@ -1,13 +1,13 @@
-var gray = 'color: #888'
-var green = 'color: #05823d'
-var blue = 'color: blue'
+const gray = 'color: #888'
+const green = 'color: #05823d'
+const blue = 'color: blue'
 
 module.exports = function log (info) {
-  var prefix
-  var isAction = info.type === 'action'
-  var isUpdate = info.type === 'update'
+  let prefix
+  const isAction = info.type === 'action'
+  const isUpdate = info.type === 'update'
 
-  var label = info.sourceActions
+  const label = info.sourceActions
     .map(actionName)
     .concat(isAction ? ['%c' + actionName(info.action)] : !info.sourceActions.length ? ['——'] : [])
     .join(' → ') + (!isAction ? '%c' : '')

@@ -9,8 +9,5 @@
   "dependencies": {
     "react": "^16.1.0",
     "react-dom": "^16.1.0"
-  },
-  "jetpack": {
-    "jsx": "React.createElement"
   }
 }

@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "coverage": "nyc --reporter html ava",
-    "test": "standard && standard5 && nyc ava"
+    "test": "standard && nyc ava",
+    "release": "node ./tasks/release"
   },
   "contributors": [
     "Karolis Narkevicius <karolis@qubit.com>",
@@ -14,6 +15,8 @@
   "license": "ISC",
   "devDependencies": {
     "ava": "^0.25.0",
+    "buble": "^0.19.3",
+    "execa": "^0.9.0",
     "jetpack": "^0.7.3",
     "jsdom": "^11.3.0",
     "np": "^2.16.1",
@@ -21,27 +24,11 @@
     "preact": "^8.2.6",
     "react": "^16.1.0",
     "react-dom": "^16.1.0",
-    "standard": "^9.0.0",
-    "standard5": "^2.0.0"
+    "standard": "^11.0.0"
   },
   "standard": {
     "ignore": [
       "docs/public"
-    ],
-    "global": [
-      "suite",
-      "test"
-    ]
-  },
-  "standard5": {
-    "ignore": [
-      "docs",
-      "examples",
-      "test"
-    ],
-    "global": [
-      "suite",
-      "test"
     ]
   },
   "ava": {

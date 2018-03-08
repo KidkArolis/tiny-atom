@@ -1,12 +1,11 @@
 module.exports = function dev (info) {
-  var type = info.type
-  var atom = info.atom
-  var action = info.action
-  var sourceActions = info.sourceActions
-  var ext = atom.devtools
+  const type = info.type
+  const atom = info.atom
+  const sourceActions = info.sourceActions
+  const ext = atom.devtools
 
   if (!ext) {
-    var devExt = window.devToolsExtension || window.top.devToolsExtension
+    const devExt = window.devToolsExtension || window.top.devToolsExtension
     if (!devExt) {
       console.log('No devtools extension found')
       atom.devtools = {}
@@ -31,9 +30,9 @@ module.exports = function dev (info) {
 
   // send only updates into devtools, not actions
   if (type === 'update') {
-    action = sourceActions.length ? sourceActions[sourceActions.length - 1] : { type: '--', payload: action.payload }
-    var updatedKeys = (!action.seq ? ' ' + ellipsis(Object.keys(action.payload || {}).join(', '), 10) : '')
-    var devtoolsAction = {
+    const action = sourceActions.length ? sourceActions[sourceActions.length - 1] : { type: '--', payload: info.action.payload }
+    const updatedKeys = (!action.seq ? ' ' + ellipsis(Object.keys(action.payload || {}).join(', '), 10) : '')
+    const devtoolsAction = {
       seq: action.seq,
       sourceActions: sourceActions,
       type: '(' + (action.seq || '-') + ') ' + action.type + updatedKeys,
