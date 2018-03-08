@@ -1,7 +1,7 @@
 const test = require('ava')
 const React = require('react')
 const ReactDOM = require('react-dom')
-const { ProvideAtom, ConnectAtom, connect } = require('../react')
+const { ProvideAtom, ConnectAtom, connect } = require('../src/react')
 const testApp = require('./generic-app')
 
 const h = React.createElement
@@ -14,7 +14,7 @@ test('usage with react', t => {
       h(ProvideAtom, { atom },
         h(App, {})
       )
-    , root)
+      , root)
   })
 
   app.assert(t)

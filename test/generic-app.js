@@ -1,5 +1,5 @@
 const { JSDOM } = require('jsdom')
-const createAtom = require('..')
+const createAtom = require('../src')
 
 module.exports = function app ({ h, ProvideAtom, ConnectAtom, connect }) {
   const dom = new JSDOM('<!doctype html><div id="root"></div>')

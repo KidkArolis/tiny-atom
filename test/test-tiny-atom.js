@@ -1,5 +1,5 @@
 const test = require('ava')
-const createAtom = require('..')
+const createAtom = require('../src')
 
 test('can be used with no initial state, evolve or render listener', t => {
   const atom = createAtom()

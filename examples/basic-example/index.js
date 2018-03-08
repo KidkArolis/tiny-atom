@@ -1,5 +1,5 @@
-const createAtom = require('../..')
-const log = require('../../log')
+const createAtom = require('tiny-atom')
+const log = require('tiny-atom/log')
 
 const atom = createAtom({ count: 0 }, evolve, render, { debug: log })
 
@@ -26,12 +26,15 @@ function render (atom) {
 }
 
 atom.split({ count: 5 })
-  // -> { count: 5 }
+// -> { count: 5 }
+
 atom.split('increment', 5)
-  // -> { count: 10 }
+// -> { count: 10 }
+
 atom.split('asyncIncrement', 3)
-  // -> { count: 10, loading: true }
+// -> { count: 10, loading: true }
+
 atom.split('increment', 2)
-  // -> { count: 12, loading: true }
-  // -> 1 second later...
-  // -> { count: 15, loading: false }
+// -> { count: 12, loading: true }
+// -> 1 second later...
+// -> { count: 15, loading: false }

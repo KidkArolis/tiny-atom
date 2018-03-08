@@ -19,13 +19,13 @@ module.exports = function createAtom (initialState, evolve, render, options) {
   }
   options = options || {}
   evolve = evolve || function () {}
-  var actionSeq = 0
-  var listeners = []
-  var state = initialState || {}
-  var merge = options.merge || defaultMerge
-  var debug = options.debug
+  let state = initialState || {}
+  let actionSeq = 0
+  const listeners = []
+  const merge = options.merge || defaultMerge
+  const debug = options.debug
   if (render) observe(render)
-  var atom = { get: get, split: createSplit(), observe: observe }
+  const atom = { get: get, split: createSplit(), observe: observe }
   return atom
 
   function defaultMerge (state, update) {
@@ -48,12 +48,12 @@ module.exports = function createAtom (initialState, evolve, render, options) {
   function createSplit (sourceActions) {
     sourceActions = sourceActions || []
     return function split (type, payload) {
-      var action, prevState
+      let action, prevState
       if (typeof type === 'string') {
         action = { seq: ++actionSeq, type: type }
         if (typeof payload !== 'undefined') action.payload = payload
         if (debug) report('action', action, sourceActions)
-        var split = debug ? createSplit(sourceActions.concat([action])) : atom.split
+        const split = debug ? createSplit(sourceActions.concat([action])) : atom.split
         evolve(get, split, action)
       } else {
         action = { payload: type }
@@ -66,7 +66,7 @@ module.exports = function createAtom (initialState, evolve, render, options) {
   }
 
   function report (type, action, sourceActions, prevState) {
-    var info = { type: type, action: action, sourceActions: sourceActions, atom: atom }
+    const info = { type: type, action: action, sourceActions: sourceActions, atom: atom }
     if (prevState) info.prevState = prevState
     debug(info)
   }

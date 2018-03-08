@@ -1,6 +1,6 @@
 const test = require('ava')
 const Preact = require('preact')
-const { ProvideAtom, ConnectAtom, connect } = require('../preact')
+const { ProvideAtom, ConnectAtom, connect } = require('../src/preact')
 const testApp = require('./generic-app')
 
 const h = Preact.h
@@ -13,7 +13,7 @@ test('usage with preact', t => {
       h(ProvideAtom, { atom }, [
         h(App, {})
       ])
-    , root, root.lastElementChild)
+      , root, root.lastElementChild)
   })
 
   app.assert(t)
