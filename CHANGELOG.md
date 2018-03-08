@@ -1,3 +1,7 @@
+## 1.2.0
+
+* Experimental future API in `require('tiny-atom/future')` that could replace the core API. See the `src/future.js` for more details.
+
 ## 1.1.0
 
 * In addition to `ConnectAtom` render prop style component, you can now also connect your components to the store using the `connect` HOC function. Import from `import { connect } from 'tiny-atom/react'` or `import { connect } from 'tiny-atom/preact'`
