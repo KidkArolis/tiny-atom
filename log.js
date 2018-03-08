@@ -14,7 +14,7 @@ module.exports = function log (info) {
 
   if (isAction) {
     prefix = !info.sourceActions.length ? '••' : ' •'
-    console.groupCollapsed(prefix + ' %c' + label, gray, green, info.action.payload || '')
+    console.groupCollapsed(prefix + ' %c' + label, gray, green, 'payload', ifUndefined(info.action.payload, '∅'))
     console.log('type %caction', blue)
     console.log('action', info.action)
     console.log('source', info.sourceActions)
@@ -23,7 +23,7 @@ module.exports = function log (info) {
 
   if (isUpdate) {
     prefix = !info.sourceActions.length ? '••' : '  '
-    console.groupCollapsed(prefix + ' %c' + label, gray, green, info.action.payload || '')
+    console.groupCollapsed(prefix + ' %c' + label, gray, green, 'update ', ifUndefined(info.action.payload, '∅'))
     console.log('type %cupdate', blue)
     console.log('action', info.action)
     console.log('source', info.sourceActions)
@@ -36,4 +36,8 @@ module.exports = function log (info) {
 
 function actionName (action) {
   return action.type + ' (' + action.seq + ')'
+}
+
+function ifUndefined (val, fallback) {
+  return typeof val === 'undefined' ? fallback : val
 }
