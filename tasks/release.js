@@ -36,4 +36,7 @@ const files = [
 
   process.chdir('./dist')
   await sh(`yarn publish --new-version ${version}`)
+
+  await sh(`git push`)
+  await sh(`git push --tags`)
 }())
