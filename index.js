@@ -53,7 +53,7 @@ module.exports = function createAtom (initialState, evolve, render, options) {
         action = { seq: ++actionSeq, type: type }
         if (typeof payload !== 'undefined') action.payload = payload
         if (debug) report('action', action, sourceActions)
-        var split = createSplit(sourceActions.concat([action]))
+        var split = debug ? createSplit(sourceActions.concat([action])) : atom.split
         evolve(get, split, action)
       } else {
         action = { payload: type }
