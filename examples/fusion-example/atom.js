@@ -1,4 +1,4 @@
-const createAtom = require('tiny-atom/orb')
+const createAtom = require('tiny-atom/fusion')
 const log = require('tiny-atom/log')
 const merge = require('tiny-atom/deep-merge')
 const actions = require('./actions')

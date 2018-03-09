@@ -1,4 +1,4 @@
-const createAtom = require('tiny-atom/orb')
+const createAtom = require('tiny-atom/fusion')
 const log = require('tiny-atom/log')
 const actions = require('./actions')
 const { Map } = require('immutable')

@@ -1,6 +1,6 @@
 ## 1.2.0
 
-* Experimental higher level API in `require('tiny-atom/orb')` wrapping th core tiny atom to create a modular sliced state atom. See the `src/orb.js` for more details.
+* Experimental higher level API in `require('tiny-atom/fusion')` wrapping th core tiny atom to create a modular sliced state atom. See the `src/fusion.js` for more details.
 
 ## 1.1.0
 

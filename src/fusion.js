@@ -1,6 +1,6 @@
 // For usage see:
-// examples/future-example/atom.js
-// examples/future-example/actions.js
+// examples/fusion-example/atom.js
+// examples/fusion-example/actions.js
 
 const createAtomCore = require('./index')
 
