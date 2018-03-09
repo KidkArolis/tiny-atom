@@ -6,26 +6,25 @@ const subatoms = {}
 const actions = {}
 const atom = createAtom({}, evolve, { merge, debug })
 
-function createNestedAtom (parent, name, pack) {
-  const path = getPath(parent, name)
+function createNestedAtom (parent, namespace, pack) {
+  const path = getPath(parent, namespace)
 
   if (subatoms[path]) {
     return subatoms[path]
   }
 
-  const subatom = {
-    name: name,
+  const subatom = Object.assign(function subatom (namespace, pack) {
+    return createNestedAtom(subatom, namespace, pack)
+  }, {
+    namespace: namespace,
     parent: parent,
     get: namespacedGet(atom.get, path),
-    split: namespacedSplit(atom.split, path),
-    slice: function slice (name, pack) {
-      return createNestedAtom(subatom, name, pack)
-    }
-  }
+    split: namespacedSplit(atom.split, path)
+  })
 
-  if (name && pack) {
+  if (namespace && pack) {
     actions[path] = pack.actions
-    parent.split({ [name]: pack.state || {} })
+    parent.split({ [namespace]: pack.state || {} })
   }
 
   if (path) {
@@ -37,13 +36,13 @@ function createNestedAtom (parent, name, pack) {
 
 module.exports = createNestedAtom(atom)
 
-function getPath (node, name) {
+function getPath (node, namespace) {
   let path = []
-  if (name) path.unshift(name)
+  if (namespace) path.unshift(namespace)
   if (node.parent) {
     while (node.parent) {
-      if (node.name) {
-        path.unshift(node.name)
+      if (node.namespace) {
+        path.unshift(node.namespace)
       }
       node = node.parent
     }
