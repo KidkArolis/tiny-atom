@@ -9,16 +9,16 @@ module.exports = {
       input: ''
     },
     actions: {
-      add: (get, split) => {
+      add: (get, split, payload, root) => {
         const items = get().items.concat([get().input])
         split({ items, input: '' })
-        split.hint.hide()
-        split.analytics.track({ type: 'added' })
+        root.split('hint.hide')
+        root.split('analytics.track', { type: 'added' })
       },
-      done: (get, split, index) => {
+      done: (get, split, index, root) => {
         const items = get().items.filter((item, i) => i !== index)
         split({ items })
-        split.analytics.track({ type: 'removed' })
+        root.split('analytics.track', { type: 'removed' })
       },
       update: (get, split, input) => {
         split({ input })
