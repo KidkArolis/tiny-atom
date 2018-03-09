@@ -6,6 +6,8 @@
   "scripts": {
     "start": "../../node_modules/.bin/jetpack ."
   },
-  "dependencies": {},
+  "dependencies": {
+    "immutable": "^3.8.2"
+  },
   "devDependencies": {}
 }

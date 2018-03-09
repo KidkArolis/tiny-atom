@@ -1,30 +1,27 @@
-const atom = window.atom = require('./atom')
+const Preact = require('preact')
+const { ProvideAtom } = require('tiny-atom/preact')
+const App = require('./components/App')
+const raf = require('./utils/raf')
 
-atom.split({ top1: 1 })
-atom.split({ top2: 2 })
+const merge = require('tiny-atom/deep-merge')
+const debug = require('tiny-atom/log')
+const createAtom = require('./atom')
 
-const events = atom('events', {
-  state: { list: [] },
-  actions: {
-    push: (get, split, payload) => {
-      split({ list: get().list.concat([payload]) })
-    }
-  }
+const atom = window.atom = createAtom({}, { merge, debug })
+
+const actions = require('./actions')
+Object.keys(actions).forEach(pack => {
+  const p = actions[pack]
+  atom(pack, p.state, p.actions)
 })
 
-events.split('push', 'item1')
-events.split('push', 'item2')
-events.split('push', 'item3')
-
-const prefs = events('preferences', {
-  state: { on: false },
-  actions: {
-    toggle: (get, split, payload) => {
-      split({ on: !get().on })
-    }
-  }
+const render = raf(function render () {
+  Preact.render((
+    <ProvideAtom atom={atom}>
+      <App />
+    </ProvideAtom>
+  ), document.body, document.body.lastElementChild)
 })
 
-prefs.split('toggle')
-
-console.log(JSON.stringify(atom.get(), null, 2))
+atom.observe(render)
+render()
