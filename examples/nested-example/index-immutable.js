@@ -1,7 +1,7 @@
 // const merge = require('tiny-atom/deep-merge')
 const debug = require('tiny-atom/log')
 const createAtom = require('./atom')
-const { Map, fromJS } = require('immutable')
+const { fromJS } = require('immutable')
 
 const merge = (state, update) => state.merge(update)
 const get = (obj, key) => obj.get(key)

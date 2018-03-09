@@ -1,6 +1,5 @@
 const createCoreAtom = require('tiny-atom')
 
-
 module.exports = function createAtom (state, options) {
   const subatoms = {}
   const actionRegistry = {}
@@ -132,13 +131,6 @@ function assignActions (split, actions, isRegistry, unscopedSplit) {
 function mapObj (obj, fn) {
   return Object.keys(obj).reduce((acc, key) => {
     acc[key] = fn(obj[key], key)
-    return acc
-  }, {})
-}
-
-function mapKeys (obj, fn) {
-  return Object.keys(obj).reduce((acc, key) => {
-    acc[fn(key)] = obj[key]
     return acc
   }, {})
 }
