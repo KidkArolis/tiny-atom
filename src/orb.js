@@ -5,35 +5,36 @@
 const createAtomCore = require('./index')
 
 module.exports = createAtom
-module.exports.initialState = initialState
-module.exports.evolve = evolve
-module.exports.assignActions = assignActions
 
-function createAtom (actions, options, state = {}) {
+function createAtom (initialActions, options, state = {}) {
+  if (!isObject(initialActions)) throw new Error('First arg should be an object with action packs')
+  if (options && !isObject(initialActions)) throw new Error('Second arg should be an object with options')
+
+  options = Object.assign({}, options)
+  options.get = options.get || ((obj, key) => obj[key])
+
   const cache = {}
-  actions = Object.assign({}, actions)
-  const atom = createAtomCore(
-    initialState(state, actions, options),
-    evolve(actions, cache, options),
-    options
-  )
-  assignActions(atom.split, actions)
-  atom.fuse = fuse(atom, actions, cache)
+  const actions = {}
+  const initialState = createInitialState(state, initialActions, options)
+  const evolve = createEvolve(actions, cache, options)
+  const atom = createAtomCore(initialState, evolve, options)
+  atom.fuse = fuse(atom, actions, cache, options)
+  atom.fuse(initialActions)
   return atom
 }
 
-function initialState (state, actions, options) {
+function createInitialState (state, actions, options) {
   if (options.merge) {
     return Object.keys(actions).reduce((state, namespace) => {
       const pack = actions[namespace]
       return typeof pack === 'function' ? state : options.merge(state, { [namespace]: pack.state })
     }, state)
   } else {
-    return mapObj(actions, pack => typeof pack === 'function' ? null : pack.state)
+    return Object.assign({}, state, mapObj(actions, pack => typeof pack === 'function' ? null : pack.state))
   }
 }
 
-function evolve (actions, cache, options) {
+function createEvolve (actions, cache, options) {
   return function evolve (get, split, action) {
     if (action.type.indexOf('.') === -1) {
       if (options.strict) throw new Error('Invalid action, all actions need to be namespaced')
@@ -52,7 +53,7 @@ function evolve (actions, cache, options) {
       get = cache[pack].get
       split = cache[pack].split
     } else {
-      get = namespacedGet(pack, get)
+      get = assignGetters(namespacedGet(pack, get, options), get, actions, options)
       split = assignActions(namespacedSplit(pack, split), actions)
       if (!options.debug) {
         cache[pack] = { get, split }
@@ -63,10 +64,18 @@ function evolve (actions, cache, options) {
   }
 }
 
-function namespacedGet (pack, get) {
-  return (namespace) => namespace
-    ? namespace.root ? get()[namespace] : get()
-    : get()[pack]
+function namespacedGet (pack, get, options) {
+  return () => options.get(get(), pack)
+}
+
+function assignGetters (get, rootGet, actions) {
+  return Object.assign(get, createGetters(rootGet, actions))
+}
+
+function createGetters (get, actions, options) {
+  return mapObj(actions, (pack, namespace) => {
+    return () => options.get(get(), namespace)
+  })
 }
 
 function namespacedSplit (pack, split) {
@@ -81,7 +90,7 @@ function assignActions (split, actions) {
 
 function createActionPacks (split, actions, options) {
   return mapObj(actions, (pack, namespace) => {
-    // support for plain action objects that people might have used
+    // support for plain action objects that people might have used in non strict mode
     if (typeof pack === 'function') {
       if (options.strict) throw new Error(`Malformed action pack ${namespace} expected object, but found a function`)
       return payload => split(`${namespace}`, payload)
@@ -98,12 +107,23 @@ function mapObj (obj, fn) {
   }, {})
 }
 
-function fuse (atom, actions, cache) {
+function fuse (atom, actions, cache, options) {
+  let initial = true
   return function fuse (moreActions) {
     Object.assign(actions, moreActions)
+    assignGetters(atom.get, atom.get, actions, options)
     assignActions(atom.split, actions)
     Object.keys(cache).forEach(key => {
       delete cache[key]
     })
+    if (!initial) {
+      atom.split(createInitialState(atom.get(), moreActions, options))
+    } else {
+      initial = false
+    }
   }
+}
+
+function isObject (obj) {
+  return typeof obj === 'object' && Object.prototype.toString.call(obj) === '[object Object]'
 }
