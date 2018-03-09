@@ -1,3 +1,7 @@
+## 1.2.0
+
+* Experimental higher level API in `require('tiny-atom/fusion')` wrapping th core tiny atom to create a modular sliced state atom. See the `src/fusion.js` for more details.
+
 ## 1.1.0
 
 * In addition to `ConnectAtom` render prop style component, you can now also connect your components to the store using the `connect` HOC function. Import from `import { connect } from 'tiny-atom/react'` or `import { connect } from 'tiny-atom/preact'`
