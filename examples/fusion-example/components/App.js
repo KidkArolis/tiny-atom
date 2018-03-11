@@ -13,14 +13,14 @@ module.exports = () => (
             className='Todo-input'
             type='text'
             ref={el => { this.$input = el }}
-            onChange={(e) => split.todo.update(e.target.value)}
+            onChange={(e) => split('todo.update', e.target.value)}
             value={state.todo.input}
           />
         </form>
 
         {state.todo.items.map((item, i) => (
           <div className='Todo'>
-            <span className='Todo-done' onClick={() => split.todo.done(i)}>☐</span>
+            <span className='Todo-done' onClick={() => split('todo.done', i)}>☐</span>
             {item}
           </div>
         ))}
@@ -39,7 +39,7 @@ module.exports = () => (
 
 function onSubmit (split, $input) {
   return function (e) {
-    split.todo.add()
+    split('todo.add')
     e.preventDefault()
     window.requestAnimationFrame(() => {
       setTimeout(() => {

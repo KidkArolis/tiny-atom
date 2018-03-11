@@ -1,11 +1,10 @@
-// const merge = require('tiny-atom/deep-merge')
+const createAtom = require('./atom-simpler')
 const debug = require('tiny-atom/log')
-const createAtom = require('./atom')
 const { fromJS } = require('immutable')
 
-const merge = (state, update) => state.merge(update)
+const merge = (state, update) => state.mergeDeep(update)
 const get = (obj, key) => obj.get(key)
-const atom = window.atom = createAtom(fromJS({}), { merge, get, debug })
+const atom = window.atom = createAtom({ merge, get, debug }, fromJS({}))
 
 const events = atom('events', fromJS({ list: [], other: 'key' }), {
   push: (get, split, payload) => {
@@ -38,8 +37,5 @@ atom('events')('preferences').get()
 events('preferences').get()
 preferences.get()
 
-// could also expose
-// atom.get.events.preferences()
-// events.get.preferences()
-
+console.log(atom.get())
 console.log(JSON.stringify(atom.get(), null, 2))

@@ -1,3 +1,5 @@
+const { push } = require('tiny-atom/immutable')
+
 module.exports = {
   todo: {
     state: {
@@ -9,16 +11,16 @@ module.exports = {
       input: ''
     },
     actions: {
-      add: (get, split) => {
-        const items = get().items.concat([get().input])
+      add: (get, split, payload) => {
+        const items = push(get().items, get().input)
         split({ items, input: '' })
-        split.hint.hide()
-        split.analytics.track({ type: 'added' })
+        split.root('hint.hide')
+        split.root('analytics.track', { type: 'added' })
       },
       done: (get, split, index) => {
         const items = get().items.filter((item, i) => i !== index)
         split({ items })
-        split.analytics.track({ type: 'removed' })
+        split.root('analytics.track', { type: 'removed' })
       },
       update: (get, split, input) => {
         split({ input })
@@ -47,8 +49,7 @@ module.exports = {
     },
     actions: {
       track: (get, split, event) => {
-        const events = get().events.concat([event])
-        split({ events })
+        split({ events: push(get().events, event) })
       }
     }
   }

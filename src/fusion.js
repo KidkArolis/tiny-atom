@@ -1,129 +1,100 @@
-// For usage see:
-// examples/fusion-example/atom.js
-// examples/fusion-example/actions.js
+const createCoreAtom = require('./index')
+const merge = require('./deep-merge')
 
-const createAtomCore = require('./index')
+module.exports = function createAtom (options, initialState) {
+  options = Object.assign({ merge }, options)
+  const registry = { subatoms: {}, actions: {}, evolvers: {} }
+  const getter = options.get || ((obj, key) => obj[key])
+  const atom = createCoreAtom(initialState, evolve, options)
+  const root = createNestedAtom()
+  Object.assign(root, atom, { root, registry })
+  return root
 
-module.exports = createAtom
-
-function createAtom (initialActions, options, state = {}) {
-  if (!isObject(initialActions)) throw new Error('First arg should be an object with action packs')
-  if (options && !isObject(initialActions)) throw new Error('Second arg should be an object with options')
-
-  options = Object.assign({}, options)
-  options.get = options.get || ((obj, key) => obj[key])
-
-  const cache = {}
-  const actions = {}
-  const initialState = createInitialState(state, initialActions, options)
-  const evolve = createEvolve(actions, cache, options)
-  const atom = createAtomCore(initialState, evolve, options)
-  atom.fuse = fuse(atom, actions, cache, options)
-  atom.fuse(initialActions)
-  return atom
-}
-
-function createInitialState (state, actions, options) {
-  if (options.merge) {
-    return Object.keys(actions).reduce((state, namespace) => {
-      const pack = actions[namespace]
-      return typeof pack === 'function' ? state : options.merge(state, { [namespace]: pack.state })
-    }, state)
-  } else {
-    return Object.assign({}, state, mapObj(actions, pack => typeof pack === 'function' ? null : pack.state))
-  }
-}
-
-function createEvolve (actions, cache, options) {
-  return function evolve (get, split, action) {
-    if (action.type.indexOf('.') === -1) {
-      if (options.strict) throw new Error('Invalid action, all actions need to be namespaced')
-      if (!actions[action.type]) throw new Error(`No such action '${action.type}'`)
-      actions[action.type](get, split, action.payload)
-      return
+  function createNestedAtom (parent = atom, namespace = '', state, actions) {
+    if (registry.subatoms[namespace] && !state && !actions) {
+      return registry.subatoms[namespace]
     }
 
-    const [pack, type] = action.type.split('.')
-
-    if (!actions[pack]) throw new Error(`No such action pack '${pack}'`)
-    if (!actions[pack].actions) throw new Error(`Action pack '${pack}' malformed, missing actions object`)
-    if (!actions[pack].actions[type]) throw new Error(`No such action '${pack}.${type}'`)
-
-    if (cache[pack]) {
-      get = cache[pack].get
-      split = cache[pack].split
-    } else {
-      get = assignGetters(namespacedGet(pack, get, options), get, actions, options)
-      split = assignActions(namespacedSplit(pack, split), actions)
-      if (!options.debug) {
-        cache[pack] = { get, split }
+    const subatom = registry.subatoms[namespace] = function subatom (name, state, actions) {
+      if (!name && !state) {
+        throw new Error('Call with (name, state, actions | evolve) or (state, actions | evolve)')
       }
+
+      if (typeof name !== 'string') {
+        actions = state
+        state = name
+        name = ''
+      }
+
+      if (subatom.namespace) {
+        name = `${subatom.namespace}.${name}`
+      }
+
+      return createNestedAtom(subatom, name, state, actions)
     }
 
-    actions[pack].actions[type](get, split, action.payload)
-  }
-}
-
-function namespacedGet (pack, get, options) {
-  return () => options.get(get(), pack)
-}
-
-function assignGetters (get, rootGet, actions) {
-  return Object.assign(get, createGetters(rootGet, actions))
-}
-
-function createGetters (get, actions, options) {
-  return mapObj(actions, (pack, namespace) => {
-    return () => options.get(get(), namespace)
-  })
-}
-
-function namespacedSplit (pack, split) {
-  return (...args) => typeof args[0] === 'string'
-    ? split(...args)
-    : split({ [pack]: args[0] })
-}
-
-function assignActions (split, actions) {
-  return Object.assign(split, createActionPacks(split, actions))
-}
-
-function createActionPacks (split, actions, options) {
-  return mapObj(actions, (pack, namespace) => {
-    // support for plain action objects that people might have used in non strict mode
-    if (typeof pack === 'function') {
-      if (options.strict) throw new Error(`Malformed action pack ${namespace} expected object, but found a function`)
-      return payload => split(`${namespace}`, payload)
-    } else {
-      return mapObj(pack.actions, (impl, action) => payload => split(`${namespace}.${action}`, payload))
-    }
-  })
-}
-
-function mapObj (obj, fn) {
-  return Object.keys(obj).reduce((acc, key) => {
-    acc[key] = fn(obj[key], key)
-    return acc
-  }, {})
-}
-
-function fuse (atom, actions, cache, options) {
-  let initial = true
-  return function fuse (moreActions) {
-    Object.assign(actions, moreActions)
-    assignGetters(atom.get, atom.get, actions, options)
-    assignActions(atom.split, actions)
-    Object.keys(cache).forEach(key => {
-      delete cache[key]
+    Object.assign(subatom, {
+      root: root,
+      namespace: namespace,
+      get: namespacedGet(atom.get, namespace, getter),
+      split: namespacedSplit(atom.split, namespace)
     })
-    if (!initial) {
-      atom.split(createInitialState(atom.get(), moreActions, options))
-    } else {
-      initial = false
+
+    if (state) atom.split(namespace ? setIn({}, namespace.split('.'), state) : state)
+    if (actions && typeof actions === 'function') {
+      registry.evolvers[namespace] = actions
+    } else if (actions) {
+      Object.keys(actions).forEach(type => {
+        registry.actions[namespace ? `${namespace}.${type}` : type] = actions[type]
+      })
     }
+
+    return namespace === '' && root ? root : subatom
+  }
+
+  function evolve (get, split, action) {
+    // there's a custom alternative root evolve, use that
+    if (registry.evolvers['']) {
+      return registry.evolvers[''](get, split, action)
+    }
+
+    // separate the namespace from action type
+    const namespace = action.type.split('.').slice(0, -1).join('.')
+    if (namespace) {
+      get = Object.assign(namespacedGet(get, namespace, getter), { root: get })
+      split = Object.assign(namespacedSplit(split, namespace), { root: split })
+    }
+
+    // it's an evolve fn
+    if (registry.evolvers[namespace]) {
+      return registry.evolvers[namespace](get, split, action)
+    }
+
+    // it's an action fn
+    if (!registry.actions[action.type]) {
+      throw new Error(`Action '${action.type} not found'`)
+    }
+
+    registry.actions[action.type](get, split, action.payload)
   }
 }
 
-function isObject (obj) {
-  return typeof obj === 'object' && Object.prototype.toString.call(obj) === '[object Object]'
+function namespacedGet (get, namespace, getter) {
+  const segments = namespace.split('.')
+  return () => segments.reduce((ref, segment) => getter(ref, segment), get())
+}
+
+function namespacedSplit (split, namespace) {
+  return (...args) => typeof args[0] === 'string'
+    ? split(`${namespace}.${args[0]}`, ...args.slice(1))
+    : split(setIn({}, namespace.split('.'), args[0]))
+}
+
+function setIn (obj, path, val) {
+  return path.reduce((ref, segment, i) => {
+    ref[segment] = ref[segment] || {}
+    if (i < path.length - 1) return ref[segment]
+    ref[segment] = val
+    return obj
+  }, obj)
 }
