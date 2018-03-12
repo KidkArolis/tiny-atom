@@ -1,7 +1,7 @@
-const createCoreAtom = require('./index')
-const merge = require('./deep-merge')
+const createCoreAtom = require('tiny-atom')
+const merge = require('tiny-atom/deep-merge')
 
-module.exports = function createAtom (options, initialState) {
+module.exports = function createFractalAtom (options, initialState) {
   options = Object.assign({ merge }, options)
   const registry = { subatoms: {}, actions: {}, evolvers: {} }
   const getter = options.get || ((obj, key) => obj[key])

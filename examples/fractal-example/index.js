@@ -1,10 +1,9 @@
 const Preact = require('preact')
 const { ProvideAtom } = require('tiny-atom/preact')
-const App = require('./components/App')
-const raf = require('./utils/raf')
-
-const createAtom = require('tiny-atom/fusion')
+const raf = require('tiny-atom/raf')
 const debug = require('tiny-atom/log')
+const App = require('./components/App')
+const createAtom = require('./fractalAtom')
 
 const atom = window.atom = createAtom({ debug })
 
