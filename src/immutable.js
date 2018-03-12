@@ -16,7 +16,7 @@
 // clone
 
 module.exports.set = function set (obj, key, value) {
-  if (obj === undefined) {
+  if (obj === undefined || obj === null) {
     return { [key]: value }
   }
 
@@ -41,7 +41,7 @@ function setIn (obj, keys, value) {
     return obj
   }
 
-  const isNil = obj === undefined
+  const isNil = obj === undefined || obj === null
   const clone = isNil ? {} : copy(obj)
 
   let ref = clone
@@ -51,7 +51,7 @@ function setIn (obj, keys, value) {
     const key = keys[index]
 
     // make sure we create the path if needed
-    if (ref[key] === undefined) {
+    if (ref[key] === undefined || ref[key] === null) {
       const nextKey = keys[index + 1]
       ref[key] = typeof nextKey === 'number' ? [] : {}
     } else {
@@ -68,7 +68,7 @@ function setIn (obj, keys, value) {
 }
 
 module.exports.unset = function unset (obj, key) {
-  if (obj === undefined) {
+  if (obj === undefined || obj === null) {
     return {}
   }
 
@@ -83,7 +83,7 @@ module.exports.unset = function unset (obj, key) {
 }
 
 module.exports.get = function get (obj, key, notFound) {
-  if (obj === undefined) {
+  if (obj === undefined || obj === null) {
     return notFound
   }
 
