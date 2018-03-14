@@ -2,7 +2,7 @@ const test = require('ava')
 
 const {
   set, setIn, unset, get, getIn, update, updateIn,
-  push, peek, pop, transient, clone
+  push, peek, pop, transient
 } = require('../src/immutable')
 
 test('set', (assert) => {
@@ -142,7 +142,7 @@ test('unset', (assert) => {
 
   assert.not(
     unset(['pan', 'galactic', 'gargle', 'blaster'], 0),
-    [ , 'galactic', 'gargle', 'blaster'],
+    ['galactic', 'gargle', 'blaster'],
     'should work with arrays too'
   )
 })
