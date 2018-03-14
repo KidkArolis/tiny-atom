@@ -2,7 +2,7 @@ const test = require('ava')
 
 const {
   set, setIn, unset, get, getIn, update, updateIn,
-  push, peek, pop, transient
+  push, peek, pop, transient, clone
 } = require('../src/immutable')
 
 test('set', (assert) => {
@@ -304,7 +304,7 @@ test('updateIn', (assert) => {
   )
 
   assert.deepEqual(
-    update(({ count: 2 }), 'score', undefined),
+    updateIn(({ count: 2 }), ['score'], undefined),
     ({ count: 2, score: undefined }),
     'should set value to undefined when func is missing'
   )
@@ -409,5 +409,41 @@ test('transient', (assert) => {
     }),
     marvin,
     'should not mutate original reference'
+  )
+})
+
+test('clone', (assert) => {
+  assert.plan(4)
+
+  const marvin = { paranoid: true }
+  const copy = clone(marvin)
+  copy.a = 5
+
+  assert.deepEqual(
+    copy,
+    { paranoid: true, a: 5 },
+    'should be updated'
+  )
+
+  assert.not(
+    marvin,
+    copy,
+    'should not be the same reference'
+  )
+
+  const list = [1, 2, 3]
+  const anotherList = clone(list)
+  anotherList.push(4)
+
+  assert.deepEqual(
+    anotherList,
+    [1, 2, 3, 4],
+    'should be updated'
+  )
+
+  assert.deepEqual(
+    list,
+    [1, 2, 3],
+    'should not be updated'
   )
 })
