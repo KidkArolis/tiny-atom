@@ -1,3 +1,13 @@
+## 1.2.0
+
+* `tiny-atom/react/context`
+* `createAtom(initialState, actions, options)`
+* `atom.fuse(state, actions)`
+* `tiny-atom/immutable`
+* `tiny-atom/raf`
+* `tiny-atom/deep-merge`
+* New examples - scoped slices of atom, modular atom, fractal atom
+
 ## 1.1.0
 
 * In addition to `ConnectAtom` render prop style component, you can now also connect your components to the store using the `connect` HOC function. Import from `import { connect } from 'tiny-atom/react'` or `import { connect } from 'tiny-atom/preact'`
