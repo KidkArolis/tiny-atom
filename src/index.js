@@ -18,18 +18,27 @@ module.exports = function createAtom (initialState, evolve, render, options) {
     render = null
   }
   options = options || {}
-  evolve = evolve || function () {}
   let state = initialState || {}
+  let actions = {}
   let actionSeq = 0
   const listeners = []
   const merge = options.merge || defaultMerge
   const debug = options.debug
   if (render) observe(render)
-  const atom = { get: get, split: createSplit(), observe: observe }
+  const atom = { get, split: createSplit(), observe, fuse }
+  evolve = evolve || function () {}
+  if (typeof evolve !== 'function') {
+    actions = evolve
+    evolve = defaultEvolve
+  }
   return atom
 
   function defaultMerge (state, update) {
     return Object.assign({}, state, update)
+  }
+
+  function defaultEvolve (get, split, action, actions) {
+    actions[action.type](get, split, action.payload)
   }
 
   function get () {
@@ -45,6 +54,11 @@ module.exports = function createAtom (initialState, evolve, render, options) {
     }
   }
 
+  function fuse (moreState, moreActions) {
+    if (moreActions) Object.assign(actions, moreActions)
+    if (moreState) atom.split(moreState)
+  }
+
   function createSplit (sourceActions) {
     sourceActions = sourceActions || []
     return function split (type, payload) {
@@ -54,13 +68,13 @@ module.exports = function createAtom (initialState, evolve, render, options) {
         if (typeof payload !== 'undefined') action.payload = payload
         if (debug) report('action', action, sourceActions)
         const split = debug ? createSplit(sourceActions.concat([action])) : atom.split
-        evolve(get, split, action)
+        evolve(get, split, action, actions)
       } else {
         action = { payload: type }
         prevState = state
         state = merge(state, action.payload)
         if (debug) report('update', action, sourceActions, prevState)
-        listeners.forEach(function (f) { f(atom) })
+        listeners.forEach(f => f(atom))
       }
     }
   }
