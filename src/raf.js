@@ -14,6 +14,7 @@ module.exports = function raf (fn) {
     window.requestAnimationFrame(() => {
       scheduled = false
       if (requested) {
+        requested = false
         fn(...args)
       }
     })
