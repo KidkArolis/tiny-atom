@@ -1,0 +1,13 @@
+{
+  "name": "react-example",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "../../node_modules/.bin/jetpack ."
+  },
+  "dependencies": {
+    "react": "^16.3.0-alpha.2",
+    "react-dom": "^16.3.0-alpha.2"
+  }
+}
