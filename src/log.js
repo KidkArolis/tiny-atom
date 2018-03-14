@@ -2,7 +2,8 @@ const gray = 'color: #888'
 const green = 'color: #05823d'
 const blue = 'color: blue'
 
-module.exports = function log (info) {
+module.exports = function log (info, logger) {
+  const { log, groupCollapsed, groupEnd } = logger || console
   let prefix
   const isAction = info.type === 'action'
   const isUpdate = info.type === 'update'
@@ -14,23 +15,23 @@ module.exports = function log (info) {
 
   if (isAction) {
     prefix = !info.sourceActions.length ? '••' : ' •'
-    console.groupCollapsed(prefix + ' %c' + label, gray, green, 'payload', ifUndefined(info.action.payload, '∅'))
-    console.log('type %caction', blue)
-    console.log('action', info.action)
-    console.log('source', info.sourceActions)
-    console.groupEnd()
+    groupCollapsed(prefix + ' %c' + label, gray, green, 'payload', ifUndefined(info.action.payload, '∅'))
+    log('type %caction', blue)
+    log('action', info.action)
+    log('source', info.sourceActions)
+    groupEnd()
   }
 
   if (isUpdate) {
     prefix = !info.sourceActions.length ? '••' : '  '
-    console.groupCollapsed(prefix + ' %c' + label, gray, green, 'update ', ifUndefined(info.action.payload, '∅'))
-    console.log('type %cupdate', blue)
-    console.log('action', info.action)
-    console.log('source', info.sourceActions)
-    console.log('patch', info.action.payload)
-    console.log('prevState', info.prevState)
-    console.log('currState', info.atom.get())
-    console.groupEnd()
+    groupCollapsed(prefix + ' %c' + label, gray, green, 'update ', ifUndefined(info.action.payload, '∅'))
+    log('type %cupdate', blue)
+    log('action', info.action)
+    log('source', info.sourceActions)
+    log('patch', info.action.payload)
+    log('prevState', info.prevState)
+    log('currState', info.atom.get())
+    groupEnd()
   }
 }
 
