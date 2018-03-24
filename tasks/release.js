@@ -18,7 +18,7 @@ const files = [
   for (let file of files) {
     await sh(`cp ${file} dist`)
   }
-  await sh(`cp src/* dist`)
+  await sh(`cp src dist`)
 
   await sh(`./node_modules/.bin/buble --objectAssign Object.assign dist -o dist`)
   await sh(`./node_modules/.bin/buble --objectAssign Object.assign --jsx Preact.h src/preact.js -o dist/preact.js`)

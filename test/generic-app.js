@@ -1,7 +1,7 @@
 const { JSDOM } = require('jsdom')
 const createAtom = require('../src')
 
-module.exports = function app ({ h, ProvideAtom, ConnectAtom, connect }) {
+module.exports = function app ({ h, Consumer, ConnectAtom, connect, createContext }) {
   const dom = new JSDOM('<!doctype html><div id="root"></div>')
   global.window = dom.window
   global.document = dom.window.document
@@ -15,13 +15,21 @@ module.exports = function app ({ h, ProvideAtom, ConnectAtom, connect }) {
     }
   }
 
+  let Provider
+  if (createContext) {
+    const ctx = createContext(atom)
+    Consumer = ctx.Consumer
+    Provider = ctx.Provider
+    connect = ctx.connect
+  }
+
   const App = () => (
-    h(ConnectAtom, {
+    h(Consumer || ConnectAtom, {
       map: (state, split) => ({
         count: state.count,
         inc: x => split('increment', x)
       }),
-      render: ({ count, inc }) => (
+      [Consumer ? 'children' : 'render']: ({ count, inc }) => (
         h('div', {}, [
           h('div', { id: 'count-outer', key: 'a' }, count),
           h('button', { id: 'increment-outer', key: 'b', onClick: () => inc() }),
@@ -34,8 +42,8 @@ module.exports = function app ({ h, ProvideAtom, ConnectAtom, connect }) {
   )
 
   const Child = ({ multiplier }) => (
-    h(ConnectAtom, {
-      render: ({ state, split }) => (
+    h(Consumer || ConnectAtom, {
+      [Consumer ? 'children' : 'render']: ({ state, split }) => (
         h('div', {}, [
           h('div', { id: 'count-inner', key: 'a' }, multiplier * state.count),
           h('button', { id: 'increment-inner', key: 'b', onClick: () => split('increment', 2) })
@@ -45,7 +53,7 @@ module.exports = function app ({ h, ProvideAtom, ConnectAtom, connect }) {
   )
 
   const Child2 = ({ multiplier }) => (
-    h(ConnectAtom, {}, ({ state, split }) => (
+    h(Consumer || ConnectAtom, {}, ({ state, split }) => (
       h('div', {}, [
         h('div', { id: 'count-inner-2', key: 'a' }, multiplier * state.count),
         h('button', { id: 'increment-inner-2', key: 'b', onClick: () => split('increment', 2) })
@@ -61,6 +69,9 @@ module.exports = function app ({ h, ProvideAtom, ConnectAtom, connect }) {
   ))
 
   return {
+    root,
+    Provider,
+
     render: function render (fn) {
       atom.observe(() => fn(App, atom, root))
       fn(App, atom, root)

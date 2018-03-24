@@ -256,3 +256,27 @@ test('observe can also be used with render', t => {
   unobserveA()
   unobserveC()
 })
+
+test('evolve as action object', t => {
+  const increment = (get, split, payload = 1) => split({ count: get().count + payload })
+  const atom = createAtom({ count: 0 }, { increment })
+
+  atom.split('increment')
+  atom.split('increment', 5)
+  t.deepEqual(atom.get(), { count: 6 })
+})
+
+test('fuse extends the state and actions', t => {
+  const increment = (get, split, payload = 1) => split({ count: get().count + payload })
+  const decrement = (get, split, payload = 1) => split({ count: get().count - payload })
+  const atom = createAtom({ count: 0 }, { increment })
+
+  atom.fuse({ meta: 1 }, { decrement })
+  atom.fuse({ base: 2 })
+  atom.fuse()
+
+  atom.split('increment')
+  atom.split('increment', 5)
+  atom.split('decrement', 2)
+  t.deepEqual(atom.get(), { count: 4, meta: 1, base: 2 })
+})
