@@ -9,7 +9,7 @@
 <br />
 
 * tiny api - easy to understand, easy to adapt
-* tiny size - 0.5KB
+* tiny size - 0.6KB
 * single store modified via actions
 * batteries included
   * react bindings including
@@ -19,6 +19,12 @@
   * redux devtools integration
   * immutable helper functions
   * requestAnimationFrame helper for efficient rerender
+
+[![npm](https://img.shields.io/npm/v/tiny-atom.svg)](https://www.npmjs.com/package/tiny-atom)
+[![size](http://img.badgesize.io/https://cdn.jsdelivr.net/npm/tiny-atom/index.min.js?compression=gzip)](http://img.badgesize.io/https://cdn.jsdelivr.net/npm/tiny-atom/index.min.js?compression=gzip)
+[![Build Status](https://travis-ci.org/QubitProducts/tiny-atom.svg?branch=master)](https://travis-ci.org/QubitProducts/tiny-atom)
+[![Coverage Status](https://coveralls.io/repos/github/QubitProducts/tiny-atom/badge.svg?branch=master)](https://coveralls.io/github/QubitProducts/tiny-atom?branch=master)
+[![code style: standard](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/standard/standard)
 
 ## Installation
 
