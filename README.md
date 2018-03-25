@@ -8,6 +8,21 @@
 <h5 align="center">Minimal, yet awesome, state management.</h5>
 <br />
 
+<p align="center">
+  <a href="https://www.npmjs.com/package/tiny-atom">
+    <img src="https://img.shields.io/npm/v/tiny-atom.svg" alt="npm" />
+  </a>
+  <a href="http://img.badgesize.io/https://cdn.jsdelivr.net/npm/tiny-atom/index.min.js?compression=gzip">
+    <img src="http://img.badgesize.io/https://cdn.jsdelivr.net/npm/tiny-atom/index.min.js?compression=gzip" alt="size" />
+  </a>
+  <a href="https://travis-ci.org/QubitProducts/tiny-atom">
+    <img src="https://travis-ci.org/QubitProducts/tiny-atom.svg?branch=master" alt="Build Status" />
+  </a>
+  <a href="https://github.com/standard/standard">
+    <img src="https://img.shields.io/badge/code_style-standard-brightgreen.svg" alt="code style: standard" />
+  </a>
+</p>
+
 * tiny api - easy to understand, easy to adapt
 * tiny size - 0.6KB
 * single store modified via actions
@@ -19,12 +34,6 @@
   * redux devtools integration
   * immutable helper functions
   * requestAnimationFrame helper for efficient rerender
-
-[![npm](https://img.shields.io/npm/v/tiny-atom.svg)](https://www.npmjs.com/package/tiny-atom)
-[![size](http://img.badgesize.io/https://cdn.jsdelivr.net/npm/tiny-atom/index.min.js?compression=gzip)](http://img.badgesize.io/https://cdn.jsdelivr.net/npm/tiny-atom/index.min.js?compression=gzip)
-[![Build Status](https://travis-ci.org/QubitProducts/tiny-atom.svg?branch=master)](https://travis-ci.org/QubitProducts/tiny-atom)
-[![Coverage Status](https://coveralls.io/repos/github/QubitProducts/tiny-atom/badge.svg?branch=master)](https://coveralls.io/github/QubitProducts/tiny-atom?branch=master)
-[![code style: standard](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/standard/standard)
 
 ## Installation
 
