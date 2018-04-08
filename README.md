@@ -54,47 +54,34 @@ Read the [full docs](https://qubitproducts.github.io/tiny-atom) or pick one of t
 ```js
 const createAtom = require('tiny-atom')
 
-const atom = createAtom({ count: 0 }, evolve)
+const initialState = {
+  clicks: 0,
+  items: []
+}
 
 const actions = {
-  increment: (get, split, x) => {
-    split({ count: get().count + x })
+  countClicks: (get, split, n) => {
+    split({ clicks: get().clicks + n })
   },
 
-  asyncIncrement: (get, split, x) => {
+  fetchItems: async (get, split) => {
     split({ loading: true })
-    setTimeout(() => {
-      split('increment', x)
-      split({ loading: false })
-    }, 1000)
+    const { data: items } = await axios.get('/api/items')
+    split({ items, loading: false })
+    split('countClicks', 1)
   }
 }
 
-function evolve (get, split, action) {
-  actions[action.type](get, split, action.payload)
-}
+const atom = createAtom(initialState, actions)
 
-function render (atom) {
-  document.body.innerHTML = `Count ${atom.get().count}`
-}
-
-atom.observe(render)
-
-atom.split({ count: 5 })
-  // -> { count: 5 }
-atom.split('increment', 5)
-  // -> { count: 10 }
-atom.split('asyncIncrement', 3)
-  // -> { count: 10, loading: true }
-atom.split('increment', 2)
-  // -> { count: 12, loading: true }
-  // -> 1 second later...
-  // -> { count: 15, loading: false }
+atom.observe(function render (atom) {
+  const { items, clicks } = atom.get()
+})
 ```
 
 ## API
 
-### `createAtom(initialState, evolve | actions, options)`
+### `createAtom(initialState, actions|evolve, options)`
 
 Create an atom.
 
@@ -103,28 +90,23 @@ Create an atom.
   * `get()` - get current state – see `atom.get`
   * `split(update)` or `split(type, payload)` – see `atom.split`
   * `action` - an object of shape `{ type, payload }`
-
-All parameters are optional, but typically you'll want to use at least initialState and evolve/actions.
-
-Available options:
-
-* `options.debug(info)` - called on each `action` and `update` with info object of shape `{ type, atom, action, sourceActions, prevState }`
-* `options.merge(state, update)` - called each time `split(update)` is called. Default implementation is `(state, update) => Object.assign({}, state, update)`. You can use this hook to use a different data structure for your state, such as Immutable. Or you could use it to extend the state instead of cloning with `Object.assign(state, update)` if that makes performance or architectural difference.
-
-e.g.
+* `options` - options object
+  * `options.debug` - a debug function called on each `action` and `update` with info object of shape `{ type, atom, action, sourceActions, prevState }`
+  * `options.merge` - a function called each time `split(update)` is called. Default implementation is `(state, update) => Object.assign({}, state, update)`. You can use this hook to use a different data structure or apply deep merges.
 
 ```js
 createAtom({ count: 1 }, { increment, decrement })
-createAtom({ count: 1 }, (get, split, action) => split({ count: 2 }))
-const evolve = (get, split, action, actions) => actions[action.type](get, split, action.payload)
+createAtom({ count: 1 }, (get, split, action) => {})
+
+const evolve = (get, split, action, actions) => {
+  actions[action.type](get, split, action.payload)
+}
 createAtom({ count: 1 }, evolve)
 ```
 
 ### `atom.get`
 
 Get current state.
-
-e.g.
 
 ```js
 atom.get()
@@ -136,11 +118,10 @@ atom.get().feed.items
 Can be used in 2 ways:
 
 * `atom.split(type, payload)` - send an action to `evolve`.
-* `atom.split(update)` - update the state with the `update` object, doesn't go via `evolve`.
-
-e.g.
+* `atom.split(update)` - update the state with the `update` object. Updates don't go via `evolve`, they get applied to the state using the `options.merge` function.
 
 ```js
+atom.split('fetchMovies')
 atom.split('increment', 5)
 atom.split({ count: 2 })
 atom.split({ entities: { movies: { 45: { name: 'Primer' } } }})
@@ -148,11 +129,7 @@ atom.split({ entities: { movies: { 45: { name: 'Primer' } } }})
 
 ### `atom.observe`
 
-Register a callback for when atom changes. This can be used in addition or instead of the `render` callback. Returns the dispose function.
-
-For documentation on the set of (p)react components `<ProvideAtom />`, `<ConnectAtom />` and `connect` see the [react](https://qubitproducts.github.io/tiny-atom/using-with-react) or [preact](https://qubitproducts.github.io/tiny-atom/using-with-preact) docs.
-
-e.g.
+Register a callback for when atom changes. Returns the unobserve function.
 
 ```js
 atom.observe(render)
@@ -163,12 +140,24 @@ atom.observe(atom => render(atom.get(), atom.split))
 
 Extend atom's state and the action object. Convenient for composing the atom slices of state and actions from several modules.
 
-e.g.
-
 ```js
-const state = { project: { name: 'tiny-atom' } }
-const actions = {
-  star: (get, split) => split({ project: { starred: true } })
+const state = {
+  project: {
+    name: 'tiny-atom'
+  }
 }
+
+const actions = {
+  star: (get, split) => split({
+    project: {
+      starred: true
+    }
+  })
+}
+
 atom.fuse(state, actions)
 ```
+
+---
+
+For documentation on the set of (p)react components `<ProvideAtom />`, `<ConnectAtom />` and `connect` see the [react](https://qubitproducts.github.io/tiny-atom/using-with-react) or [preact](https://qubitproducts.github.io/tiny-atom/using-with-preact) docs.
