@@ -27,13 +27,12 @@
 * tiny size - 0.6KB
 * single store modified via actions
 * batteries included
-  * react bindings including
-  * support for the new React.createContext API
+  * react bindings with support for React.createContext API
   * preact bindings
   * console logger
   * redux devtools integration
   * immutable helper functions
-  * requestAnimationFrame helper for efficient rerender
+  * requestAnimationFrame helper for efficient rerenders
 
 ## Installation
 
@@ -76,6 +75,7 @@ const atom = createAtom(initialState, actions)
 
 atom.observe(function render (atom) {
   const { items, clicks } = atom.get()
+  onClick
 })
 ```
 
