@@ -59,15 +59,15 @@ const initialState = {
 }
 
 const actions = {
-  countClicks: (get, split, n) => {
-    split({ clicks: get().clicks + n })
+  countClicks: ({ get, set }, n) => {
+    set({ clicks: get().clicks + n })
   },
 
-  fetchItems: async (get, split) => {
-    split({ loading: true })
+  fetchItems: async ({ set, dispatch }) => {
+    set({ loading: true })
     const { data: items } = await axios.get('/api/items')
-    split({ items, loading: false })
-    split('countClicks', 1)
+    set({ items, loading: false })
+    dispatch('countClicks', 1)
   }
 }
 
@@ -75,24 +75,24 @@ const atom = createAtom(initialState, actions)
 
 atom.observe(function render (atom) {
   const { items, clicks } = atom.get()
-  onClick
+  onClick(e => atom.dispatch('countClicks', 10))
 })
 ```
 
 ## API
 
-### `createAtom(initialState, actions|evolve, options)`
+### `createAtom(initialState, actions, options)`
 
 Create an atom.
 
 * `initialState` - defaults to `{}`
-* `evolve(get, split, action, actions)` - receives actions and controls the evolution of the state
-  * `get()` - get current state – see `atom.get`
-  * `split(update)` or `split(type, payload)` – see `atom.split`
-  * `action` - an object of shape `{ type, payload }`
 * `options` - options object
   * `options.debug` - a debug function called on each `action` and `update` with info object of shape `{ type, atom, action, sourceActions, prevState }`
   * `options.merge` - a function called each time `split(update)` is called. Default implementation is `(state, update) => Object.assign({}, state, update)`. You can use this hook to use a different data structure or apply deep merges.
+  * `evolve({ get, set, dispatch }, action, actions)` - receives actions and controls the evolution of the state
+    * `get()` - get current state – see `atom.get`
+    * `set(update)` - mutate atom
+    * `dispatch(type, payload)` – dispatch an action
 
 ```js
 createAtom({ count: 1 }, { increment, decrement })

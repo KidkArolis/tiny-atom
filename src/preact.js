@@ -11,7 +11,7 @@ class ProvideAtom extends Preact.Component {
 
 function ConnectAtom ({ map, render, children }, { atom }) {
   render = render || children[0]
-  const data = map ? map(atom.get(), atom.split) : { state: atom.get(), split: atom.split }
+  const data = map ? map(atom.get(), atom.dispatch) : { state: atom.get(), dispatch: atom.dispatch }
   return render(data)
 }
 
