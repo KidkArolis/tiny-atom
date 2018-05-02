@@ -27,11 +27,10 @@
 * tiny size - 0.6KB
 * single store modified via actions
 * batteries included
-  * react bindings with support for React.createContext API
+  * react bindings
   * preact bindings
   * console logger
   * redux devtools integration
-  * immutable helper functions
   * requestAnimationFrame helper for efficient rerenders
 
 ## Installation
@@ -86,22 +85,15 @@ atom.observe(function render (atom) {
 Create an atom.
 
 * `initialState` - defaults to `{}`
-* `options` - options object
-  * `options.debug` - a debug function called on each `action` and `update` with info object of shape `{ type, atom, action, sourceActions, prevState }`
-  * `options.merge` - a function called each time `split(update)` is called. Default implementation is `(state, update) => Object.assign({}, state, update)`. You can use this hook to use a different data structure or apply deep merges.
-  * `evolve({ get, set, dispatch }, action, actions)` - receives actions and controls the evolution of the state
-    * `get()` - get current state – see `atom.get`
-    * `set(update)` - mutate atom
-    * `dispatch(type, payload)` – dispatch an action
+* `options.debug` - a debug function called on each `action` and `update` with info object of shape `{ type, atom, action, sourceActions, prevState }`
+* `options.merge` - a function called each time `set(update)` is called. Default implementation is `(state, update) => Object.assign({}, state, update)`. You can use this hook to use a different data structure or apply deep merges.
+* `evolve({ get, set, dispatch }, action, actions)` - receives actions and controls the evolution of the state
+  * `get()` - get current state – see `atom.get`
+  * `set(update)` - mutate atom
+  * `dispatch(type, payload)` – dispatch an action
 
 ```js
 createAtom({ count: 1 }, { increment, decrement })
-createAtom({ count: 1 }, (get, split, action) => {})
-
-const evolve = (get, split, action, actions) => {
-  actions[action.type](get, split, action.payload)
-}
-createAtom({ count: 1 }, evolve)
 ```
 
 ### `atom.get`
@@ -113,18 +105,13 @@ atom.get()
 atom.get().feed.items
 ```
 
-### `atom.split`
+### `atom.dispatch`
 
-Can be used in 2 ways:
-
-* `atom.split(type, payload)` - send an action to `evolve`.
-* `atom.split(update)` - update the state with the `update` object. Updates don't go via `evolve`, they get applied to the state using the `options.merge` function.
+Send an action
 
 ```js
-atom.split('fetchMovies')
-atom.split('increment', 5)
-atom.split({ count: 2 })
-atom.split({ entities: { movies: { 45: { name: 'Primer' } } }})
+atom.dispatch('fetchMovies')
+atom.dispatch('increment', 5)
 ```
 
 ### `atom.observe`
@@ -134,28 +121,6 @@ Register a callback for when atom changes. Returns the unobserve function.
 ```js
 atom.observe(render)
 atom.observe(atom => render(atom.get(), atom.split))
-```
-
-### `atom.fuse(state, actions)`
-
-Extend atom's state and the action object. Convenient for composing the atom slices of state and actions from several modules.
-
-```js
-const state = {
-  project: {
-    name: 'tiny-atom'
-  }
-}
-
-const actions = {
-  star: (get, split) => split({
-    project: {
-      starred: true
-    }
-  })
-}
-
-atom.fuse(state, actions)
 ```
 
 ---

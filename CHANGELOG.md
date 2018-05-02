@@ -1,3 +1,11 @@
+## 2.0.0
+
+Breaking changes
+
+* React context API
+* Removed atom.fuse
+* Removed tiny-atom/immutable
+
 ## 1.2.0
 
 * `tiny-atom/react/context`
