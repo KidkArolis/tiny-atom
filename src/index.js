@@ -18,8 +18,8 @@ module.exports = function createAtom (initialState = {}, actions = {}, options =
   const debug = options.debug
   const set = createSet()
   const dispatch = createDispatch()
-  const atom = { get, dispatch, observe, fuse }
-  const mutableAtom = { get, set, dispatch, observe, fuse }
+  const atom = { get, dispatch, observe }
+  const mutableAtom = { get, set, dispatch, observe }
   const evolve = options.evolve || defaultEvolve
   return atom
 
@@ -42,11 +42,6 @@ module.exports = function createAtom (initialState = {}, actions = {}, options =
         listeners.splice(listeners.indexOf(f), 1)
       }
     }
-  }
-
-  function fuse (moreState, moreActions) {
-    if (moreActions) Object.assign(actions, moreActions)
-    if (moreState) set(moreState)
   }
 
   function createDispatch (sourceActions) {
