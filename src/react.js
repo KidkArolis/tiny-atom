@@ -1,41 +1,49 @@
 const React = require('react')
+const raf = require('../raf')
 
-function Any () {
-  return null
-}
+module.exports = function createAtomContext (atom) {
+  const Context = React.createContext()
 
-class ProvideAtom extends React.Component {
-  getChildContext () {
-    return { atom: this.props.atom }
-  }
-  render () {
-    return React.Children.only(this.props.children)
-  }
-}
+  const Consumer = ({ map, children }) => (
+    React.createElement(Context.Consumer, {}, ({ state, split }) => (
+      children(map ? map(state, split) : { state, split })
+    ))
+  )
 
-ProvideAtom.childContextTypes = { atom: Any }
+  const connect = map => Component => props => (
+    React.createElement(Consumer, { map }, (mappedProps) => (
+      React.createElement(Component, Object.assign({}, props, mappedProps))
+    ))
+  )
 
-function ConnectAtom ({ map, render, children }, { atom }) {
-  render = render || children
-  const data = map ? map(atom.get(), atom.split) : { state: atom.get(), split: atom.split }
-  return render(data)
-}
+  class Provider extends React.Component {
+    componentDidMount () {
+      if (!this.props.atom) {
+        const update = raf(() => this.unobserve && this.forceUpdate())
+        this.unobserve = atom.observe(update)
+      }
+    }
 
-ConnectAtom.contextTypes = { atom: Any }
+    componentWillUnmount () {
+      this.unobserve && this.unobserve()
+      delete this.unobserve
+    }
 
-function connect (map) {
-  return function connectComponent (Component) {
-    return function Connected (props) {
-      return React.createElement(ConnectAtom, {
-        map: map,
-        render: function (mappedProps) {
-          return React.createElement(Component, Object.assign({}, props, mappedProps))
-        }
-      })
+    render () {
+      const currAtom = this.props.atom || atom
+      const value = Object.assign({
+        state: currAtom.get(),
+        split: currAtom.split
+      }, this.props.value)
+      return (
+        React.createElement(Context.Provider, { value }, this.props.children)
+      )
     }
   }
-}
 
-module.exports.ProvideAtom = ProvideAtom
-module.exports.ConnectAtom = ConnectAtom
-module.exports.connect = connect
+  return {
+    Provider,
+    Consumer,
+    connect
+  }
+}
