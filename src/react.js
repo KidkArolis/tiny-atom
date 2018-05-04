@@ -1,12 +1,12 @@
 const React = require('react')
-const raf = require('../raf')
+const raf = require('./raf')
 
 module.exports = function createAtomContext (atom) {
   const Context = React.createContext()
 
   const Consumer = ({ map, children }) => (
-    React.createElement(Context.Consumer, {}, ({ state, split }) => (
-      children(map ? map(state, split) : { state, split })
+    React.createElement(Context.Consumer, {}, ({ state, dispatch }) => (
+      children(map ? map(state, dispatch) : { state, dispatch })
     ))
   )
 
@@ -33,7 +33,7 @@ module.exports = function createAtomContext (atom) {
       const currAtom = this.props.atom || atom
       const value = Object.assign({
         state: currAtom.get(),
-        split: currAtom.split
+        dispatch: currAtom.dispatch
       }, this.props.value)
       return (
         React.createElement(Context.Provider, { value }, this.props.children)

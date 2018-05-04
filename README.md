@@ -88,7 +88,7 @@ Create an atom.
 * `options.debug` - a debug function called on each `action` and `update` with info object of shape `{ type, atom, action, sourceActions, prevState }`
 * `options.merge` - a function called each time `set(update)` is called. Default implementation is `(state, update) => Object.assign({}, state, update)`. You can use this hook to use a different data structure or apply deep merges.
 * `evolve({ get, set, dispatch }, action, actions)` - receives actions and controls the evolution of the state
-  * `get()` - get current state – see `atom.get`
+  * `get()` - get current state
   * `set(update)` - mutate atom
   * `dispatch(type, payload)` – dispatch an action
 
@@ -121,6 +121,24 @@ Register a callback for when atom changes. Returns the unobserve function.
 ```js
 atom.observe(render)
 atom.observe(atom => render(atom.get(), atom.split))
+```
+
+### `atom.fuse(state, actions)`
+
+Extend atom's state and the action object. Convenient for composing atom from slices of state and actions from several modules.
+
+```js
+const state = {
+  project: { name: 'tiny-atom' }
+}
+
+const actions = {
+  star: (get, split) => split({
+    project: { starred: true }
+  })
+}
+
+atom.fuse(state, actions)
 ```
 
 ---

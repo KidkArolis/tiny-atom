@@ -1,7 +1,7 @@
 const test = require('ava')
 const merge = require('../src/deep-merge')
 
-test.only('merges objects deeply', t => {
+test('merges objects deeply', t => {
   t.deepEqual(
     merge(),
     undefined

@@ -18,8 +18,8 @@ module.exports = function createAtom (initialState = {}, actions = {}, options =
   const debug = options.debug
   const set = createSet()
   const dispatch = createDispatch()
-  const atom = { get, dispatch, observe }
-  const mutableAtom = { get, set, dispatch, observe }
+  const atom = { get, dispatch, observe, fuse }
+  const mutableAtom = { get, set, dispatch, observe, fuse }
   const evolve = options.evolve || defaultEvolve
   return atom
 
@@ -28,7 +28,8 @@ module.exports = function createAtom (initialState = {}, actions = {}, options =
   }
 
   function defaultEvolve (atom, action, actions) {
-    actions[action.type](atom, action.payload)
+    if (!actions[action.type]) throw new Error(`Missing action: ${action.type}`)
+    return actions[action.type](atom, action.payload)
   }
 
   function get () {
@@ -44,6 +45,11 @@ module.exports = function createAtom (initialState = {}, actions = {}, options =
     }
   }
 
+  function fuse (moreState, moreActions) {
+    if (moreActions) Object.assign(actions, moreActions)
+    if (moreState) set(moreState)
+  }
+
   function createDispatch (sourceActions) {
     sourceActions = sourceActions || []
     return function dispatch (type, payload) {
@@ -55,9 +61,9 @@ module.exports = function createAtom (initialState = {}, actions = {}, options =
         const dispatch = createDispatch(history)
         const set = createSet(history)
         const actionAtom = Object.assign({}, mutableAtom, { dispatch, set })
-        evolve(actionAtom, action, actions)
+        return evolve(actionAtom, action, actions)
       } else {
-        evolve(mutableAtom, action, actions)
+        return evolve(mutableAtom, action, actions)
       }
     }
   }

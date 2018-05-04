@@ -1,12 +1,12 @@
 const test = require('ava')
 const React = require('react')
 const ReactDOM = require('react-dom')
-const createContext = require('../src/react/context')
+const createContext = require('../src/react')
 const testApp = require('./generic-app')
 
 const h = React.createElement
 
-test('usage with react\'s new context', t => {
+test('usage', t => {
   const app = testApp({ h, createContext })
 
   app.render((App, atom, root) => {
@@ -22,7 +22,7 @@ test('usage with react\'s new context', t => {
   ReactDOM.render(null, app.root)
 })
 
-test('usage with react\'s new context with atom as prop', t => {
+test('atom as prop', t => {
   const { Provider, Consumer, connect } = createContext()
   const app = testApp({ h, Consumer, connect })
 

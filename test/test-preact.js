@@ -5,7 +5,7 @@ const testApp = require('./generic-app')
 
 const h = Preact.h
 
-test('usage with preact', t => {
+test('usage', t => {
   const app = testApp({ h, ProvideAtom, ConnectAtom, connect })
 
   app.render((App, atom, root) => {
