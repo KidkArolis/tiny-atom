@@ -8,6 +8,10 @@
     "test": "standard && nyc ava",
     "release": "node ./tasks/release"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/QubitProducts/tiny-atom.git"
+  },
   "contributors": [
     "Karolis Narkevicius <karolis@qubit.com>",
     "Alan Clarke <alan@qubit.com>"
