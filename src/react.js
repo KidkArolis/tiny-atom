@@ -1,89 +1,93 @@
 const React = require('react')
 
-const { PureComponent } = React
+const { Component, PureComponent, createContext } = React
 
 class PureConnect extends PureComponent {
   render () {
-    const { children, actions, dispatch, ...mappedProps } = this.props
-    if (this.props.stable) {
-      console.log('RENDERING')
-    }
-    return children(actions
-      ? Object.assign({}, mappedProps, actions(dispatch, mappedProps))
-      : mappedProps
-    )
+    const {
+      connectedComponent: ConnectedComponent,
+      connectedActions,
+      connectedDispatch,
+      ...mappedProps
+    } = this.props
+    const mappedActions = mapActions(connectedActions, connectedDispatch, mappedProps)
+    return <ConnectedComponent {...mappedProps} {...mappedActions} />
   }
 }
 
 module.exports = function createAtomContext (atom) {
-  const Context = React.createContext()
+  const Context = createContext()
 
-  class Consumer extends React.Component {
-    constructor () {
-      super()
-      this.renderChildren = this.renderChildren.bind(this)
-    }
+  // connect is creates a HOC that will map props and bind actions
+  // the component it creates is pure by default, and so if mapped
+  // props or origina props hasn't changed, it doesn't rebind the
+  // actions and it doesn't rerender the component
+  const connect = (map, actions, options = {}) => Component => originalProps => (
+    <Consumer>
+      {({ state, dispatch }) => {
+        const mappedProps = map ? Object.assign({}, originalProps, map(state, originalProps)) : originalProps
+        if (options.pure !== false) {
+          return (
+            <PureConnect
+              {...mappedProps}
+              connectedActions={actions}
+              connectedDispatch={dispatch}
+              connectedComponent={Component}
+            />
+          )
+        } else {
+          const mappedActions = mapActions(actions, dispatch, mappedProps)
+          return <Component {...mappedProps} {...mappedActions} />
+        }
+      }}
+    </Consumer>
+  )
 
-    render () {
-      const { map, actions, originalProps, pure = true } = this.props
-      if (pure) {
-        return (
-          <Context.Consumer>
-            {({ state, dispatch }) => {
-              const mappedProps = Object.assign({}, originalProps, map ? map(state, originalProps) : { state, dispatch })
-              return (
-                <PureConnect {...mappedProps} actions={actions} dispatch={dispatch}>
-                  {this.renderChildren}
-                </PureConnect>
-              )
-            }}
-          </Context.Consumer>
-        )
-      }
-    }
-
-    renderChildren (mappedProps, dispatch) {
-      return this.props.children(mappedProps)
-    }
-  }
-
-  const connect = (map, actions, options = {}) => Component => {
-    const renderComponent = mappedProps => <Component {...mappedProps} />
-    return props => (
-      <Consumer map={map} actions={actions} pure={options.pure} originalProps={props}>
-        {renderComponent}
-      </Consumer>
+  // Consumer is a wrapper around Context.Consumer with extra
+  // props map and actions for transforming state and binding action fns
+  function Consumer ({ map, actions, children }) {
+    return (
+      <Context.Consumer>
+        {({ state, dispatch }) => {
+          const mappedProps = map ? map(state) : { state }
+          const mappedActions = mapActions(actions, dispatch, mappedProps)
+          return children(Object.assign({}, mappedProps, mappedActions))
+        }}
+      </Context.Consumer>
     )
   }
 
-  class Provider extends React.Component {
+  // Provider observes atom changes and updates the Context.Provider value
+  class Provider extends Component {
     componentDidMount () {
-      this.unobserve = atom.observe(() => {
-        this.setState({})
-      })
+      this.unobserve = atom.observe(() => this.setState({}))
     }
 
     componentWillUnmount () {
       this.unobserve && this.unobserve()
-      delete this.unobserve
     }
 
     render () {
-      const value = {
-        state: atom.get(),
-        dispatch: atom.dispatch
-      }
       return (
-        <Context.Provider value={value}>
+        <Context.Provider value={{ state: atom.get(), dispatch: atom.dispatch }}>
           {this.props.children}
         </Context.Provider>
       )
     }
   }
 
-  return {
-    Provider,
-    Consumer,
-    connect
+  return { Provider, Consumer, connect }
+}
+
+function mapActions (actions, dispatch, mappedProps) {
+  if (!actions) {
+    return { dispatch }
   }
+  if (typeof actions === 'function') {
+    return actions(dispatch, mappedProps)
+  }
+  return actions.reduce((acc, action) => {
+    acc[action] = payload => dispatch(action, payload)
+    return acc
+  }, {})
 }

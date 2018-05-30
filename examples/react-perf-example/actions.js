@@ -1,6 +1,9 @@
 module.exports = {
   increment: ({ get, set, dispatch }, payload) => {
     set({ count: get().count + payload })
+    if (Math.random() > 0.9) {
+      set({ stable: Math.random() })
+    }
   },
 
   decrement: ({ get, set, dispatch }, payload) => {
@@ -12,7 +15,7 @@ module.exports = {
   },
 
   asyncIncrementNested: ({ get, set, dispatch }, payload) => {
-    set('increment', payload)
+    dispatch('increment', payload)
     setTimeout(() => {
       set({
         count: get().count + payload,
@@ -26,5 +29,9 @@ module.exports = {
 
   track: ({ get, set }, payload) => {
     // track is a side effect, no store updates
+  },
+
+  rnd: ({ set }) => {
+    set({ rnd: Math.random() })
   }
 }
