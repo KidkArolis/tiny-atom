@@ -19,7 +19,7 @@ test('logs out formatted messages', async t => {
   log({ type: 'action', action: { type: 'foo', seq: 1 }, sourceActions: [] }, logger)
 
   t.deepEqual(buffer, [
-    '•• %c%cfoo (1) color: #888 color: #05823d payload ∅',
+    '★ action %c%cfoo (1) color: #888 color: #05823d {}',
     'type %caction color: blue',
     'action {"type":"foo","seq":1}',
     'source []'
@@ -29,7 +29,7 @@ test('logs out formatted messages', async t => {
   log({ type: 'update', action: { payload: { slice: 1 }, seq: 2 }, sourceActions: [], atom }, logger)
 
   t.deepEqual(buffer.slice(4), [
-    '•• %c——%c color: #888 color: #05823d update  {"slice":1}',
+    '  update %c——%c color: #888 color: #05823d {"slice":1}',
     'type %cupdate color: blue',
     'action {"payload":{"slice":1},"seq":2}',
     'source []',
