@@ -1,10 +1,32 @@
 ## 2.0.0
 
+A pretty major refactor of tiny-atom. The core concepts haven't changed, but the API and React/Preact bindings have been updated.
+
+The main change is that `split` has been .. split into `set` and `dispatch`. This makes for more intuitive and more readable API. The action signatures are now updated to:
+
+```
+createAtom({ count: 0 }, {
+  increment: ({ get, set, dispatch }, payload) => {}
+})
+```
+
+React and Preact bindings have been refactored to be more consistent, performant and convenient. Support for the old React context API that is planned for removal in React 17 has been dropped.
+
+```
+const createContext = require('tiny-atom/react')
+const { Provider, Consumer, connect } = createContext(atom)
+```
+
+The core API has changed to only allow a single signature `createAtom(initialState, actions, options)` where `evolve` can only be passed as an option now.
+
 Breaking changes
 
-* React context API
-* Removed atom.fuse
-* Removed tiny-atom/immutable
+* Use new React's context API in both React and Preact bindings
+* The new Provider rerenders relevant connected components
+* Connect applies an optimisation and only rerenders if mapped state changed
+* Move `evolve` to options
+* Remove `tiny-atom/immutable` - out of scope for tiny-atom
+* Remove `render` prop and only allow children prop
 
 ## 1.2.0
 
