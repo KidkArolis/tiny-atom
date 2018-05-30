@@ -3,7 +3,7 @@ const Preact = require('preact')
 const { ProvideAtom, ConnectAtom, connect } = require('../src/preact')
 const testApp = require('./generic-app')
 
-const h = Preact.h
+const h = global.h = Preact.h
 
 test('usage', t => {
   const app = testApp({ h, ProvideAtom, ConnectAtom, connect })

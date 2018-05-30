@@ -1,27 +1,66 @@
 const React = require('react')
-const raf = require('./raf')
+
+const { PureComponent } = React
+
+class PureConnect extends PureComponent {
+  render () {
+    const { children, actions, dispatch, ...mappedProps } = this.props
+    if (this.props.stable) {
+      console.log('RENDERING')
+    }
+    return children(actions
+      ? Object.assign({}, mappedProps, actions(dispatch, mappedProps))
+      : mappedProps
+    )
+  }
+}
 
 module.exports = function createAtomContext (atom) {
   const Context = React.createContext()
 
-  const Consumer = ({ map, children }) => (
-    React.createElement(Context.Consumer, {}, ({ state, dispatch }) => (
-      children(map ? map(state, dispatch) : { state, dispatch })
-    ))
-  )
+  class Consumer extends React.Component {
+    constructor () {
+      super()
+      this.renderChildren = this.renderChildren.bind(this)
+    }
 
-  const connect = map => Component => props => (
-    React.createElement(Consumer, { map }, (mappedProps) => (
-      React.createElement(Component, Object.assign({}, props, mappedProps))
-    ))
-  )
+    render () {
+      const { map, actions, originalProps, pure = true } = this.props
+      if (pure) {
+        return (
+          <Context.Consumer>
+            {({ state, dispatch }) => {
+              const mappedProps = Object.assign({}, originalProps, map ? map(state, originalProps) : { state, dispatch })
+              return (
+                <PureConnect {...mappedProps} actions={actions} dispatch={dispatch}>
+                  {this.renderChildren}
+                </PureConnect>
+              )
+            }}
+          </Context.Consumer>
+        )
+      }
+    }
+
+    renderChildren (mappedProps, dispatch) {
+      return this.props.children(mappedProps)
+    }
+  }
+
+  const connect = (map, actions, options = {}) => Component => {
+    const renderComponent = mappedProps => <Component {...mappedProps} />
+    return props => (
+      <Consumer map={map} actions={actions} pure={options.pure} originalProps={props}>
+        {renderComponent}
+      </Consumer>
+    )
+  }
 
   class Provider extends React.Component {
     componentDidMount () {
-      if (!this.props.atom) {
-        const update = raf(() => this.unobserve && this.forceUpdate())
-        this.unobserve = atom.observe(update)
-      }
+      this.unobserve = atom.observe(() => {
+        this.setState({})
+      })
     }
 
     componentWillUnmount () {
@@ -30,13 +69,14 @@ module.exports = function createAtomContext (atom) {
     }
 
     render () {
-      const currAtom = this.props.atom || atom
-      const value = Object.assign({
-        state: currAtom.get(),
-        dispatch: currAtom.dispatch
-      }, this.props.value)
+      const value = {
+        state: atom.get(),
+        dispatch: atom.dispatch
+      }
       return (
-        React.createElement(Context.Provider, { value }, this.props.children)
+        <Context.Provider value={value}>
+          {this.props.children}
+        </Context.Provider>
       )
     }
   }

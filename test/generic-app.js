@@ -23,8 +23,10 @@ module.exports = function app ({ h, Consumer, ConnectAtom, connect, createContex
 
   const App = () => (
     h(Consumer || ConnectAtom, {
-      map: (state, dispatch) => ({
-        count: state.count,
+      map: (state) => ({
+        count: state.count
+      }),
+      actions: (dispatch) => ({
         inc: x => dispatch('increment', x)
       }),
       [Consumer ? 'children' : 'render']: ({ count, inc }) => (

@@ -18,12 +18,11 @@ function ConnectAtom ({ map, render, children }, { atom }) {
 function connect (map) {
   return function connectComponent (Component) {
     return function Connected (props) {
-      return Preact.h(ConnectAtom, {
-        map: map,
-        render: function (mappedProps) {
-          return Preact.h(Component, Object.assign({}, props, mappedProps))
-        }
-      })
+      return (
+        <ConnectAtom map={map}>
+          { mappedProps => <Component {...props} {...mappedProps} /> }
+        </ConnectAtom>
+      )
     }
   }
 }

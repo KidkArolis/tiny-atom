@@ -20,14 +20,14 @@
   "devDependencies": {
     "ava": "^0.25.0",
     "buble": "^0.19.3",
-    "execa": "^0.9.0",
+    "execa": "^0.10.0",
     "jetpack": "^0.7.3",
     "jsdom": "^11.3.0",
-    "np": "^2.16.1",
+    "np": "^3.0.1",
     "nyc": "^11.3.0",
     "preact": "^8.2.6",
-    "react": "^16.3.0-alpha.2",
-    "react-dom": "^16.3.0-alpha.2",
+    "react": "^16.3.0",
+    "react-dom": "^16.3.0",
     "standard": "^11.0.0"
   },
   "standard": {
@@ -36,6 +36,7 @@
     ]
   },
   "ava": {
-    "files": "test/test-*.js"
+    "files": "test/test-*.js",
+    "require": "./test/setup.js"
   }
 }
