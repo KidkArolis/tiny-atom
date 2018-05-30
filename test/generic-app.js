@@ -29,13 +29,13 @@ module.exports = function app ({ h, Consumer, ConnectAtom, connect, createContex
       actions: (dispatch) => ({
         inc: x => dispatch('increment', x)
       }),
-      [Consumer ? 'children' : 'render']: ({ count, inc }) => (
+      children: ({ count, inc }) => (
         h('div', {}, [
           h('div', { id: 'count-outer', key: 'a' }, count),
           h('button', { id: 'increment-outer', key: 'b', onClick: () => inc() }),
-          h(Child, { multiplier: 10, key: 'c' }, []),
-          h(Child2, { multiplier: 50, key: 'd' }, []),
-          h(Child3, { multiplier: 100, key: 'e' }, [])
+          h(Child, { multiplier: 10, key: 'c' }),
+          h(Child2, { multiplier: 50, key: 'd' }),
+          h(Child3, { multiplier: 100, key: 'e' })
         ])
       )
     })
@@ -43,7 +43,7 @@ module.exports = function app ({ h, Consumer, ConnectAtom, connect, createContex
 
   const Child = ({ multiplier }) => (
     h(Consumer || ConnectAtom, {
-      [Consumer ? 'children' : 'render']: ({ state, dispatch }) => (
+      children: ({ state, dispatch }) => (
         h('div', {}, [
           h('div', { id: 'count-inner', key: 'a' }, multiplier * state.count),
           h('button', { id: 'increment-inner', key: 'b', onClick: () => dispatch('increment', 2) })
@@ -100,12 +100,6 @@ module.exports = function app ({ h, Consumer, ConnectAtom, connect, createContex
       t.is(document.getElementById('count-inner').innerHTML, '30')
       t.is(document.getElementById('count-inner-2').innerHTML, '150')
       t.is(document.getElementById('count-inner-3').innerHTML, '300')
-
-      // document.getElementById('increment-inner').dispatchEvent(click(dom))
-      // t.is(document.getElementById('count-outer').innerHTML, '5')
-      // t.is(document.getElementById('count-inner').innerHTML, '50')
-      // t.is(document.getElementById('count-inner-2').innerHTML, '250')
-      // t.is(document.getElementById('count-inner-3').innerHTML, '500')
     }
   }
 }

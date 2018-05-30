@@ -79,11 +79,9 @@ const Nested = ({ multiplier, children }) => (
 //   )
 // }
 
-let renders = 0
 let map = ({ stable }) => ({ stable })
 let mapStableActions = ['increment']
 const Stable = connect(map, mapStableActions)(({ stable, increment }) => {
-  renders++
   return (
     <div onClick={() => increment(10)}>
       Stable component: { stable }

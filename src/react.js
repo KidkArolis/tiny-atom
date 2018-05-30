@@ -25,7 +25,7 @@ module.exports = function createAtomContext (atom) {
   const connect = (map, actions, options = {}) => Component => originalProps => (
     <Consumer>
       {({ state, dispatch }) => {
-        const mappedProps = map ? Object.assign({}, originalProps, map(state, originalProps)) : originalProps
+        const mappedProps = Object.assign({}, originalProps, map ? map(state, originalProps) : { state })
         if (options.pure !== false) {
           return (
             <PureConnect

@@ -9,10 +9,10 @@ class ProvideAtom extends Preact.Component {
   }
 }
 
-function ConnectAtom ({ map, render, children }, { atom }) {
-  render = render || children[0]
-  const data = map ? map(atom.get(), atom.dispatch) : { state: atom.get(), dispatch: atom.dispatch }
-  return render(data)
+function ConnectAtom ({ map, actions, children }, { atom }) {
+  const mappedProps = map ? map(atom.get(), atom.dispatch) : { state: atom.get(), dispatch: atom.dispatch }
+  const mappedActions = mapActions(actions, atom.dispatch, mappedProps)
+  return children[0](Object.assign({}, mappedProps, mappedActions))
 }
 
 function connect (map) {
@@ -27,6 +27,17 @@ function connect (map) {
   }
 }
 
-module.exports.ProvideAtom = ProvideAtom
-module.exports.ConnectAtom = ConnectAtom
-module.exports.connect = connect
+function mapActions (actions, dispatch, mappedProps) {
+  if (!actions) {
+    return { dispatch }
+  }
+  if (typeof actions === 'function') {
+    return actions(dispatch, mappedProps)
+  }
+  return actions.reduce((acc, action) => {
+    acc[action] = payload => dispatch(action, payload)
+    return acc
+  }, {})
+}
+
+module.exports = { ProvideAtom, ConnectAtom, connect }
