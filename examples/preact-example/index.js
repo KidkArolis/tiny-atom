@@ -1,92 +1,86 @@
 const Preact = require('preact')
 const createAtom = require('tiny-atom')
-const { ProvideAtom, ConnectAtom } = require('tiny-atom/preact')
+const createContext = require('tiny-atom/preact')
 const devtools = require('tiny-atom/devtools')
 const log = require('tiny-atom/log')
 
-const atom = window.atom = createAtom({ count: 0 }, evolve, render, {
+const actions = {
+  increment: ({ get, set, dispatch }, payload) => {
+    set({ count: get().count + payload })
+  },
+
+  decrement: ({ get, set, dispatch }, payload) => {
+    set({ count: get().count - payload })
+  },
+
+  asyncIncrement: ({ get, set, dispatch }, payload) => {
+    dispatch('asyncIncrementNested', payload)
+  },
+
+  asyncIncrementNested: ({ get, set, dispatch }, payload) => {
+    dispatch('increment', payload)
+    setTimeout(() => {
+      set({
+        count: get().count + payload,
+        extra: (get().extra || 'a') + 'a'
+      })
+      setTimeout(() => {
+        dispatch('decrement', 1)
+      }, 1000)
+    }, 1000)
+  },
+
+  track: ({ get, set, dispatch }, payload) => {
+    // track is a side effect, no store updates
+  }
+}
+
+const atom = window.atom = createAtom({ count: 0 }, actions, {
   debug: (info) => {
     log(info)
     devtools(info)
   }
 })
 
-const actions = {
-  increment: (get, split, payload) => {
-    split({ count: get().count + payload })
-  },
-
-  decrement: (get, split, payload) => {
-    split({ count: get().count - payload })
-  },
-
-  asyncIncrement: (get, split, payload) => {
-    split('asyncIncrementNested', payload)
-  },
-
-  asyncIncrementNested: (get, split, payload) => {
-    split('increment', payload)
-    setTimeout(() => {
-      split({
-        count: get().count + payload,
-        extra: (get().extra || 'a') + 'a'
-      })
-      setTimeout(() => {
-        split('decrement', 1)
-      }, 1000)
-    }, 1000)
-  },
-
-  track: (get, split, payload) => {
-    // track is a side effect, no store updates
-  }
-}
-
-function evolve (get, split, action) {
-  actions[action.type](get, split, action.payload)
-}
-
-const mapAtom = (state, split) => ({
+const mapAtom = (state) => ({
   doubleCount: state.count * 2,
-  count: state.count,
-  split: split,
-  inc: () => split('increment', 1),
-  dec: () => split('decrement', 1),
-  asyncIncrement: x => () => split('asyncIncrement', x)
+  count: state.count
 })
 
+const bindActions = [
+  'increment',
+  'decrement',
+  'asyncIncrement'
+]
+
+const { Provider, Consumer, connect } = createContext(atom)
+
 const App = () => (
-  <ConnectAtom map={mapAtom} render={({ count, doubleCount, split, asyncIncrement, inc, dec }) => (
-    <div>
-      <h1>count: {count}</h1>
-      <h1>double: {doubleCount}</h1>
-      <Nested multiplier={5}>
-        <Nested multiplier={10} />
-      </Nested>
-      <button onClick={inc}>Increment</button>
-      <button onClick={dec}>Decrement</button>
-      <button onClick={asyncIncrement(2)}>Async increment</button>
-      <button onClick={() => split('track')}>Track</button>
-      <button onClick={() => split({ rnd: Math.random() })}>Random</button>
-    </div>
-  )} />
+  <Consumer map={mapAtom} actions={bindActions}>
+    {({ count, doubleCount, asyncIncrement, increment, decrement }) => (
+      <div>
+        <h1>count: {count}</h1>
+        <h1>double: {doubleCount}</h1>
+        <Nested multiplier={5}>
+          <Nested multiplier={10} />
+        </Nested>
+        <button onClick={() => increment(1)}>Increment</button>
+        <button onClick={() => decrement(1)}>Decrement</button>
+        <button onClick={() => asyncIncrement(2)}>Async increment</button>
+      </div>
+    )}
+  </Consumer>
 )
 
-const Nested = ({ multiplier, children }) => (
-  <ConnectAtom map={state => ({ count: state.count })} render={({ count }) => (
-    <div>
-      Nested component: { count * multiplier }
-      {children[0]}
-    </div>
-  )} />
-)
+const Nested = connect()(({ multiplier, state, children }) => (
+  <div>
+    Nested component: { state.count * multiplier }
+    {children[0]}
+  </div>
+))
 
-function render (atom) {
-  Preact.render((
-    <ProvideAtom atom={atom}>
-      <App />
-    </ProvideAtom>
-  ), document.body, document.body.lastElementChild)
-}
-
-render(atom)
+Preact.render((
+  <Provider>
+    <App />
+  </Provider>
+), document.body, document.body.lastElementChild)

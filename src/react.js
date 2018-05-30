@@ -24,7 +24,7 @@ module.exports = function createAtomContext (atom) {
         }
       }
 
-      return function ConnectedComponent (originalProps) {
+      return function Connected (originalProps) {
         return (
           <Context.Consumer>
             {({ state }) => {

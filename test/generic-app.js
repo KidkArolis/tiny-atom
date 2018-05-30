@@ -1,105 +1,106 @@
 const { JSDOM } = require('jsdom')
 const createAtom = require('../src')
 
-module.exports = function app ({ h, Consumer, ConnectAtom, connect, createContext }) {
+module.exports = function app ({ h, createContext }) {
   const dom = new JSDOM('<!doctype html><div id="root"></div>')
   global.window = dom.window
   global.document = dom.window.document
   const root = document.getElementById('root')
 
-  const atom = createAtom({ count: 0 }, { increment })
+  const atom = createAtom({ count: 0, unrelated: 1 }, {
+    increment: ({ get, set }, payload = 1) => {
+      set({ count: get().count + payload })
+    },
+    incrementUnrelated: ({ get, set }) => {
+      set({ unrelated: get().unrelated + 1 })
+    }
+  })
 
-  function increment ({ get, set }, payload = 1) {
-    set({ count: get().count + payload })
+  const { Provider, Consumer, connect } = createContext(atom)
+
+  const App = () => {
+    const map = (state) => ({
+      count: state.count
+    })
+
+    const actions = (dispatch) => ({
+      inc: x => dispatch('increment', x)
+    })
+
+    return (
+      <Provider>
+        <Consumer map={map} actions={actions}>
+          {({ count, inc }) => (
+            <div>
+              <div id='count-outer'>{count}</div>
+              <button id='increment-outer' onClick={() => inc()} />
+              <ChildWithRenderProp multiplier={10} />
+              <ChildWithConnect id='connected' multiplier={50} />
+            </div>
+          )}
+        </Consumer>
+      </Provider>
+    )
   }
 
-  let Provider
-  if (createContext) {
-    const ctx = createContext(atom)
-    Consumer = ctx.Consumer
-    Provider = ctx.Provider
-    connect = ctx.connect
-  }
-
-  const App = () => (
-    h(Consumer || ConnectAtom, {
-      map: (state) => ({
-        count: state.count
-      }),
-      actions: (dispatch) => ({
-        inc: x => dispatch('increment', x)
-      }),
-      children: ({ count, inc }) => (
-        h('div', {}, [
-          h('div', { id: 'count-outer', key: 'a' }, count),
-          h('button', { id: 'increment-outer', key: 'b', onClick: () => inc() }),
-          h(Child, { multiplier: 10, key: 'c' }),
-          h(Child2, { multiplier: 50, key: 'd' }),
-          h(Child3, { multiplier: 100, key: 'e' })
-        ])
-      )
-    })
+  const ChildWithRenderProp = ({ multiplier }) => (
+    <Consumer>
+      {({ state, dispatch }) => (
+        <div>
+          <div id='count-inner'>{multiplier * state.count}</div>
+          <button id='increment-inner' onClick={() => dispatch('increment', 2)} />
+        </div>
+      )}
+    </Consumer>
   )
 
-  const Child = ({ multiplier }) => (
-    h(Consumer || ConnectAtom, {
-      children: ({ state, dispatch }) => (
-        h('div', {}, [
-          h('div', { id: 'count-inner', key: 'a' }, multiplier * state.count),
-          h('button', { id: 'increment-inner', key: 'b', onClick: () => dispatch('increment', 2) })
-        ])
-      )
-    })
-  )
+  let childWithConnectRenderCount = 0
 
-  const Child2 = ({ multiplier }) => (
-    h(Consumer || ConnectAtom, {}, ({ state, dispatch }) => (
-      h('div', {}, [
-        h('div', { id: 'count-inner-2', key: 'a' }, multiplier * state.count),
-        h('button', { id: 'increment-inner-2', key: 'b', onClick: () => dispatch('increment', 2) })
-      ])
-    ))
-  )
-
-  const Child3 = connect()(({ multiplier, state, dispatch }) => (
-    h('div', {}, [
-      h('div', { id: 'count-inner-3', key: 'a' }, multiplier * state.count),
-      h('button', { id: 'increment-inner-3', key: 'b', onClick: () => dispatch('increment', 2) })
-    ])
-  ))
+  const ChildWithConnect = connect(({ count }) => ({ count }))(({ multiplier, count, dispatch }) => {
+    childWithConnectRenderCount++
+    return (
+      <div>
+        <div id='count-inner-2'>{multiplier * count}</div>
+        <button id='increment-inner-2' onClick={() => dispatch('increment', 2)} />
+      </div>
+    )
+  })
 
   return {
     root,
-    Provider,
+    render: (fn) => fn(App),
 
-    render: function render (fn) {
-      atom.observe(() => fn(App, atom, root))
-      fn(App, atom, root)
-    },
+    assert: async function (t) {
+      t.is(childWithConnectRenderCount, 1)
 
-    assert: function (t) {
       t.is(document.getElementById('count-outer').innerHTML, '0')
       t.is(document.getElementById('count-inner').innerHTML, '0')
       t.is(document.getElementById('count-inner-2').innerHTML, '0')
-      t.is(document.getElementById('count-inner-3').innerHTML, '0')
 
       atom.dispatch('increment')
+      await Promise.resolve()
       t.is(document.getElementById('count-outer').innerHTML, '1')
       t.is(document.getElementById('count-inner').innerHTML, '10')
       t.is(document.getElementById('count-inner-2').innerHTML, '50')
-      t.is(document.getElementById('count-inner-3').innerHTML, '100')
+      t.is(childWithConnectRenderCount, 2)
 
       atom.dispatch('increment')
+      await Promise.resolve()
       t.is(document.getElementById('count-outer').innerHTML, '2')
       t.is(document.getElementById('count-inner').innerHTML, '20')
       t.is(document.getElementById('count-inner-2').innerHTML, '100')
-      t.is(document.getElementById('count-inner-3').innerHTML, '200')
+      t.is(childWithConnectRenderCount, 3)
 
       document.getElementById('increment-outer').dispatchEvent(click(dom))
+      await Promise.resolve()
       t.is(document.getElementById('count-outer').innerHTML, '3')
       t.is(document.getElementById('count-inner').innerHTML, '30')
       t.is(document.getElementById('count-inner-2').innerHTML, '150')
-      t.is(document.getElementById('count-inner-3').innerHTML, '300')
+      t.is(childWithConnectRenderCount, 4)
+
+      atom.dispatch('incrementUnrelated')
+      await Promise.resolve()
+      t.is(childWithConnectRenderCount, 4)
     }
   }
 }
