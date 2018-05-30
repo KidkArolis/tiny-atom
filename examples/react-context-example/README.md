@@ -1,6 +1,8 @@
-# preact-example
+# react-context-example
 
-A small example of using `tiny-atom` with `preact`.
+A small example of using `tiny-atom` with `react` and `tinyatom/react/context`.
+
+For more infos on the Context API, see https://reactjs.org/docs/context.html
 
 ## Running
 
