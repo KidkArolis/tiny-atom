@@ -1,1 +1,1 @@
-require('../tasks/register')
+require('./register')
