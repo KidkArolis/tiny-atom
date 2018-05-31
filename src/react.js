@@ -1,54 +1,21 @@
 const React = require('react')
 const raf = require('./raf')
 
-module.exports = function createAtomContext (atom) {
+module.exports = function createContext (atom) {
   const { get, dispatch } = atom
 
-  // connect is creates a HOC that will map props and bind actions
-  // the component it creates is pure by default, and so if mapped
-  // props or origina props hasn't changed, it doesn't rebind the
-  // actions and it doesn't rerender the component
-  function connect (map, actions, options = {}) {
-    if (typeof options.pure === 'undefined') {
-      options.pure = true
-    }
-
-    return function connectComponent (Component) {
-      class Pure extends React.PureComponent {
-        render () {
-          const mappedProps = this.props
-          const boundActions = bindActions(actions, mappedProps)
-          return <Component {...mappedProps} {...boundActions} />
-        }
-      }
-
-      return function Connected (originalProps) {
-        return (
-          <Consumer sync={options.sync}>
-            {({ state }) => {
-              const mappedProps = Object.assign({}, originalProps, map ? map(state, originalProps) : { state })
-              return options.pure
-                ? <Pure {...mappedProps} />
-                : <Component {...mappedProps} {...bindActions(actions, mappedProps)} />
-            }}
-          </Consumer>
-        )
-      }
-    }
-  }
-
-  // Consumer is a wrapper around Context.Consumer with extra
-  // props map and actions for transforming state and binding action fns
   class Consumer extends React.Component {
-    constructor ({ sync }) {
+    constructor (props) {
       super()
-      this.dirty = false
-      this.scheduleUpdate = sync
+      this.state = {}
+      this.pure = typeof props.pure === 'undefined' ? true : props.pure
+      this.scheduleUpdate = props.sync
         ? () => this.update()
         : raf(() => this.update(), { initial: false })
     }
 
     componentDidMount () {
+      this.dirty = false
       this.unobserve = atom.observe(() => {
         this.dirty = true
         this.cancelUpdate = this.scheduleUpdate()
@@ -60,32 +27,72 @@ module.exports = function createAtomContext (atom) {
       this.cancelUpdate && this.cancelUpdate()
     }
 
+    shouldComponentUpdate (nextProps, nextState) {
+      if (!this.pure) return true
+      // if it's <Consumer> with dynamic children, shortcut the check
+      if (this.props.children !== nextProps.children) return true
+      // our state is mappedProps, this is the main optimisation
+      if (differ(this.state, nextState)) return true
+      // in connect() case don't need to diff further, we're in control
+      if (this.props.originalProps) return false
+      // in <Consumer /> case we also diff props
+      return differ(this.props, nextProps)
+    }
+
     componentDidUpdate () {
       this.dirty = false
     }
 
     update () {
-      if (this.dirty) {
-        this.setState({})
-      }
+      if (this.dirty) this.setState({})
     }
 
     render () {
-      const { map, actions, children } = this.props
-      const state = get()
-      const mappedProps = map ? map(state) : { state }
-      const boundActions = bindActions(actions, mappedProps)
-      return children(Object.assign({}, mappedProps, boundActions))
+      const { actions, originalProps, render, children } = this.props
+      const mappedProps = this.state
+      const boundActions = bindActions(actions, dispatch, mappedProps)
+      return (render || children)(Object.assign({}, originalProps, mappedProps, boundActions))
     }
   }
 
-  function bindActions (actions, mappedProps) {
+  Consumer.getDerivedStateFromProps = (props, state) => {
+    const { originalProps, map } = props
+    return Object.assign({}, originalProps, map ? map(get(), originalProps) : {})
+  }
+
+  function connect (map, actions, options = {}) {
+    return function connectComponent (Component) {
+      const render = mappedProps => <Component {...mappedProps} />
+      return (props) => (
+        <Consumer
+          map={map}
+          actions={actions}
+          pure={options.pure}
+          sync={options.sync}
+          originalProps={props}
+          render={render}
+        />
+      )
+    }
+  }
+
+  function bindActions (actions, dispatch, mappedProps) {
     if (!actions) return { dispatch }
     if (typeof actions === 'function') return actions(dispatch, mappedProps)
     return actions.reduce((acc, action) => {
       acc[action] = payload => dispatch(action, payload)
       return acc
     }, {})
+  }
+
+  function differ (mappedProps, nextMappedProps) {
+    for (let i in mappedProps) {
+      if (mappedProps[i] !== nextMappedProps[i]) return true
+    }
+    for (let i in mappedProps) {
+      if (!(i in nextMappedProps)) return true
+    }
+    return false
   }
 
   return { Consumer, connect }

@@ -1,6 +1,9 @@
 const Preact = require('preact')
 const raf = require('./raf')
 
+// For now, React and Preact bindings are different implementation
+// just because Preact doesn't have getDerivedStateFromProps yet
+// once that's shipped, we can reuse the React implementation in both
 module.exports = function createContext (atom) {
   const { get, dispatch } = atom
 
@@ -61,7 +64,7 @@ module.exports = function createContext (atom) {
 
     render ({ actions, originalProps, render, children }) {
       const mappedProps = this.state
-      const boundActions = bindActions(actions, mappedProps)
+      const boundActions = bindActions(actions, dispatch, mappedProps)
       return (render || children[0])(Object.assign({}, originalProps, mappedProps, boundActions))
     }
   }
@@ -82,7 +85,7 @@ module.exports = function createContext (atom) {
     }
   }
 
-  function bindActions (actions, mappedProps) {
+  function bindActions (actions, dispatch, mappedProps) {
     if (!actions) return { dispatch }
     if (typeof actions === 'function') return actions(dispatch, mappedProps)
     return actions.reduce((acc, action) => {
