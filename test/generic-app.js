@@ -16,7 +16,7 @@ module.exports = function app ({ h, createContext }) {
     }
   })
 
-  const { Provider, Consumer, connect } = createContext(atom)
+  const { Consumer, connect } = createContext(atom)
 
   const App = () => {
     const map = (state) => ({
@@ -28,18 +28,16 @@ module.exports = function app ({ h, createContext }) {
     })
 
     return (
-      <Provider>
-        <Consumer map={map} actions={actions}>
-          {({ count, inc }) => (
-            <div>
-              <div id='count-outer'>{count}</div>
-              <button id='increment-outer' onClick={() => inc()} />
-              <ChildWithRenderProp multiplier={10} />
-              <ChildWithConnect id='connected' multiplier={50} />
-            </div>
-          )}
-        </Consumer>
-      </Provider>
+      <Consumer map={map} actions={actions}>
+        {({ count, inc }) => (
+          <div>
+            <div id='count-outer'>{count}</div>
+            <button id='increment-outer' onClick={() => inc()} />
+            <ChildWithRenderProp multiplier={10} />
+            <ChildWithConnect id='connected' multiplier={50} />
+          </div>
+        )}
+      </Consumer>
     )
   }
 
@@ -78,28 +76,28 @@ module.exports = function app ({ h, createContext }) {
       t.is(document.getElementById('count-inner-2').innerHTML, '0')
 
       atom.dispatch('increment')
-      await Promise.resolve()
+      await frame()
       t.is(document.getElementById('count-outer').innerHTML, '1')
       t.is(document.getElementById('count-inner').innerHTML, '10')
       t.is(document.getElementById('count-inner-2').innerHTML, '50')
       t.is(childWithConnectRenderCount, 2)
 
       atom.dispatch('increment')
-      await Promise.resolve()
+      await frame()
       t.is(document.getElementById('count-outer').innerHTML, '2')
       t.is(document.getElementById('count-inner').innerHTML, '20')
       t.is(document.getElementById('count-inner-2').innerHTML, '100')
       t.is(childWithConnectRenderCount, 3)
 
       document.getElementById('increment-outer').dispatchEvent(click(dom))
-      await Promise.resolve()
+      await frame()
       t.is(document.getElementById('count-outer').innerHTML, '3')
       t.is(document.getElementById('count-inner').innerHTML, '30')
       t.is(document.getElementById('count-inner-2').innerHTML, '150')
       t.is(childWithConnectRenderCount, 4)
 
       atom.dispatch('incrementUnrelated')
-      await Promise.resolve()
+      await frame()
       t.is(childWithConnectRenderCount, 4)
     }
   }
@@ -111,4 +109,8 @@ function click (dom) {
     'bubbles': true,
     'cancelable': true
   })
+}
+
+function frame () {
+  return new Promise(resolve => setTimeout(resolve, 1.5 * (1000 / 30)))
 }

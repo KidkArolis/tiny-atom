@@ -33,11 +33,16 @@ module.exports = function raf (fn, options = {}) {
 
   let scheduled = false
   let requested = false
+  let cancelled = false
+
+  function cancel () {
+    cancelled = true
+  }
 
   return function rafed (...args) {
     if (scheduled) {
       requested = true
-      return
+      return cancel
     }
 
     if (options.initial) {
@@ -51,8 +56,12 @@ module.exports = function raf (fn, options = {}) {
       scheduled = false
       if (requested) {
         requested = false
-        fn(...args)
+        if (!cancelled) {
+          fn(...args)
+        }
       }
     })
+
+    return cancel
   }
 }

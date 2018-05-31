@@ -34,12 +34,13 @@ module.exports = function createContext (atom) {
       componentDidMount () {
         this.unobserve = atom.observe(() => {
           this.dirty = true
-          this.scheduleUpdate()
+          this.cancelUpdate = this.scheduleUpdate()
         })
       }
 
       componentWillUnmount () {
         this.unobserve && this.unobserve()
+        this.cancelUpdate && this.cancelUpdate()
       }
 
       render () {}
