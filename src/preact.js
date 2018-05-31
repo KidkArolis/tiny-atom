@@ -1,30 +1,56 @@
 const Preact = require('preact')
+const raf = require('./raf')
 
 module.exports = function createContext (atom) {
   const { get, dispatch } = atom
 
-  // this doesn't do much, it doesn't pass atom via context
-  // it's just there to simulate the new React context API
-  const Provider = props => props.children[0]
+  function createConnectedComponent () {
+    return class ConnectedComponent extends Preact.Component {
+      constructor (props) {
+        super()
+        this.setup(props)
+        this.dirty = false
+        this.state = this.map(get(), props)
+        this.scheduleUpdate = this.options.sync
+          ? () => this.update()
+          : raf(() => this.update(), { initial: false })
+      }
 
-  class Consumer extends Preact.Component {
-    constructor ({ map }) {
-      super()
-      this.state = map ? map(get()) : { state: get() }
+      componentDidUpdate () {
+        this.dirty = false
+      }
+
+      map (state, props) {
+        return this.options.map ? this.options.map(state, props) : { state }
+      }
+
+      update () {
+        if (this.dirty) {
+          const nextMappedProps = this.map(get(), this.props)
+          this.setState(nextMappedProps)
+        }
+      }
+
+      componentDidMount () {
+        this.unobserve = atom.observe(() => {
+          this.dirty = true
+          this.scheduleUpdate()
+        })
+      }
+
+      componentWillUnmount () {
+        this.unobserve && this.unobserve()
+      }
+
+      render () {}
     }
+  }
 
-    componentDidMount () {
-      this.dispose = atom.observe(() => this.update())
-    }
+  const BaseConnectedComponent = createConnectedComponent('consumer')
 
-    componentWillUnmount () {
-      this.dispose && this.dispose()
-    }
-
-    update () {
-      const { map } = this.props
-      const nextMappedProps = map ? map(get()) : { state: get() }
-      this.setState(nextMappedProps)
+  class Consumer extends BaseConnectedComponent {
+    setup (props) {
+      this.options = { map: props.map, sync: props.sync }
     }
 
     render ({ actions, children }) {
@@ -39,36 +65,22 @@ module.exports = function createContext (atom) {
       options.pure = true
     }
 
+    const BaseConnectedComponent = createConnectedComponent('connect', map, options)
+
     return function connectComponent (Component) {
-      return class Connected extends Preact.Component {
-        constructor () {
-          super()
-          this.state = map ? map(get(), this.props) : { state: get() }
+      return class ConnectedComponent extends BaseConnectedComponent {
+        setup () {
+          this.options = Object.assign({}, options, { map })
         }
 
         shouldComponentUpdate (nextProps, nextState) {
-          if (!options.pure) {
-            return true
-          }
+          if (!this.options.pure) return true
           return differ(this.state, nextState)
         }
 
         componentWillReceiveProps (nextProps) {
-          const nextMappedProps = map ? map(get(), nextProps) : { state: get() }
+          const nextMappedProps = this.map(get(), nextProps)
           this.setState(nextMappedProps)
-        }
-
-        update () {
-          const nextMappedProps = map ? map(get(), this.props) : { state: get() }
-          this.setState(nextMappedProps)
-        }
-
-        componentDidMount () {
-          this.dispose = atom.observe(() => this.update())
-        }
-
-        componentWillUnmount () {
-          this.dispose && this.dispose()
         }
 
         render (props) {
@@ -81,12 +93,8 @@ module.exports = function createContext (atom) {
   }
 
   function bindActions (actions, mappedProps) {
-    if (!actions) {
-      return { dispatch }
-    }
-    if (typeof actions === 'function') {
-      return actions(dispatch, mappedProps)
-    }
+    if (!actions) return { dispatch }
+    if (typeof actions === 'function') return actions(dispatch, mappedProps)
     return actions.reduce((acc, action) => {
       acc[action] = payload => dispatch(action, payload)
       return acc
@@ -95,17 +103,12 @@ module.exports = function createContext (atom) {
 
   function differ (mappedProps, nextMappedProps) {
     for (let i in mappedProps) {
-      if (mappedProps[i] !== nextMappedProps[i]) {
-        return true
-      }
+      if (mappedProps[i] !== nextMappedProps[i]) return true
     }
     for (let i in mappedProps) {
-      if (!(i in nextMappedProps)) {
-        return true
-      }
+      if (!(i in nextMappedProps)) return true
     }
-    return false
   }
 
-  return { Provider, Consumer, connect }
+  return { Consumer, connect }
 }

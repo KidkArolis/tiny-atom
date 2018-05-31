@@ -53,7 +53,7 @@ const bindActions = [
   'asyncIncrement'
 ]
 
-const { Provider, Consumer, connect } = createContext(atom)
+const { Consumer, connect } = createContext(atom)
 
 const App = () => (
   <Consumer map={mapAtom} actions={bindActions}>
@@ -80,7 +80,5 @@ const Nested = connect()(({ multiplier, state, children }) => (
 ))
 
 Preact.render((
-  <Provider>
-    <App />
-  </Provider>
+  <App />
 ), document.body, document.body.lastElementChild)

@@ -6,10 +6,7 @@ const devtools = require('tiny-atom/devtools')
 const log = require('tiny-atom/log')
 
 const atom = window.atom = createAtom({ count: 0 }, evolve, render, {
-  debug: (info) => {
-    log(info)
-    devtools(info)
-  }
+  debug: [log, devtools]
 })
 
 const actions = {

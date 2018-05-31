@@ -37,7 +37,7 @@ module.exports = function createAtom (initialState = {}, actions = {}, options =
   }
 
   function observe (f) {
-    listeners.push(f)
+    listeners.unshift(f)
     return function unobserve () {
       if (listeners.indexOf(f) >= 0) {
         listeners.splice(listeners.indexOf(f), 1)
@@ -82,6 +82,6 @@ module.exports = function createAtom (initialState = {}, actions = {}, options =
   function report (type, action, sourceActions, prevState) {
     const info = { type: type, action: action, sourceActions: sourceActions, atom: atom }
     if (prevState) info.prevState = prevState
-    debug(info)
+    typeof debug === 'function' ? debug(info) : debug.forEach(debug => debug(info))
   }
 }

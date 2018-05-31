@@ -27,11 +27,9 @@
 * tiny size - 0.6KB
 * single store modified via actions
 * batteries included
-  * react bindings
-  * preact bindings
+  * react and preact bindings
   * console logger
   * redux devtools integration
-  * requestAnimationFrame helper for efficient rerenders
 
 ## Installation
 
@@ -52,12 +50,10 @@ Read the [full docs](https://qubitproducts.github.io/tiny-atom) or pick one of t
 ```js
 const createAtom = require('tiny-atom')
 
-const initialState = {
+const atom = createAtom({
   clicks: 0,
   items: []
-}
-
-const actions = {
+}, {
   countClicks: ({ get, set }, n) => {
     set({ clicks: get().clicks + n })
   },
@@ -68,9 +64,7 @@ const actions = {
     set({ items, loading: false })
     dispatch('countClicks', 1)
   }
-}
-
-const atom = createAtom(initialState, actions)
+})
 
 atom.observe(function render (atom) {
   const { items, clicks } = atom.get()
@@ -143,4 +137,4 @@ atom.fuse(state, actions)
 
 ---
 
-For documentation on the set of (p)react components `<ProvideAtom />`, `<ConnectAtom />` and `connect` see the [react](https://qubitproducts.github.io/tiny-atom/using-with-react) or [preact](https://qubitproducts.github.io/tiny-atom/using-with-preact) docs.
+For documentation on the set of react and preact components `<Consumer />` and `connect` see [react](https://qubitproducts.github.io/tiny-atom/using-with-react) or [preact](https://qubitproducts.github.io/tiny-atom/using-with-preact) docs.

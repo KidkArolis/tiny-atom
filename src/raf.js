@@ -24,8 +24,12 @@ function getRequestAnimationFrame () {
     polyfill
 }
 
-module.exports = function raf (fn) {
+module.exports = function raf (fn, options = {}) {
   const requestAnimationFrame = getRequestAnimationFrame()
+
+  if (typeof options.initial === 'undefined') {
+    options.initial = true
+  }
 
   let scheduled = false
   let requested = false
@@ -36,7 +40,11 @@ module.exports = function raf (fn) {
       return
     }
 
-    fn(...args)
+    if (options.initial) {
+      fn(...args)
+    } else {
+      requested = true
+    }
 
     scheduled = true
     requestAnimationFrame(() => {

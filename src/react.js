@@ -1,10 +1,8 @@
 const React = require('react')
-
-const { Component, PureComponent, createContext } = React
+const raf = require('./raf')
 
 module.exports = function createAtomContext (atom) {
   const { get, dispatch } = atom
-  const Context = createContext()
 
   // connect is creates a HOC that will map props and bind actions
   // the component it creates is pure by default, and so if mapped
@@ -16,7 +14,7 @@ module.exports = function createAtomContext (atom) {
     }
 
     return function connectComponent (Component) {
-      class PureConnectedComponent extends PureComponent {
+      class Pure extends React.PureComponent {
         render () {
           const mappedProps = this.props
           const boundActions = bindActions(actions, mappedProps)
@@ -26,14 +24,14 @@ module.exports = function createAtomContext (atom) {
 
       return function Connected (originalProps) {
         return (
-          <Context.Consumer>
+          <Consumer sync={options.sync}>
             {({ state }) => {
               const mappedProps = Object.assign({}, originalProps, map ? map(state, originalProps) : { state })
               return options.pure
-                ? <PureConnectedComponent {...mappedProps} />
+                ? <Pure {...mappedProps} />
                 : <Component {...mappedProps} {...bindActions(actions, mappedProps)} />
             }}
-          </Context.Consumer>
+          </Consumer>
         )
       }
     }
@@ -41,49 +39,53 @@ module.exports = function createAtomContext (atom) {
 
   // Consumer is a wrapper around Context.Consumer with extra
   // props map and actions for transforming state and binding action fns
-  function Consumer ({ map, actions, children }) {
-    return (
-      <Context.Consumer>
-        {({ state }) => {
-          const mappedProps = map ? map(state) : { state }
-          const boundActions = bindActions(actions, mappedProps)
-          return children(Object.assign({}, mappedProps, boundActions))
-        }}
-      </Context.Consumer>
-    )
-  }
+  class Consumer extends React.Component {
+    constructor ({ sync }) {
+      super()
+      this.dirty = false
+      this.scheduleUpdate = sync
+        ? () => this.update()
+        : raf(() => this.update(), { initial: false })
+    }
 
-  // Provider observes atom changes and updates the Context.Provider value
-  class Provider extends Component {
     componentDidMount () {
-      this.unobserve = atom.observe(() => this.setState({}))
+      this.unobserve = atom.observe(() => {
+        this.dirty = true
+        this.scheduleUpdate()
+      })
     }
 
     componentWillUnmount () {
       this.unobserve && this.unobserve()
     }
 
+    componentDidUpdate () {
+      this.dirty = false
+    }
+
+    update () {
+      if (this.dirty) {
+        this.setState({})
+      }
+    }
+
     render () {
-      return (
-        <Context.Provider value={{ state: get(), dispatch }}>
-          {this.props.children}
-        </Context.Provider>
-      )
+      const { map, actions, children } = this.props
+      const state = get()
+      const mappedProps = map ? map(state) : { state }
+      const boundActions = bindActions(actions, mappedProps)
+      return children(Object.assign({}, mappedProps, boundActions))
     }
   }
 
   function bindActions (actions, mappedProps) {
-    if (!actions) {
-      return { dispatch }
-    }
-    if (typeof actions === 'function') {
-      return actions(dispatch, mappedProps)
-    }
+    if (!actions) return { dispatch }
+    if (typeof actions === 'function') return actions(dispatch, mappedProps)
     return actions.reduce((acc, action) => {
       acc[action] = payload => dispatch(action, payload)
       return acc
     }, {})
   }
 
-  return { Provider, Consumer, connect }
+  return { Consumer, connect }
 }

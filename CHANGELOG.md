@@ -13,20 +13,25 @@ createAtom({ count: 0 }, {
 React and Preact bindings have been refactored to be more consistent, performant and convenient. Support for the old React context API that is planned for removal in React 17 has been dropped.
 
 ```
-const createContext = require('tiny-atom/react')
-const { Provider, Consumer, connect } = createContext(atom)
+const createConnector = require('tiny-atom/react')
+const { Consumer, connect } = createConnector(atom)
 ```
 
 The core API has changed to only allow a single signature `createAtom(initialState, actions, options)` where `evolve` can only be passed as an option now.
 
-Breaking changes
-
-* Use new React's context API in both React and Preact bindings
-* The new Provider rerenders relevant connected components
+* React and Preact bindings have been rewritten and the api changed
+    - the Provider component has been removed
+    - the new API is React createContext() inspired and is `const { Consumer, connect } = createConnector(atom)` - use Consumer or connect anywhere in the render tree to bind to state efficiently
+* The new connectors rerender each connected component individually
+    - this means deeply nested components connected to state will still update, even if the parent component is optimised with shouldComponentUpdate
+    - the state changes are debounced and batched into less rerenders
+    - and the components also check if they've already been rerendered by the parent component to avoid unecessary rerenders
 * Connect applies an optimisation and only rerenders if mapped state changed
 * Move `evolve` to options
+* Atom observer functions are now pushed to the start of the array, this is to better match up with the order of initialising components in react's render tree. The inner components mount first and subscribe to atom first, the outer components mount second and will subscribe second. We want to trigger subscription callbacks outside in, the way react rerenders, so that inner component could avoid rerendering if not necessary.
 * Remove `tiny-atom/immutable` - out of scope for tiny-atom
 * Remove `render` prop and only allow children prop
+* Feature `options.debug` can be an array, e.g. `[log, devtools]`
 
 ## 1.2.0
 
