@@ -43,7 +43,7 @@ const App = () => {
         return (
           <div>
             <div>App count: {count}</div>
-            <Count id='count' doubleCount={count * 2}/>
+            <Count id='count' doubleCount={count * 2} />
             <button onClick={() => increment(1)}>Increment</button>
             <button onClick={() => decrement(1)}>Decrement</button>
             <button onClick={() => random()}>Random</button>

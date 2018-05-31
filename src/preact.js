@@ -4,92 +4,81 @@ const raf = require('./raf')
 module.exports = function createContext (atom) {
   const { get, dispatch } = atom
 
-  function createConnectedComponent () {
-    return class ConnectedComponent extends Preact.Component {
-      constructor (props) {
-        super()
-        this.setup(props)
-        this.dirty = false
-        this.state = this.map(get(), props)
-        this.scheduleUpdate = this.options.sync
-          ? () => this.update()
-          : raf(() => this.update(), { initial: false })
-      }
-
-      componentDidUpdate () {
-        this.dirty = false
-      }
-
-      map (state, props) {
-        return this.options.map ? this.options.map(state, props) : { state }
-      }
-
-      update () {
-        if (this.dirty) {
-          const nextMappedProps = this.map(get(), this.props)
-          this.setState(nextMappedProps)
-        }
-      }
-
-      componentDidMount () {
-        this.unobserve = atom.observe(() => {
-          this.dirty = true
-          this.cancelUpdate = this.scheduleUpdate()
-        })
-      }
-
-      componentWillUnmount () {
-        this.unobserve && this.unobserve()
-        this.cancelUpdate && this.cancelUpdate()
-      }
-
-      render () {}
-    }
-  }
-
-  const BaseConnectedComponent = createConnectedComponent('consumer')
-
-  class Consumer extends BaseConnectedComponent {
-    setup (props) {
-      this.options = { map: props.map, sync: props.sync }
+  class Consumer extends Preact.Component {
+    constructor (props) {
+      super()
+      this.state = this.map(get(), props)
+      this.pure = typeof props.pure === 'undefined' ? true : props.pure
+      this.scheduleUpdate = props.sync
+        ? () => this.update()
+        : raf(() => this.update(), { initial: false })
     }
 
-    render ({ actions, children }) {
+    componentDidMount () {
+      this.dirty = false
+      this.unobserve = atom.observe(() => {
+        this.dirty = true
+        this.cancelUpdate = this.scheduleUpdate()
+      })
+    }
+
+    componentWillUnmount () {
+      this.unobserve && this.unobserve()
+      this.cancelUpdate && this.cancelUpdate()
+    }
+
+    shouldComponentUpdate (nextProps, nextState) {
+      if (!this.pure) return true
+      // if it's <Consumer> with dynamic children, shortcut the check
+      if (this.props.children !== nextProps.children) return true
+      // our state is mappedProps, this is the main optimisation
+      if (differ(this.state, nextState)) return true
+      // in connect() case don't need to diff further, we're in control
+      if (this.props.originalProps) return false
+      // in <Consumer /> case we also diff props
+      return differ(this.props, nextProps)
+    }
+
+    componentWillReceiveProps (nextProps) {
+      const nextMappedProps = this.map(get(), nextProps)
+      this.setState(nextMappedProps)
+    }
+
+    componentDidUpdate () {
+      this.dirty = false
+    }
+
+    map (state, props) {
+      const { originalProps, map } = props
+      return Object.assign({}, originalProps, map ? map(state, originalProps) : {})
+    }
+
+    update () {
+      if (!this.dirty) return
+      const nextMappedProps = this.map(get(), this.props)
+      this.setState(nextMappedProps)
+    }
+
+    render ({ actions, originalProps, render, children }) {
       const mappedProps = this.state
       const boundActions = bindActions(actions, mappedProps)
-      return children[0](Object.assign({}, mappedProps, boundActions))
+      return (render || children[0])(Object.assign({}, originalProps, mappedProps, boundActions))
     }
   }
 
   function connect (map, actions, options = {}) {
-    if (typeof options.pure === 'undefined') {
-      options.pure = true
-    }
-
-    const BaseConnectedComponent = createConnectedComponent('connect', map, options)
-
     return function connectComponent (Component) {
-      return class ConnectedComponent extends BaseConnectedComponent {
-        setup () {
-          this.options = Object.assign({}, options, { map })
-        }
-
-        shouldComponentUpdate (nextProps, nextState) {
-          if (!this.options.pure) return true
-          return differ(this.state, nextState)
-        }
-
-        componentWillReceiveProps (nextProps) {
-          const nextMappedProps = this.map(get(), nextProps)
-          this.setState(nextMappedProps)
-        }
-
-        render (props) {
-          const mappedProps = this.state
-          const boundActions = bindActions(actions, mappedProps)
-          return <Component {...props} {...mappedProps} {...boundActions} />
-        }
-      }
+      const render = mappedProps => <Component {...mappedProps} />
+      return (props) => (
+        <Consumer
+          map={map}
+          actions={actions}
+          pure={options.pure}
+          sync={options.sync}
+          originalProps={props}
+          render={render}
+        />
+      )
     }
   }
 
@@ -109,6 +98,7 @@ module.exports = function createContext (atom) {
     for (let i in mappedProps) {
       if (!(i in nextMappedProps)) return true
     }
+    return false
   }
 
   return { Consumer, connect }

@@ -41,16 +41,21 @@ module.exports = function app ({ h, createContext }) {
     )
   }
 
-  const ChildWithRenderProp = ({ multiplier }) => (
-    <Consumer>
-      {({ state, dispatch }) => (
-        <div>
-          <div id='count-inner'>{multiplier * state.count}</div>
-          <button id='increment-inner' onClick={() => dispatch('increment', 2)} />
-        </div>
-      )}
-    </Consumer>
-  )
+  const ChildWithRenderProp = ({ multiplier }) => {
+    const map = (state) => ({
+      count: state.count
+    })
+    return (
+      <Consumer map={map}>
+        {({ count, dispatch }) => (
+          <div>
+            <div id='count-inner'>{multiplier * count}</div>
+            <button id='increment-inner' onClick={() => dispatch('increment', 2)} />
+          </div>
+        )}
+      </Consumer>
+    )
+  }
 
   let childWithConnectRenderCount = 0
 

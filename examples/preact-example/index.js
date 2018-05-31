@@ -30,6 +30,10 @@ const actions = {
     }, 1000)
   },
 
+  random: ({ set }) => {
+    set({ rnd: Math.random() })
+  },
+
   track: ({ get, set, dispatch }, payload) => {
     // track is a side effect, no store updates
   }
@@ -44,40 +48,54 @@ const atom = window.atom = createAtom({ count: 0 }, actions, {
 
 const mapAtom = (state) => ({
   doubleCount: state.count * 2,
-  count: state.count
+  count: state.count,
+  rnd: state.rnd
 })
 
 const bindActions = [
   'increment',
   'decrement',
-  'asyncIncrement'
+  'asyncIncrement',
+  'random'
 ]
 
 const { Consumer, connect } = createContext(atom)
 
 const App = () => (
   <Consumer map={mapAtom} actions={bindActions}>
-    {({ count, doubleCount, asyncIncrement, increment, decrement }) => (
-      <div>
-        <h1>count: {count}</h1>
-        <h1>double: {doubleCount}</h1>
-        <Nested multiplier={5}>
-          <Nested multiplier={10} />
-        </Nested>
-        <button onClick={() => increment(1)}>Increment</button>
-        <button onClick={() => decrement(1)}>Decrement</button>
-        <button onClick={() => asyncIncrement(2)}>Async increment</button>
-      </div>
-    )}
+    {({ count, rnd, doubleCount, asyncIncrement, increment, decrement, random }) => {
+      console.log('Rendered app (inside)')
+      return (
+        <div>
+          <h1>count: {count}</h1>
+          <h1>double: {doubleCount}</h1>
+          <h1>rnd: {rnd}</h1>
+          <Count multiplier={5} />
+          <Consumer map={({ rnd }) => ({ rnd })}>
+            {({ rnd }) => {
+              console.log('Rendered rnd (inside)')
+              return <div>Random: {rnd}</div>
+            }}
+          </Consumer>
+          <button onClick={() => increment(1)}>Increment</button>
+          <button onClick={() => decrement(1)}>Decrement</button>
+          <button onClick={() => asyncIncrement(2)}>Async increment</button>
+          <button onClick={() => random()}>Random</button>
+        </div>
+      )
+    }}
   </Consumer>
 )
 
-const Nested = connect()(({ multiplier, state, children }) => (
-  <div>
-    Nested component: { state.count * multiplier }
-    {children[0]}
-  </div>
-))
+const mapCount = ({ count }) => ({ count })
+const Count = connect(mapCount)(({ multiplier, count, children }) => {
+  console.log('Rendered count (inside)')
+  return (
+    <div>
+      Count component: { count * multiplier }
+    </div>
+  )
+})
 
 Preact.render((
   <App />
