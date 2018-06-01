@@ -2,8 +2,6 @@ const React = require('react')
 const raf = require('./raf')
 
 module.exports = function createContext (atom) {
-  const { get, dispatch } = atom
-
   class Consumer extends React.Component {
     constructor (props) {
       super()
@@ -50,14 +48,14 @@ module.exports = function createContext (atom) {
     render () {
       const { actions, originalProps, render, children } = this.props
       const mappedProps = this.state
-      const boundActions = bindActions(actions, dispatch, mappedProps)
+      const boundActions = bindActions(actions, atom.dispatch, mappedProps)
       return (render || children)(Object.assign({}, originalProps, mappedProps, boundActions))
     }
   }
 
   Consumer.getDerivedStateFromProps = (props, state) => {
     const { originalProps, map } = props
-    return Object.assign({}, originalProps, map ? map(get(), originalProps) : {})
+    return Object.assign({}, originalProps, map ? map(atom.get(), originalProps) : {})
   }
 
   function connect (map, actions, options = {}) {
