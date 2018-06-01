@@ -28,6 +28,7 @@ The core API has changed to only allow a single signature `createAtom(initialSta
     - and the components also check if they've already been rerendered by the parent component to avoid unecessary rerenders
 * Connect applies an optimisation and only rerenders if mapped state changed
 * Move `evolve` to options
+* Remove the `deep-merge` module - it's now the default merge behavior
 * Atom observer functions are now pushed to the start of the array, this is to better match up with the order of initialising components in react's render tree. The inner components mount first and subscribe to atom first, the outer components mount second and will subscribe second. We want to trigger subscription callbacks outside in, the way react rerenders, so that inner component could avoid rerendering if not necessary.
 * Remove `tiny-atom/immutable` - out of scope for tiny-atom
 * Remove `render` prop and only allow children prop

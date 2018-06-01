@@ -14,8 +14,9 @@ module.exports = function createAtom (initialState = {}, actions = {}, options =
   let state = initialState
   let actionSeq = 0
   const listeners = []
-  const merge = options.merge || defaultMerge
+  const merge = options.merge || deepMerge
   const debug = options.debug
+  const get = () => state
   const set = createSet()
   const dispatch = createDispatch()
   const atom = { get, dispatch, observe, fuse }
@@ -23,17 +24,9 @@ module.exports = function createAtom (initialState = {}, actions = {}, options =
   const evolve = options.evolve || defaultEvolve
   return atom
 
-  function defaultMerge (state, update) {
-    return Object.assign({}, state, update)
-  }
-
   function defaultEvolve (atom, action, actions) {
     if (!actions[action.type]) throw new Error(`Missing action: ${action.type}`)
     return actions[action.type](atom, action.payload)
-  }
-
-  function get () {
-    return state
   }
 
   function observe (f) {
@@ -83,5 +76,19 @@ module.exports = function createAtom (initialState = {}, actions = {}, options =
     const info = { type: type, action: action, sourceActions: sourceActions, atom: atom }
     if (prevState) info.prevState = prevState
     typeof debug === 'function' ? debug(info) : debug.forEach(debug => debug(info))
+  }
+
+  function deepMerge (state, update) {
+    if (typeof update === 'undefined') return state
+    if (!isObject(update)) return update
+    return Object.keys(update).reduce((acc, key) => {
+      acc[key] = deepMerge(acc[key], update[key])
+      return acc
+    }, Object.assign({}, state) || {})
+  }
+
+  function isObject (obj) {
+    return typeof obj === 'object' &&
+      Object.prototype.toString.call(obj) === '[object Object]'
   }
 }

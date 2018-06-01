@@ -1,11 +1,13 @@
 const test = require('ava')
-const merge = require('../src/deep-merge')
+const createAtom = require('../src')
 
 test('merges objects deeply', t => {
-  t.deepEqual(
-    merge(),
-    undefined
-  )
+  const merge = (a, b) => {
+    const atom = createAtom(a)
+    atom.fuse(b)
+    return atom.get()
+  }
+
   t.deepEqual(
     merge({ a: 1 }, 5),
     5
