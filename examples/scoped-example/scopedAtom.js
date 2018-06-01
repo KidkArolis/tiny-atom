@@ -1,28 +1,20 @@
 module.exports = function createEvolve (actions) {
   const registry = { '': Object.assign({}, actions) }
 
-  return { evolve, fuse }
+  return { evolve, add }
 
-  function fuse (namespace, actions) {
+  function add (namespace, actions) {
     registry[namespace] = actions
   }
 
-  function evolve (get, split, action) {
+  function evolve ({ get, set, dispatch }, action) {
     const namespace = action.type.split('.').slice(0, -1).join('.')
+    const root = { get, set, dispatch }
     if (namespace && registry[namespace]) {
-      get = Object.assign(namespacedGet(get, namespace), { root: get })
-      split = Object.assign(namespacedSplit(split, namespace), { root: split })
+      get = () => namespace.split('.').reduce((ref, segment) => ref[segment], get())
+      set = (update) => set({ [namespace]: update })
+      dispatch = (type, payload) => dispatch(`${namespace}.${type}`, payload)
     }
-    registry.actions[action.type](get, split, action.payload)
-  }
-
-  function namespacedGet (get, namespace) {
-    return () => namespace.split('.').reduce((ref, segment) => ref[segment], get())
-  }
-
-  function namespacedSplit (split, namespace) {
-    return (...args) => typeof args[0] === 'string'
-      ? split(`${namespace}.${args[0]}`, ...args.slice(1))
-      : split({ [namespace]: args[0] })
+    registry.actions[action.type]({ get, set, dispatch, root }, action.payload)
   }
 }
