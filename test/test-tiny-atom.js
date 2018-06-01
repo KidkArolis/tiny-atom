@@ -100,6 +100,32 @@ test.cb('debug provides action and update details', t => {
   atom.dispatch('inc', 100)
 })
 
+test.cb('debug can be an array of functions', t => {
+  const history = []
+
+  const actions = {
+    inc: ({ get, set }, payload) => set({ count: get().count + payload })
+  }
+
+  const atom = createAtom({ count: 0 }, actions, { debug: [debugOne, debugTwo] })
+
+  function debugOne (info) {
+    history.push(['debugOne', info])
+  }
+
+  function debugTwo (info) {
+    history.push(['debugTwo', info])
+
+    if (atom.get().done) {
+      t.snapshot(history)
+      t.end()
+    }
+  }
+
+  atom.dispatch('inc', 2)
+  atom.fuse({ done: true })
+})
+
 test('observe callback is called on each update', t => {
   const observations = []
   const atom = createAtom()

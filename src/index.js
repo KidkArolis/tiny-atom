@@ -39,7 +39,7 @@ module.exports = function createAtom (initialState = {}, actions = {}, options =
   }
 
   function fuse (moreState, moreActions) {
-    if (moreActions) Object.assign(actions, moreActions)
+    Object.assign(actions, moreActions)
     if (moreState) set(moreState)
   }
 
@@ -84,7 +84,7 @@ module.exports = function createAtom (initialState = {}, actions = {}, options =
     return Object.keys(update).reduce((acc, key) => {
       acc[key] = deepMerge(acc[key], update[key])
       return acc
-    }, Object.assign({}, state) || {})
+    }, Object.assign({}, state))
   }
 
   function isObject (obj) {
