@@ -6,7 +6,8 @@
   "scripts": {
     "coverage": "nyc --reporter html ava",
     "test": "standard && nyc ava",
-    "release": "node ./tasks/release"
+    "version": "node ./tasks/build.js",
+    "release": "np --contents dist"
   },
   "repository": {
     "type": "git",
