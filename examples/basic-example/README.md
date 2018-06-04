@@ -1,9 +1,8 @@
 # basic-example
 
-A small example of using `tiny-atom` on it's own.
+A small example of using `tiny-atom`.
 
 ## Running
 
-     yarn
      npm start
      open http://localhost:3000

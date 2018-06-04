@@ -1,26 +1,30 @@
 const Preact = require('preact') //eslint-disable-line
-const { ConnectAtom } = require('tiny-atom/preact')
+const { Consumer } = require('./atom')
 require('./App.css')
 
+const map = state => {
+  return ({ state })
+}
+
 module.exports = () => (
-  <ConnectAtom>
-    {({ state, split }) => (
+  <Consumer map={map}>
+    {({ state, dispatch }) => (
       <div className='App'>
         <h1>tiny todo</h1>
 
-        <form onSubmit={onSubmit(split, this.$input)}>
+        <form onSubmit={onSubmit(dispatch, this.$input)}>
           <input
             className='Todo-input'
             type='text'
             ref={el => { this.$input = el }}
-            onChange={(e) => split('todo.update', e.target.value)}
+            onChange={(e) => dispatch('todo.update', e.target.value)}
             value={state.todo.input}
           />
         </form>
 
         {state.todo.items.map((item, i) => (
           <div className='Todo'>
-            <span className='Todo-done' onClick={() => split('todo.done', i)}>☐</span>
+            <span className='Todo-done' onClick={() => dispatch('todo.done', i)}>☐</span>
             {item}
           </div>
         ))}
@@ -34,13 +38,13 @@ module.exports = () => (
         </div>
       </div>
     )}
-  </ConnectAtom>
+  </Consumer>
 )
 
-function onSubmit (split, $input) {
+function onSubmit (dispatch, $input) {
   return function (e) {
-    split('todo.add')
     e.preventDefault()
+    dispatch('todo.add')
     window.requestAnimationFrame(() => {
       setTimeout(() => {
         $input.focus()

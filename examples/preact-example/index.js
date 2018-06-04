@@ -64,7 +64,6 @@ const { Consumer, connect } = createContext(atom)
 const App = () => (
   <Consumer map={mapAtom} actions={bindActions}>
     {({ count, rnd, doubleCount, asyncIncrement, increment, decrement, random }) => {
-      console.log('Rendered app (inside)')
       return (
         <div>
           <h1>count: {count}</h1>
@@ -73,7 +72,6 @@ const App = () => (
           <Count multiplier={5} />
           <Consumer map={({ rnd }) => ({ rnd })}>
             {({ rnd }) => {
-              console.log('Rendered rnd (inside)')
               return <div>Random: {rnd}</div>
             }}
           </Consumer>
@@ -89,7 +87,6 @@ const App = () => (
 
 const mapCount = ({ count }) => ({ count })
 const Count = connect(mapCount)(({ multiplier, count, children }) => {
-  console.log('Rendered count (inside)')
   return (
     <div>
       Count component: { count * multiplier }

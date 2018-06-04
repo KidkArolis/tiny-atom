@@ -1,49 +1,36 @@
 const Preact = require('preact')
-const { ProvideAtom } = require('tiny-atom/preact')
-const raf = require('tiny-atom/raf')
-const debug = require('tiny-atom/log')
-const App = require('./components/App')
-const createAtom = require('./fractalAtom')
-
-const atom = window.atom = createAtom({ debug })
+const App = require('./App')
+const actions = require('./actions')
+const { atom } = require('./atom')
 
 atom({ a: 1 }, {
-  plus: (get, split) => {
-    split({ a: get().a + 1 })
-    split('todo.update', 'plus')
-    split('todo.add')
+  plus: ({ get, set, dispatch }) => {
+    set({ a: get().a + 1 })
+    dispatch('todo.update', 'plus')
+    dispatch('todo.add')
   }
 })
 
 atom({ b: 1 }, {
-  minus: (get, split) => {
-    split({ a: get().a - 1 })
-    split('todo.update', 'minus')
-    split('todo.add')
+  minus: ({ get, set, dispatch }) => {
+    set({ a: get().a - 1 })
+    dispatch('todo.update', 'minus')
+    dispatch('todo.add')
   }
 })
 
-const actions = require('./actions')
 Object.keys(actions).forEach(pack => {
   const p = actions[pack]
   atom(pack, p.state, p.actions)
 })
 
 const deep = atom('deeply')('nested')('atom')
-deep.split({ nested: 123 })
+deep.set({ nested: 123 })
 
-atom.split('plus')
-atom.split('plus')
-atom.split('plus')
-atom.split('minus')
+atom.dispatch('plus')
+atom.dispatch('plus')
+atom.dispatch('minus')
 
-const render = raf(function render () {
-  Preact.render((
-    <ProvideAtom atom={atom}>
-      <App />
-    </ProvideAtom>
-  ), document.body, document.body.lastElementChild)
-})
-
-atom.observe(render)
-render()
+Preact.render((
+  <App />
+), document.body, document.body.lastElementChild)
