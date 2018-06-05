@@ -1,3 +1,36 @@
+## 2.0.0
+
+A major refactor of tiny-atom's codebase and API.
+
+The main change is that `split` has been .. split into `set` and `dispatch`. This makes for more intuitive and more readable API. The action signatures are now updated to:
+
+```js
+createAtom({ count: 0 }, {
+  increment: ({ get, set, dispatch }, payload) => {}
+})
+```
+
+React and Preact bindings have been refactored to be more consistent, performant and convenient. Support for the old React context API that is planned for removal in React 17 has been dropped. In fact, all use of the context API has been removed. The connectors connect to the atom directly. This makes the API very similar to how you'd use React's new context API. And also, this means that instead of rerendering the entire application top down, the new API encourages to render the app only once and let the individual components anywhere in the tree listen to their own changes. This is done efficiently by debouncing the changes to only rerender at most once per frame and. The components also avoid needless rerendering if the parent has already rerendered it as part of the change. Finally, this new connectors API means that deeply nested components connected to state will update, even if the parent component is optimised with shouldComponentUpdate.
+
+```js
+const createConnector = require('tiny-atom/react')
+const { Consumer, connect } = createConnector(atom)
+```
+
+The core API has changed to only allow a single signature `createAtom(initialState, actions, options)` where `evolve` can only be passed as an option now.
+
+Summary of changes:
+
+* React and Preact bindings have been rewritten.
+* Remove The ProvideAtom, ConnectAtom components.
+* Create a new connector API `const { Consumer, connect } = createConnector(atom)`.
+* Connect applies an optimisation and only rerenders if mapped state changed.
+* Atom observer functions are now pushed to the start of the array reversing the order that on change listeners are called.
+* Add ability to pass array to  `options.debug`, e.g. `debug: [log, devtools]`
+* Move `evolve` to options.
+* Remove `tiny-atom/deep-merge` - it's now the default merge behavior.
+* Remove `tiny-atom/immutable` - out of scope for tiny-atom.
+
 ## 1.2.0
 
 * `tiny-atom/react/context`
@@ -10,8 +43,8 @@
 
 ## 1.1.0
 
-* In addition to `ConnectAtom` render prop style component, you can now also connect your components to the store using the `connect` HOC function. Import from `import { connect } from 'tiny-atom/react'` or `import { connect } from 'tiny-atom/preact'`
-* In addition to being able to pass a `render` prop to `ConnectAtom`, you can now also pass the render function as children: `<ConnectAtom>{(state, split) => {}}</ConnectAtom>`
+* In addition to `ConnectAtom` render prop style component, you can now also connect your components to the store using the `connect` HOC function. Import from `import { connect } from 'tiny-atom/react'` or `import { connect } from 'tiny-atom/preact'`.
+* In addition to being able to pass a `render` prop to `ConnectAtom`, you can now also pass the render function as children: `<ConnectAtom>{(state, split) => {}}</ConnectAtom>`.
 
 ## 1.0.1
 
@@ -24,11 +57,11 @@
 ## 0.6.0
 
 * Add `const dispose = atom.observe(atom => {})` - useful when passing atom around. Allows for separation of concerns where a self contained module can depend on atom changes as well as update atom.
-* **BREAKING** A real edge case, but `render` can't be passed as null anymore in combination with `options`. Instead of `createAtom(initialState, evolve, null, options)` do `createAtom(initialState, evolve, options)`
+* **BREAKING** A real edge case, but `render` can't be passed as null anymore in combination with `options`. Instead of `createAtom(initialState, evolve, null, options)` do `createAtom(initialState, evolve, options)`.
 
 ## 0.5.1
 
-* Updated docs and README
+* Update docs and README.
 
 ## 0.5.0
 

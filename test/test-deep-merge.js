@@ -1,11 +1,17 @@
 const test = require('ava')
-const merge = require('../src/deep-merge')
+const createAtom = require('../src')
 
-test.only('merges objects deeply', t => {
-  t.deepEqual(
-    merge(),
-    undefined
-  )
+test('merges objects deeply', t => {
+  // deepMerge is not exposed directly
+  // so test via this wrapper function
+  const merge = (a, b) => {
+    const atom = createAtom(a, {
+      set: ({ set }, payload) => set(payload)
+    })
+    atom.dispatch('set', b)
+    return atom.get()
+  }
+
   t.deepEqual(
     merge({ a: 1 }, 5),
     5

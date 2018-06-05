@@ -23,20 +23,17 @@
   </a>
 </p>
 
-* tiny api - easy to understand, easy to adapt
-* tiny size - 0.6KB
 * single store modified via actions
-* batteries included
-  * react bindings with support for React.createContext API
-  * preact bindings
-  * console logger
-  * redux devtools integration
-  * immutable helper functions
-  * requestAnimationFrame helper for efficient rerenders
+* tiny api - easy to understand, easy to adapt
+* tiny size - 1KB
++ react and preact bindings included
++ console logger and redux devtools integration
+
+**How is this different from redux?** The key difference is that action functions in tiny-atom can read and update the state and call other actions. Action functions are self contained units of business logic. This removes layers of boilerplate while preserving the benefits of redux like stores.
 
 ## Installation
 
-    $ yarn add tiny-atom
+    $ npm install --save tiny-atom
 
 ## Docs
 
@@ -53,55 +50,67 @@ Read the [full docs](https://qubitproducts.github.io/tiny-atom) or pick one of t
 ```js
 const createAtom = require('tiny-atom')
 
-const initialState = {
+const atom = createAtom({
   clicks: 0,
   items: []
-}
-
-const actions = {
-  countClicks: (get, split, n) => {
-    split({ clicks: get().clicks + n })
+}, {
+  countClicks: ({ get, set }, n) => {
+    set({ clicks: get().clicks + n })
   },
 
-  fetchItems: async (get, split) => {
-    split({ loading: true })
+  fetchItems: async ({ set, dispatch }) => {
+    set({ loading: true })
     const { data: items } = await axios.get('/api/items')
-    split({ items, loading: false })
-    split('countClicks', 1)
+    set({ items, loading: false })
+    dispatch('countClicks', 1)
   }
-}
-
-const atom = createAtom(initialState, actions)
+})
 
 atom.observe(function render (atom) {
   const { items, clicks } = atom.get()
-  onClick
+  onClick(e => atom.dispatch('countClicks', 10))
 })
 ```
 
 ## API
 
-### `createAtom(initialState, actions|evolve, options)`
+### `createAtom(initialState, actions, options)`
 
 Create an atom.
 
-* `initialState` - defaults to `{}`
-* `evolve(get, split, action, actions)` - receives actions and controls the evolution of the state
-  * `get()` - get current state – see `atom.get`
-  * `split(update)` or `split(type, payload)` – see `atom.split`
-  * `action` - an object of shape `{ type, payload }`
-* `options` - options object
-  * `options.debug` - a debug function called on each `action` and `update` with info object of shape `{ type, atom, action, sourceActions, prevState }`
-  * `options.merge` - a function called each time `split(update)` is called. Default implementation is `(state, update) => Object.assign({}, state, update)`. You can use this hook to use a different data structure or apply deep merges.
+#### initialState
+*type*: `any`
+*default*: `{}`
+
+The initial state of the atom. If custom data structure is used (e.g. Immutable), make sure to also specify an appropriate `options.merge` implementation.
+
+#### actions
+*type*: `object`
+*default*: `{}`
+
+An object with action functions. The signature of an action function is `({ get, set, dispatch }, payload)`. If you provide nested action objects or other structure, make sure to also specify an appropriate `options.evolve` implementation to handle your actions appropriately.
+
+#### options.merge
+*type*: `function`
+
+A function called on each `set(update)` to merge the update into the state. The function signature is `(state, update) => state'`. The default implementation is a deep merge.
+
+#### options.evolve
+*type*: `function`
+
+A function that receives all of the dispatched action objects and calls the action functions. The function signature is `(atom, action, actions)`. Note that `atom` in this place has an extra added function `set`, a function that is used to update the state, this function does not exist on the actual atom. The default implementation uses `action.type` to find the matching function in the `actions` object.
+
+#### options.debug
+*type*: `function | function[]`
+*default*: `null`
+
+A function that will be called on each action and state update. The function is passed an `info` object of shape `{ type, atom, action, sourceActions, prevState }`. Tiny atom comes with 2 built in debug functions `tiny-atom/log` and `tiny-atom/devtools`.
 
 ```js
-createAtom({ count: 1 }, { increment, decrement })
-createAtom({ count: 1 }, (get, split, action) => {})
-
-const evolve = (get, split, action, actions) => {
-  actions[action.type](get, split, action.payload)
-}
-createAtom({ count: 1 }, evolve)
+createAtom({ count: 1 }, {
+  increment: ({ get, set }, payload) => set({ count: get().count + payload }),
+  inc: ({ dispatch }, payload) => dispatch('increment', payload)
+})
 ```
 
 ### `atom.get`
@@ -113,18 +122,13 @@ atom.get()
 atom.get().feed.items
 ```
 
-### `atom.split`
+### `atom.dispatch`
 
-Can be used in 2 ways:
-
-* `atom.split(type, payload)` - send an action to `evolve`.
-* `atom.split(update)` - update the state with the `update` object. Updates don't go via `evolve`, they get applied to the state using the `options.merge` function.
+Send an action
 
 ```js
-atom.split('fetchMovies')
-atom.split('increment', 5)
-atom.split({ count: 2 })
-atom.split({ entities: { movies: { 45: { name: 'Primer' } } }})
+atom.dispatch('fetchMovies')
+atom.dispatch('increment', 5)
 ```
 
 ### `atom.observe`
@@ -138,20 +142,16 @@ atom.observe(atom => render(atom.get(), atom.split))
 
 ### `atom.fuse(state, actions)`
 
-Extend atom's state and the action object. Convenient for composing the atom slices of state and actions from several modules.
+Extend atom's state and the action object. Convenient for composing atom from slices of state and actions from several modules.
 
 ```js
 const state = {
-  project: {
-    name: 'tiny-atom'
-  }
+  project: { name: 'tiny-atom' }
 }
 
 const actions = {
   star: (get, split) => split({
-    project: {
-      starred: true
-    }
+    project: { starred: true }
   })
 }
 
@@ -160,4 +160,4 @@ atom.fuse(state, actions)
 
 ---
 
-For documentation on the set of (p)react components `<ProvideAtom />`, `<ConnectAtom />` and `connect` see the [react](https://qubitproducts.github.io/tiny-atom/using-with-react) or [preact](https://qubitproducts.github.io/tiny-atom/using-with-preact) docs.
+For documentation on the set of react and preact components `<Consumer />` and `connect` see [react](https://qubitproducts.github.io/tiny-atom/using-with-react) or [preact](https://qubitproducts.github.io/tiny-atom/using-with-preact) docs.

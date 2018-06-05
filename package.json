@@ -6,7 +6,9 @@
   "scripts": {
     "coverage": "nyc --reporter html ava",
     "test": "standard && nyc ava",
-    "release": "node ./tasks/release"
+    "version": "node ./tasks/build.js",
+    "release": "np --contents dist",
+    "release-beta": "np --tag=beta --contents=dist"
   },
   "repository": {
     "type": "git",
@@ -20,14 +22,14 @@
   "devDependencies": {
     "ava": "^0.25.0",
     "buble": "^0.19.3",
-    "execa": "^0.9.0",
-    "jetpack": "^0.7.3",
+    "execa": "^0.10.0",
+    "jetpack": "^0.8.0",
     "jsdom": "^11.3.0",
-    "np": "^2.16.1",
-    "nyc": "^11.3.0",
-    "preact": "^8.2.6",
-    "react": "^16.3.0-alpha.2",
-    "react-dom": "^16.3.0-alpha.2",
+    "np": "^3.0.4",
+    "nyc": "^12.0.2",
+    "preact": "^8.2.9",
+    "react": "^16.3.0",
+    "react-dom": "^16.3.0",
     "standard": "^11.0.0"
   },
   "standard": {
@@ -36,6 +38,7 @@
     ]
   },
   "ava": {
-    "files": "test/test-*.js"
+    "files": "test/test-*.js",
+    "require": "./test/helpers/setup.js"
   }
 }

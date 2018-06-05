@@ -2,35 +2,86 @@
 title: API reference
 ---
 
-### `createAtom(initialState, evolve, render, options)`
+### `createAtom(initialState, actions, options)`
 
 Create an atom.
 
-* `initialState` - defaults to `{}`
-* `evolve(get, split, action)` - receives actions and controls the evolution of the state
-  * `get()` - get current state – see `atom.get`
-  * `split(update)` or `split(type, payload)` – see `atom.split`
-  * `action` - an object of shape `{ type, payload }`
-* `render(atom)` - called on each state update
+#### initialState
+*type*: `any`
+*default*: `{}`
 
-Available options:
+The initial state of the atom. If custom data structure is used (e.g. Immutable), make sure to also specify an appropriate `options.merge` implementation.
 
-* `options.debug(info)` - called on each `action` and `update` with info object of shape `{ type, atom, action, sourceActions, prevState }`
-* `options.merge(state, update)` - called each time `split(update)` is called. Default implementation is `(state, update) => Object.assign({}, state, update)`. You can use this hook to use a different data structure for your state, such as Immutable. Or you could use it to extend the state instead of cloning with `Object.assign(state, update)` if that makes performance or architectural difference.
+#### actions
+*type*: `object`
+*default*: `{}`
 
-All parameters are optional, but typically you'll want to use at least initialState and evolve.
+An object with action functions. The signature of an action function is `({ get, set, dispatch }, payload)`. If you provide nested action objects or other structure, make sure to also specify an appropriate `options.evolve` implementation to handle your actions appropriately.
+
+#### options.merge
+*type*: `function`
+
+A function called on each `set(update)` to merge the update into the state. The function signature is `(state, update) => state'`. The default implementation is a deep merge.
+
+#### options.evolve
+*type*: `function`
+
+A function that receives all of the dispatched action objects and calls the action functions. The function signature is `(atom, action, actions)`. Note that `atom` in this place has an extra added function `set`, a function that is used to update the state, this function does not exist on the actual atom. The default implementation uses `action.type` to find the matching function in the `actions` object.
+
+#### options.debug
+*type*: `function | function[]`
+*default*: `null`
+
+A function that will be called on each action and state update. The function is passed an `info` object of shape `{ type, atom, action, sourceActions, prevState }`. Tiny atom comes with 2 built in debug functions `tiny-atom/log` and `tiny-atom/devtools`.
+
+```js
+createAtom({ count: 1 }, {
+  increment: ({ get, set }, payload) => set({ count: get().count + payload }),
+  inc: ({ dispatch }, payload) => dispatch('increment', payload)
+})
+```
 
 ### `atom.get`
 
 Get current state.
 
-### `atom.split`
+```js
+atom.get()
+atom.get().feed.items
+```
 
-Can be used in 2 ways:
+### `atom.dispatch`
 
-* `atom.split(type, payload)` - send an action to `evolve`.
-* `atom.split(update)` - update the state with the `update` object, doesn't go via `evolve`.
+Send an action
+
+```js
+atom.dispatch('fetchMovies')
+atom.dispatch('increment', 5)
+```
 
 ### `atom.observe`
 
-Register a callback for when atom changes. This can be used in addition or instead of the `render` callback. Returns the dispose function.
+Register a callback for when atom changes. Returns the unobserve function.
+
+```js
+atom.observe(render)
+atom.observe(atom => render(atom.get(), atom.split))
+```
+
+### `atom.fuse(state, actions)`
+
+Extend atom's state and the action object. Convenient for composing atom from slices of state and actions from several modules.
+
+```js
+const state = {
+  project: { name: 'tiny-atom' }
+}
+
+const actions = {
+  star: (get, split) => split({
+    project: { starred: true }
+  })
+}
+
+atom.fuse(state, actions)
+```

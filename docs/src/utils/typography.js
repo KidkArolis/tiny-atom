@@ -44,7 +44,6 @@ const options = {
     `sans-serif`
   ],
   monospaceFontFamily: [
-    `Space Mono`,
     `SFMono-Regular`,
     `Menlo`,
     `Monaco`,

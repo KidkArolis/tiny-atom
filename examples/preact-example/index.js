@@ -1,92 +1,94 @@
 const Preact = require('preact')
 const createAtom = require('tiny-atom')
-const { ProvideAtom, ConnectAtom } = require('tiny-atom/preact')
-const devtools = require('tiny-atom/devtools')
+const createContext = require('tiny-atom/preact')
 const log = require('tiny-atom/log')
 
-const atom = window.atom = createAtom({ count: 0 }, evolve, render, {
-  debug: (info) => {
-    log(info)
-    devtools(info)
-  }
-})
-
 const actions = {
-  increment: (get, split, payload) => {
-    split({ count: get().count + payload })
+  increment: ({ get, set, dispatch }, payload) => {
+    set({ count: get().count + payload })
   },
 
-  decrement: (get, split, payload) => {
-    split({ count: get().count - payload })
+  decrement: ({ get, set, dispatch }, payload) => {
+    set({ count: get().count - payload })
   },
 
-  asyncIncrement: (get, split, payload) => {
-    split('asyncIncrementNested', payload)
+  asyncIncrement: ({ get, set, dispatch }, payload) => {
+    dispatch('asyncIncrementNested', payload)
   },
 
-  asyncIncrementNested: (get, split, payload) => {
-    split('increment', payload)
+  asyncIncrementNested: ({ get, set, dispatch }, payload) => {
+    dispatch('increment', payload)
     setTimeout(() => {
-      split({
-        count: get().count + payload,
-        extra: (get().extra || 'a') + 'a'
+      set({
+        count: get().count + payload
       })
-      setTimeout(() => {
-        split('decrement', 1)
-      }, 1000)
     }, 1000)
   },
 
-  track: (get, split, payload) => {
+  random: ({ set }) => {
+    set({ rnd: Math.random() })
+  },
+
+  track: ({ get, set, dispatch }, payload) => {
     // track is a side effect, no store updates
   }
 }
 
-function evolve (get, split, action) {
-  actions[action.type](get, split, action.payload)
-}
-
-const mapAtom = (state, split) => ({
-  doubleCount: state.count * 2,
-  count: state.count,
-  split: split,
-  inc: () => split('increment', 1),
-  dec: () => split('decrement', 1),
-  asyncIncrement: x => () => split('asyncIncrement', x)
+const atom = window.atom = createAtom({ count: 0 }, actions, {
+  debug: (info) => {
+    log(info)
+    // devtools(info)
+  }
 })
 
+const mapAtom = (state) => ({
+  doubleCount: state.count * 2,
+  count: state.count,
+  rnd: state.rnd
+})
+
+const bindActions = [
+  'increment',
+  'decrement',
+  'asyncIncrement',
+  'random'
+]
+
+const { Consumer, connect } = createContext(atom)
+
 const App = () => (
-  <ConnectAtom map={mapAtom} render={({ count, doubleCount, split, asyncIncrement, inc, dec }) => (
-    <div>
-      <h1>count: {count}</h1>
-      <h1>double: {doubleCount}</h1>
-      <Nested multiplier={5}>
-        <Nested multiplier={10} />
-      </Nested>
-      <button onClick={inc}>Increment</button>
-      <button onClick={dec}>Decrement</button>
-      <button onClick={asyncIncrement(2)}>Async increment</button>
-      <button onClick={() => split('track')}>Track</button>
-      <button onClick={() => split({ rnd: Math.random() })}>Random</button>
-    </div>
-  )} />
+  <Consumer map={mapAtom} actions={bindActions}>
+    {({ count, rnd, doubleCount, asyncIncrement, increment, decrement, random }) => {
+      return (
+        <div>
+          <h1>count: {count}</h1>
+          <h1>double: {doubleCount}</h1>
+          <h1>rnd: {rnd}</h1>
+          <Count multiplier={5} />
+          <Consumer map={({ rnd }) => ({ rnd })}>
+            {({ rnd }) => {
+              return <div>Random: {rnd}</div>
+            }}
+          </Consumer>
+          <button onClick={() => increment(1)}>Increment</button>
+          <button onClick={() => decrement(1)}>Decrement</button>
+          <button onClick={() => asyncIncrement(2)}>Async increment</button>
+          <button onClick={() => random()}>Random</button>
+        </div>
+      )
+    }}
+  </Consumer>
 )
 
-const Nested = ({ multiplier, children }) => (
-  <ConnectAtom map={state => ({ count: state.count })} render={({ count }) => (
+const mapCount = ({ count }) => ({ count })
+const Count = connect(mapCount)(({ multiplier, count, children }) => {
+  return (
     <div>
-      Nested component: { count * multiplier }
-      {children[0]}
+      Count component: { count * multiplier }
     </div>
-  )} />
-)
+  )
+})
 
-function render (atom) {
-  Preact.render((
-    <ProvideAtom atom={atom}>
-      <App />
-    </ProvideAtom>
-  ), document.body, document.body.lastElementChild)
-}
-
-render(atom)
+Preact.render((
+  <App />
+), document.body, document.body.lastElementChild)

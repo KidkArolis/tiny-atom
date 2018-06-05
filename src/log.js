@@ -4,7 +4,6 @@ const blue = 'color: blue'
 
 module.exports = function log (info, logger) {
   const { log, groupCollapsed, groupEnd } = logger || console
-  let prefix
   const isAction = info.type === 'action'
   const isUpdate = info.type === 'update'
 
@@ -14,8 +13,7 @@ module.exports = function log (info, logger) {
     .join(' → ') + (!isAction ? '%c' : '')
 
   if (isAction) {
-    prefix = !info.sourceActions.length ? '••' : ' •'
-    groupCollapsed(prefix + ' %c' + label, gray, green, 'payload', ifUndefined(info.action.payload, '∅'))
+    groupCollapsed('★ action %c' + label, gray, green, { payload: info.action.payload })
     log('type %caction', blue)
     log('action', info.action)
     log('source', info.sourceActions)
@@ -23,8 +21,7 @@ module.exports = function log (info, logger) {
   }
 
   if (isUpdate) {
-    prefix = !info.sourceActions.length ? '••' : '  '
-    groupCollapsed(prefix + ' %c' + label, gray, green, 'update ', ifUndefined(info.action.payload, '∅'))
+    groupCollapsed('  update %c' + label, gray, green, ifDef(info.action.payload, '∅'))
     log('type %cupdate', blue)
     log('action', info.action)
     log('source', info.sourceActions)
@@ -39,6 +36,6 @@ function actionName (action) {
   return action.type + ' (' + action.seq + ')'
 }
 
-function ifUndefined (val, fallback) {
+function ifDef (val, fallback) {
   return typeof val === 'undefined' ? fallback : val
 }

@@ -6,8 +6,5 @@
   "scripts": {
     "start": "../../node_modules/.bin/jetpack ."
   },
-  "dependencies": {
-    "react": "^16.1.0",
-    "react-dom": "^16.1.0"
-  }
+  "dependencies": {}
 }

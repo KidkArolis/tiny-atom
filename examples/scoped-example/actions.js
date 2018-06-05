@@ -9,16 +9,16 @@ module.exports = {
       input: ''
     },
     actions: {
-      add: ({ get, set, dispatch }, payload) => {
+      add: ({ get, set, dispatch, top }, payload) => {
         const items = get().items.concat([get().input])
         set({ items, input: '' })
-        dispatch.root('hint.hide')
-        dispatch.root('analytics.track', { type: 'added' })
+        top.dispatch('hint.hide')
+        top.dispatch('analytics.track', { type: 'added' })
       },
-      done: ({ get, set, dispatch }, index) => {
+      done: ({ get, set, dispatch, top }, index) => {
         const items = get().items.filter((item, i) => i !== index)
         set({ items })
-        dispatch.root('analytics.track', { type: 'removed' })
+        top.dispatch('analytics.track', { type: 'removed' })
       },
       update: ({ get, set, dispatch }, input) => {
         set({ input })
