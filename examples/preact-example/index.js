@@ -1,7 +1,6 @@
 const Preact = require('preact')
 const createAtom = require('tiny-atom')
 const createContext = require('tiny-atom/preact')
-const devtools = require('tiny-atom/devtools')
 const log = require('tiny-atom/log')
 
 const actions = {
@@ -21,12 +20,8 @@ const actions = {
     dispatch('increment', payload)
     setTimeout(() => {
       set({
-        count: get().count + payload,
-        // extra: (get().extra || 'a') + 'a'
+        count: get().count + payload
       })
-      // setTimeout(() => {
-      //   dispatch('decrement', 1)
-      // }, 1000)
     }, 1000)
   },
 
