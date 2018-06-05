@@ -1,4 +1,4 @@
-# preact-example
+# react-example
 
 A small example of using `tiny-atom` with `preact`.
 

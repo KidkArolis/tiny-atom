@@ -9,14 +9,14 @@ An example of how you could go about unit testing individual actions. Say you ha
 const axios = require('axios')
 
 module.exports = {
-  fetchMetrics: async (get, split, id) => {
-    split({ loading: true })
+  fetchMetrics: async ({ get, set, dispatch }, id) => {
+    set({ loading: true })
     try {
       const res = await axios.get('/metrics/' + id)
-      split({ loading: false, metrics: res.data })
+      set({ loading: false, metrics: res.data })
     } catch (err) {
-      split({ loading: false, error: err.message })
-      split('trackError', err)
+      set({ loading: false, error: err.message })
+      dispatch('trackError', err)
     }
   }
 }
@@ -38,18 +38,21 @@ let atom
 // reusable setup
 function setup (actionType) {
   changes = []
-  atom = createAtom({}, evolve, onChange)
-  function evolve (get, split, action) {
+  atom = createAtom({}, actions, { evolve })
+
+  function evolve (atom, action, actions) {
     const { type, payload } = action
     if (type === actionType) {
-      actions[type](get, split, payload)
+      actions[type](atom, payload)
     } else {
       changes.push(action)
     }
   }
-  function onChange (atom) {
+
+  atom.observe(function onChange (atom) {
     changes.push(atom.get())
-  }
+  })
+
   return atom
 }
 
@@ -60,8 +63,7 @@ test('fetchMetrics success', async () => {
     (path) => Promise.resolve({ data: [path, 'data'] })
   )
 
-  // directly call the action so we could await
-  await actions.fetchMetrics(atom.get, atom.split, 57)
+  await atom.dispatch('fetchMetrics', 57)
 
   // inspect each state change
   deepEqual(changes, [
@@ -78,8 +80,7 @@ test('fetchMetrics error', async () => {
     (path) => Promise.reject(err)
   )
 
-  // directly call the action so we could await
-  await actions.fetchMetrics(atom.get, atom.split, 57)
+  await atom.dispatch('fetchMetrics', 57)
 
   // inspect each state change and actions dispatched
   deepEqual(changes, [

@@ -2,183 +2,124 @@
 title: Using with Preact
 ---
 
-In principle, you don't need to use any extra components to utilise atom in your Preact application. The simplest way to use atom is to pass `state` and `split` to your app as props: `<App atom={atom.get()} split={atom.split} />`.
-
-**Note**: the reason we name the first prop `atom` and not `state` is to avoid confusing `this.state` with `this.props.state`. The reason we pass `atom.get()` instead of the whole atom is to be able to utilise `componentShouldUpdate` and other lifecycle hooks. It can be useful in these hooks to inspect the current state and the next state.
-
-While a lot of the time passing atom around as props can be enough, **Tiny Atom** comes with some helper components.
-
-## `<ProvideAtom />`
+**Tiny Atom** comes with connectors for mapping atom state to your components and reacting to changes efficiently. To create the connectors, use `tiny-atom/preact` module:
 
 ```js
-import { ProvideAtom } from 'tiny-atom/preact'
-
-<ProvideAtom atom={atom}>
-  <App />
-</ProvideAtom>
+const createConnectors = require('tiny-atom/preact')
+const { connect, Consumer } = createConnectors(atom)
+export { connect, Consumer }
 ```
 
-Takes atom as a prop and provides it via context to the nested components.
+## `connect(map, actions, options)(Component)`
 
-## `<ConnectAtom />`
+Connects a component to atom and rerenders it upon relevant changes.
+
+#### map
+*type*: `function`
+*default*: `null`
+
+Map atom state to props for your component. Upon changes to atom, the mapped props are compared to the previously mapped props and the connected component is only rerendered if they differ. A shallow object diff is used in the comparison.
+
+#### actions
+*type*: `array | function`
+*default*: `null`
+
+An array of action names that will be turned into functions and passed via props or a function that takes dispatch and can return an object with functions that will be passed to the component.
+
+#### options.pure
+*type*: `boolean`
+*default*: `true`
+
+If the connection is `pure`, the mapped props are compared to previously mapped props for avoiding rerenders. Set this to false to rerender on any state change.
+
+#### options.sync
+*type*: `boolean`
+*default*: `false`
+
+By default, the change listeners are debounced such that at most one render occurs per frame. Set to true to rerender immediately on change state.
+
+### Example
 
 ```js
-import { ConnectAtom } from 'tiny-atom/preact'
+import { connect } from './connect'
+
+const map = (state) => {
+  return {
+    count: state.count
+  }
+}
+
+const actions = (dispatch) => {
+  return {
+    inc: (x) => dispatch('inc', x),
+    dec: (x) => dispatch('dec', x)
+  }  
+}
+
+// or
+const actions = ['inc', 'dec']
+
+export default connect(map, actions, options)(Component)
+```
+
+## `<Consumer />`
+
+A render props style component that can be used inline of your component's render function to map the state similarly to how `connect works`. It supports the following props.
+
+#### map
+*type*: `function`
+*default*: `null`
+
+Map atom state to props for your component. Upon changes to atom, the mapped props are compared to the previously mapped props and the connected component is only rerendered if they differ. A shallow object diff is used in the comparison.
+
+#### actions
+*type*: `array | function`
+*default*: `null`
+
+An array of action names that will be turned into functions and passed via props or a function that takes dispatch and can return an object with functions that will be passed to the component.
+
+#### pure
+*type*: `boolean`
+*default*: `true`
+
+If the connection is `pure`, the mapped props are compared to previously mapped props for avoiding rerenders. Set this to false to rerender on any state change. **Note!** Children prop is also compared in this case and if you're using an inline render function, it will be different every time thus removing the benefits of setting `pure` to `true`.
+
+#### sync
+*type*: `boolean`
+*default*: `false`
+
+By default, the change listeners are debounced such that at most one render occurs per frame. Set to true to rerender immediately on change state.
+
+### Example
+
+```js
+import { Consumer } from './connect'
+
+const map = (state) => {
+  return {
+    count: state.count
+  }
+}
+
+const actions = (dispatch) => {
+  return {
+    inc: (x) => dispatch('inc', x),
+    dec: (x) => dispatch('dec', x)
+  }  
+}
+
+// or
+const actions = ['inc', 'dec']
 
 export default () => {
-  <ConnectAtom map={(state, split) => {}} render={props => (...)} />
+  <Consumer map={map} actions={actions}>
+    {({ count, inc, dec })} => (
+      <button onClick={inc}>{count}</button>
+    )
+  </Consumer>
 }
 ```
-
-Takes an optional `map` prop that transforms the `state` and `split` into props for the nested component. If not provided, the entire `state` and `split` is passed as props to the nested component. The `render` prop takes a function that is called to render the connected child component.
-
-## `connect`
-
-```js
-import { connect } from 'tiny-atom/preact'
-
-const map = (state, split) => {}
-export default connect(map)(Component)
-```
-
-Takes an optional `map` prop that transforms the `state` and `split` into props for the connected component. And then takes a `Component` and returns the connected higher order component.
 
 ## Example
 
-**index.js**
-
-```js
-const Preact = require('preact')
-const createAtom = require('tiny-atom')
-const { ProvideAtom } = require('tiny-atom/preact')
-const log = require('tiny-atom/log')
-const actions = require('./actions')
-const App = require('./App')
-
-// create the atom
-const atom = createAtom({ count: 0 }, evolve, render, {
-  debug: log
-})
-
-// a pretty typical evolver that calls the action handlers
-function evolve (get, split, action) {
-  actions[action.type](get, split, action.payload)
-}
-
-// wrap the rendering into a function for atom to call
-function render (atom) {
-  Preact.render((
-    <ProvideAtom atom={atom}>
-      <App />
-    </ProvideAtom>
-  ), document.body, document.body.lastElementChild)
-}
-
-// initial render
-render(atom)
-```
-
-**actions.js**
-
-```js
-module.exports = {
-  increment: (get, split, payload) => {
-    split({ count: get().count + payload })
-    split('track', { event: 'increment' })
-  },
-
-  decrement: (get, split, payload) => {
-    split({ count: get().count - payload })
-    split('track', { event: 'decrement' })
-  },
-
-  track: (get, split, payload) => {
-    ga('send', payload)
-  }
-}
-```
-
-**App.js**
-
-```js
-const Preact = require('preact')
-const Header = require('./Header')
-const { ConnectAtom } = require('tiny-atom/preact')
-
-const mapAtom = (state, split) => ({
-  count: state.count,
-  doubleCount: state.count * 2,
-  inc: () => split('increment', 1),
-  dec: () => split('decrement', 1)
-})
-
-module.exports = () => (
-  <ConnectAtom map={mapAtom} render={({ count, doubleCount, inc, dec }) => (
-    <div>
-      <Header title='Counter' />
-      <div>times one: {count}</div>
-      <div>times two: {doubleCount}</div>
-      <button onClick={inc}>Increment</button>
-      <button onClick={dec}>Decrement</button>
-    </div>
-  )} />
-)
-```
-
-**Header.js**
-
-```js
-const Preact = require('preact')
-const { ConnectAtom } = require('tiny-atom/preact')
-
-module.exports = ({ title }) => (
-  <ConnectAtom render={({ state, split }) => (
-    <div onClick={() => split('increment', 5)}>
-      {title}
-    </div>
-  )} />
-)
-```
-
-## Render prop vs children prop vs connect
-
-Use the one that works best for your application.
-
-Connect with a render prop:
-
-```js
-const Preact = require('preact')
-const { ConnectAtom } = require('tiny-atom/preact')
-
-module.exports = ({ title }) => (
-  <ConnectAtom render={({ state, split }) => (
-    <div>{title} - {state.id}</div>
-  )} />
-)
-```
-
-Connect with a children prop:
-
-```js
-const Preact = require('preact')
-const { ConnectAtom } = require('tiny-atom/preact')
-
-module.exports = ({ title }) => (
-  <ConnectAtom>{
-    ({ state, split }) => 
-      <div>{title} - {state.id}</div>
-    )
-  }</ConnectAtom>
-)
-```
-
-Connect with a hoc function:
-
-```js
-const Preact = require('preact')
-const { connect } = require('tiny-atom/preact')
-
-module.exports = connect()(({ title, state, split }) => (
-  <div>{title} - {state.id}</div>
-))
-```
+To see a full working example, have a look at the [examples/preact-example](https://github.com/QubitProducts/tiny-atom/tree/master/examples/preact-example)

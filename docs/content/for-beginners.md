@@ -33,7 +33,7 @@ const App = (state) => `
 document.body.innerHTML = App({ count: 5 })
 ```
 
-That's it. If you want to render the app with different `state`, call `App()` again. That's kind of the concept behind React. But React does a fair bit more to help us in real world situations:
+That's it. If you want to render the app with different `state`, call `App()` again. That's kind of the core concept behind React. But React does a fair bit more to help us in real world situations:
 
 * it helps us handle user events
 * makes it easy to nest individual components
@@ -83,13 +83,13 @@ ReactDOM.render(<App {...state} />, document.body)
 
 But at the core, you can see how `App` is still a function that takes state and outputs the entire UI - `fn(state)`.
 
-Why is that important? Because it's simple. You can think of each smaller part of the app as another function. And each one of them are these pure, stateless functions. They take some arguments, return some UI. It's easy to reason about each such function as long as you keep the state outside.
+Why is that important? Because it's simple. You can think of each smaller part of the application as yet another function. And all of these functions are  pure and stateless. They take some arguments, return some UI. It's easy to reason about each such function as long as you keep the state outside.
 
 ## Part 2 - State management
 
 What we saw in Part 1 is all great and good. But in real world applications, the `state` changes all the time. For example:
 
-* the server ‐ someone posts a comment
+* the server state changes when someone posts a comment
 * UI interaction ‐ you click "Merge PR"
 * VR interaction ‐ you turn your head
 * side effect ‐ a game engine ticks and updates the world state
@@ -138,19 +138,29 @@ Bam! Whenever some app component needs to update the state it can do so with the
 The single state store approach is what **Tiny Atom** helps utilise in your applications. With **Tiny Atom** this same example will look more like:
 
 ```js
-let atom = createAtom({ count: 0 }, () => {}, render)
+let atom = createAtom({ count: 0 }, {
+  increment: ({ get, set }) => {
+    const count = get().count
+    set({ count: count + 1 })
+  }
+})
+```
 
-const App ({ state, split }) => (
-  <div onClick={() => split({ count: state.count + 1 })}>
-    <div>Count: {state.count}</div>
-  </div>
-)
-
-function render () {
-  ReactDOM.render(<App state={atom.get()} split={atom.split} />)
+const map = (state) => {
+  return { count: state.count }
 }
 
-render()
+const actions = [
+  'increment'
+]
+
+const App = connect(map, actions)(({ count, increment }) => (
+  <div onClick={increment}>
+    <div>Count: {count}</div>
+  </div>
+))
+
+ReactDOM.render(<App />, document.getElementById('root'))
 ```
 
 Additionally, **Tiny Atom** provides ability to use actions which are self contained pieces of logic that can transition the `state` from one state to the next. You can read more about the actual real world usage of **Tiny Atom** in the [Basics](/basics) section.

@@ -12,22 +12,26 @@ Another way to actually force immutability in your `atom` is to use an immutable
 const { Map } = require('immutable')
 const createAtom = require('tiny-atom')
 
-const initialState = Map({ count: 0 })
 const merge = (state, update) => state.merge(update)
-const atom = createAtom(initialState, evolve, render, { merge })
+const atom = createAtom(initialState(), actions(), { merge })
 
-function evolve (get, split, action) {
-  if (action.type === 'increment') {
-    const state = get()
-    const count = state.get('count')
-    const update = Map({ count: count + 1 })
-    split(update)
-  }
+const initialState = function () {
+  return Map({ count: 0 })
+}
 
-  if (action.type === 'decrement') {
-    // or simply
-    const nextState = get().set('count', 5)
-    split(nextState)
+function actions () {
+  return {
+    increment: ({ get, set }, action) => {
+      const state = get()
+      const count = state.get('count')
+      const update = Map({ count: count + 1 })
+      set(update)
+    },
+
+    decrement: ({ get, set }, action) => {
+      const nextState = get().set('count', 5)
+      set(nextState)
+    }
   }
 }
 ```

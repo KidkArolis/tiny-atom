@@ -47,58 +47,54 @@ console.log(store.getState())
 ```js
 const createStore = require('tiny-atom')
 
-function todos (get, split, { type, payload }) {
+function todos ({ get, set, dispatch }, { type, payload }) {
   switch (type) {
     case 'addTodo':
       let { list } = get()
-      split({ list: list.concat([payload.text])
+      set({ list: list.concat([payload.text])
       break
   }
 }
-const store = createStore({ list: ['Use Tiny Atom'] }, todos)
+const store = createStore({ list: ['Use Tiny Atom'] }, {}, { evolve: todos })
 
-store.split('addTodo', { text: 'Read the docs' })
+store.dispatch('addTodo', { text: 'Read the docs' })
 
 console.log(store.get())
 // [ 'Use Tiny Atom', 'Read the docs' ]
 ```
 
-Why is `dispatch` called `split`? To give **Tiny Atom** a bit of it's own distinct identity. And splitting the atom, you know? Thing with `split` is that it can be used inside the reducer to perform many sync and async updates. It can also `split` further actions. Here's an example:
+The power of **Tiny Atom** comes from being able to perform many different related state transitions in a single action. Here's an example:
 
 ```js
 const createAtom = require('tiny-atom')
 
 const actions = {
-  fetch: async (get, split) => {
-    // first split
-    split({ loading: true })
+  fetch: async ({ get, set, dispatch }) => {
+    // first set
+    set({ loading: true })
     try {
       const todos = await axios.get('/todos')
-      // second split
-      split({ list: get().list.concat(todos.data) })
+      // second set
+      set({ list: get().list.concat(todos.data) })
     } catch (err) {
       // in case this errored
-      split({ err })
-      // split another action
-      split('track', { event: 'fetchFailed', data: err.message })
+      set({ err })
+      // dispatch another action
+      dispatch('track', { event: 'fetchFailed', data: err.message })
     } finally {
-      // split more
-      split({ loading: false })
+      // set more
+      set({ loading: false })
     }
   },
 
-  track: (get, split, payload) => {
+  track: (atom, payload) => {
     sentry.send(payload)
   }
 }
 
-function evolve (get, split, action) {
-  actions[action.type](get, split, action.payload)
-}
+const atom = createAtom({ list: [] }, actions)
 
-const atom = createAtom({ list: [] }, evolve)
-
-atom.split('fetch')
+atom.dispatch('fetch')
 ```
 
 **We found that this way of asynchronously updating the state reduces the boilerplate and improves readability of the code. The relevant logic is self contained instead of being scattered around.**
@@ -107,8 +103,8 @@ To summarise, **Tiny Atom**:
 
 * is similar to Redux
 * does not have action creators
-* keeps the business logic in the "reducer" called `evolve`
-* `evolve` can make changes to the state synchronously and asynchronously
+* keeps the business logic self contained inside actions
+* actions can make multiple changes to the state synchronously and asynchronously
 
 ## Declarative state management
 
@@ -131,7 +127,7 @@ These look very cool and we're still wondering if they are a better alternative.
 
 When [Om](https://github.com/omcljs/om) first came around, it popularised the cursor approach to managing the state. The idea was roughly to pass around an object – cursor, which could be used to read the state. It could then also be used to mutate the state directly, but instead of mutating the object in place it would trigger an update to subscribers with the new updated state.
 
-In a lot of ways, it's not too dissimilar from passing a **Tiny Atom** atom around which you use to read of state. **Tiny Atom** even allows directly modifying the state with a patch `split({ count: 5 })`, similar to how you would update a cursor. Except you don't need to learn a custom API, you just work with plain JavaScript.
+In a lot of ways, it's not too dissimilar from passing a **Tiny Atom** atom around which you use to read the state.
 
 *Note: apologies if I'm misunderstanding cursors entirely, feel free to post an GH issue or edit this page*.
 

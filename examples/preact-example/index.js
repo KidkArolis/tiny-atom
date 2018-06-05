@@ -22,11 +22,11 @@ const actions = {
     setTimeout(() => {
       set({
         count: get().count + payload,
-        extra: (get().extra || 'a') + 'a'
+        // extra: (get().extra || 'a') + 'a'
       })
-      setTimeout(() => {
-        dispatch('decrement', 1)
-      }, 1000)
+      // setTimeout(() => {
+      //   dispatch('decrement', 1)
+      // }, 1000)
     }, 1000)
   },
 
@@ -42,7 +42,7 @@ const actions = {
 const atom = window.atom = createAtom({ count: 0 }, actions, {
   debug: (info) => {
     log(info)
-    devtools(info)
+    // devtools(info)
   }
 })
 
