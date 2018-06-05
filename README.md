@@ -26,8 +26,8 @@
 * single store modified via actions
 * tiny api - easy to understand, easy to adapt
 * tiny size - 1KB
-+ react and preact bindings included
-+ console logger and redux devtools integration
+* react and preact bindings included
+* console logger and redux devtools integration
 
 **How is this different from redux?** The key difference is that action functions in tiny-atom can read and update the state and call other actions. Action functions are self contained units of business logic. This removes layers of boilerplate while preserving the benefits of redux like stores.
 
