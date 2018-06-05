@@ -33,7 +33,7 @@
 
 ## Installation
 
-    $ npm install --save tiny-atom
+    $ npm install --save tiny-atom@beta
 
 ## Docs
 
