@@ -1,8 +1,20 @@
 const React = require('react')
 const raf = require('./raf')
 
-module.exports = function createContext (atom) {
-  class Consumer extends React.Component {
+function createContext () {
+  const AtomContext = React.createContext()
+
+  class Provider extends React.Component {
+    render () {
+      return (
+        <AtomContext.Provider value={this.props.atom}>
+          {this.props.children}
+        </AtomContext.Provider>
+      )
+    }
+  }
+
+  class ConsumerWithAtom extends React.Component {
     constructor (props) {
       super()
       this.state = {}
@@ -14,10 +26,7 @@ module.exports = function createContext (atom) {
 
     componentDidMount () {
       this.dirty = false
-      this.unobserve = atom.observe(() => {
-        this.dirty = true
-        this.cancelUpdate = this.scheduleUpdate()
-      })
+      this.observe()
     }
 
     componentWillUnmount () {
@@ -37,8 +46,19 @@ module.exports = function createContext (atom) {
       return differ(this.props, nextProps)
     }
 
-    componentDidUpdate () {
+    componentDidUpdate (prevProps) {
       this.dirty = false
+      if (prevProps.atom !== this.props.atom) {
+        this.unobserve && this.unobserve()
+        this.observe()
+      }
+    }
+
+    observe () {
+      this.unobserve = this.props.atom.observe(() => {
+        this.dirty = true
+        this.cancelUpdate = this.scheduleUpdate()
+      })
     }
 
     update () {
@@ -46,17 +66,23 @@ module.exports = function createContext (atom) {
     }
 
     render () {
-      const { actions, originalProps, render, children } = this.props
+      const { atom, actions, originalProps, render, children } = this.props
       const mappedProps = this.state
       const boundActions = bindActions(actions, atom.dispatch, mappedProps)
       return (render || children)(Object.assign({}, originalProps, mappedProps, boundActions))
     }
   }
 
-  Consumer.getDerivedStateFromProps = (props, state) => {
-    const { originalProps, map } = props
+  ConsumerWithAtom.getDerivedStateFromProps = (props, state) => {
+    const { atom, originalProps, map } = props
     return Object.assign({}, originalProps, map ? map(atom.get(), originalProps) : {})
   }
+
+  const Consumer = props => (
+    <AtomContext.Consumer>
+      {atom => <ConsumerWithAtom {...props} atom={atom} />}
+    </AtomContext.Consumer>
+  )
 
   function connect (map, actions, options = {}) {
     return function connectComponent (Component) {
@@ -93,5 +119,8 @@ module.exports = function createContext (atom) {
     return false
   }
 
-  return { Consumer, connect }
+  return { Provider, Consumer, connect }
 }
+
+const { Provider, Consumer, connect } = createContext()
+module.exports = { Provider, Consumer, connect, createContext }

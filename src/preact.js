@@ -4,13 +4,33 @@ const raf = require('./raf')
 // For now, React and Preact bindings are different implementation
 // just because Preact doesn't have getDerivedStateFromProps yet
 // once that's shipped, we can reuse the React implementation in both
-module.exports = function createContext (atom) {
-  const { get, dispatch } = atom
+function createContext () {
+  // this breaks the multiple Providers with different atoms
+  // functionality, but that's not common, on the other hand
+  // this ensures that swapping atoms (which is also not common)
+  // works as expected
+  let currentAtom
+
+  class Provider extends Preact.Component {
+    getChildContext () {
+      return {
+        atom: this.props.atom
+      }
+    }
+
+    componentWillReceiveProps (nextProps) {
+      currentAtom = nextProps.atom
+    }
+
+    render () {
+      return this.props.children[0]
+    }
+  }
 
   class Consumer extends Preact.Component {
-    constructor (props) {
+    constructor (props, { atom }) {
       super()
-      this.state = this.map(get(), props)
+      this.state = this.map(atom.get(), props)
       this.pure = typeof props.pure === 'undefined' ? true : props.pure
       this.scheduleUpdate = props.sync
         ? () => this.update()
@@ -18,7 +38,19 @@ module.exports = function createContext (atom) {
     }
 
     componentDidMount () {
+      const { atom } = this.context
       this.dirty = false
+      this.observedAtom = atom
+      this.unobserve = atom.observe(() => {
+        this.dirty = true
+        this.cancelUpdate = this.scheduleUpdate()
+      })
+    }
+
+    reobserve () {
+      const { atom } = this.context
+      this.unobserve && this.unobserve()
+      this.observedAtom = atom
       this.unobserve = atom.observe(() => {
         this.dirty = true
         this.cancelUpdate = this.scheduleUpdate()
@@ -43,7 +75,8 @@ module.exports = function createContext (atom) {
     }
 
     componentWillReceiveProps (nextProps) {
-      const nextMappedProps = this.map(get(), nextProps)
+      const { atom } = this.context
+      const nextMappedProps = this.map(atom.get(), nextProps)
       this.setState(nextMappedProps)
     }
 
@@ -58,13 +91,16 @@ module.exports = function createContext (atom) {
 
     update () {
       if (!this.dirty) return
-      const nextMappedProps = this.map(get(), this.props)
+      const { atom } = this.context
+      const nextMappedProps = this.map(atom.get(), this.props)
       this.setState(nextMappedProps)
     }
 
-    render ({ actions, originalProps, render, children }) {
+    render ({ actions, originalProps, render, children }, state) {
+      if (this.observedAtom !== currentAtom) this.reobserve()
+      const { atom } = this.context
       const mappedProps = this.state
-      const boundActions = bindActions(actions, dispatch, mappedProps)
+      const boundActions = bindActions(actions, atom.dispatch, mappedProps)
       return (render || children[0])(Object.assign({}, originalProps, mappedProps, boundActions))
     }
   }
@@ -104,5 +140,8 @@ module.exports = function createContext (atom) {
     return false
   }
 
-  return { Consumer, connect }
+  return { Provider, Consumer, connect }
 }
+
+const { Provider, Consumer, connect } = createContext()
+module.exports = { Provider, Consumer, connect, createContext }

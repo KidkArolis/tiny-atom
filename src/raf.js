@@ -1,6 +1,6 @@
 function getRequestAnimationFrame () {
   if (typeof window === 'undefined') {
-    return (callback) => callback()
+    return callback => callback()
   }
 
   const polyfill = (() => {
@@ -24,44 +24,24 @@ function getRequestAnimationFrame () {
     polyfill
 }
 
-module.exports = function raf (fn, options = {}) {
+module.exports = function raf (fn) {
   const requestAnimationFrame = getRequestAnimationFrame()
 
-  if (typeof options.initial === 'undefined') {
-    options.initial = true
-  }
-
-  let scheduled = false
   let requested = false
-  let cancelled = false
-
-  function cancel () {
-    cancelled = true
-  }
 
   return function rafed (...args) {
-    if (scheduled) {
+    if (!requested) {
       requested = true
-      return cancel
-    }
-
-    if (options.initial) {
-      fn(...args)
-    } else {
-      requested = true
-    }
-
-    scheduled = true
-    requestAnimationFrame(() => {
-      scheduled = false
-      if (requested) {
-        requested = false
-        if (!cancelled) {
+      requestAnimationFrame(() => {
+        if (requested) {
+          requested = false
           fn(...args)
         }
-      }
-    })
+      })
+    }
 
-    return cancel
+    return function cancel () {
+      requested = false
+    }
   }
 }

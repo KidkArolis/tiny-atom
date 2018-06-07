@@ -9,7 +9,7 @@ const atom = window.atom = createAtom({ count: 0, list: [1] }, actions(), {
   debug: [log(), devtools()]
 })
 
-const { Consumer } = createConnector(atom)
+const { Provider, Consumer } = createConnector()
 
 function actions () {
   return {
@@ -58,20 +58,22 @@ const mapActions = [
 ]
 
 const App = () => (
-  <Consumer map={map} actions={mapActions}>
-    {({ count, doubleCount, asyncIncrement, increment, decrement }) => (
-      <div>
-        <h2>count: {count}</h2>
-        <h2>double: {doubleCount}</h2>
-        <Nested multiplier={5}>
-          <Nested multiplier={10} />
-        </Nested>
-        <button onClick={() => increment(1)}>Increment</button>
-        <button onClick={() => decrement(1)}>Decrement</button>
-        <button onClick={() => asyncIncrement(2)}>Async increment</button>
-      </div>
-    )}
-  </Consumer>
+  <Provider atom={atom}>
+    <Consumer map={map} actions={mapActions}>
+      {({ count, doubleCount, asyncIncrement, increment, decrement }) => (
+        <div>
+          <h2>count: {count}</h2>
+          <h2>double: {doubleCount}</h2>
+          <Nested multiplier={5}>
+            <Nested multiplier={10} />
+          </Nested>
+          <button onClick={() => increment(1)}>Increment</button>
+          <button onClick={() => decrement(1)}>Decrement</button>
+          <button onClick={() => asyncIncrement(2)}>Async increment</button>
+        </div>
+      )}
+    </Consumer>
+  </Provider>
 )
 
 const Nested = ({ multiplier, children }) => (

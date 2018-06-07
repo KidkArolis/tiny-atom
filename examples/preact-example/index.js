@@ -51,30 +51,34 @@ const bindActions = [
   'random'
 ]
 
-const { Consumer, connect } = createContext(atom)
+const { Provider, Consumer, connect } = createContext()
+
+const atom2 = createAtom({ count: 2000 }, actions)
 
 const App = () => (
-  <Consumer map={mapAtom} actions={bindActions}>
-    {({ count, rnd, doubleCount, asyncIncrement, increment, decrement, random }) => {
-      return (
-        <div>
-          <h1>count: {count}</h1>
-          <h1>double: {doubleCount}</h1>
-          <h1>rnd: {rnd}</h1>
-          <Count multiplier={5} />
-          <Consumer map={({ rnd }) => ({ rnd })}>
-            {({ rnd }) => {
-              return <div>Random: {rnd}</div>
-            }}
-          </Consumer>
-          <button onClick={() => increment(1)}>Increment</button>
-          <button onClick={() => decrement(1)}>Decrement</button>
-          <button onClick={() => asyncIncrement(2)}>Async increment</button>
-          <button onClick={() => random()}>Random</button>
-        </div>
-      )
-    }}
-  </Consumer>
+  <Provider atom={Math.random() > 0.5 ? atom : atom2}>
+    <Consumer map={mapAtom} actions={bindActions}>
+      {({ count, rnd, doubleCount, asyncIncrement, increment, decrement, random }) => {
+        return (
+          <div>
+            <h1>count: {count}</h1>
+            <h1>double: {doubleCount}</h1>
+            <h1>rnd: {rnd}</h1>
+            <Count multiplier={5} />
+            <Consumer map={({ rnd }) => ({ rnd })}>
+              {({ rnd }) => {
+                return <div>Random: {rnd}</div>
+              }}
+            </Consumer>
+            <button onClick={() => increment(1)}>Increment</button>
+            <button onClick={() => decrement(1)}>Decrement</button>
+            <button onClick={() => asyncIncrement(2)}>Async increment</button>
+            <button onClick={() => random()}>Random</button>
+          </div>
+        )
+      }}
+    </Consumer>
+  </Provider>
 )
 
 const mapCount = ({ count }) => ({ count })
@@ -86,6 +90,9 @@ const Count = connect(mapCount)(({ multiplier, count, children }) => {
   )
 })
 
-Preact.render((
-  <App />
-), document.body, document.body.lastElementChild)
+setInterval(() => {
+  console.log('rendering')
+  Preact.render((
+    <App />
+  ), document.body, document.body.lastElementChild)
+}, 2000)
