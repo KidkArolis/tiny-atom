@@ -15,8 +15,9 @@ class ProvideAtom extends React.Component {
 
 ProvideAtom.childContextTypes = { atom: Any }
 
-function ConnectAtom ({ map, render, children }, { atom }) {
-  render = render || children
+function ConnectAtom (props, { atom }) {
+  const { map } = props
+  const render = props.render || props.children
   const data = map ? map(atom.get(), atom.split) : { state: atom.get(), split: atom.split }
   return render(data)
 }
