@@ -37,18 +37,18 @@ module.exports = (options = {}) => {
     if (type === 'action' && options.actions) {
       const actions = sourceActions.concat(action)
       groupStart(`🚀 ${actions.map(a => a.type).join(' → ')}`, true)
-      logger.log('chain', actions)
       logger.log('payload', action.payload)
+      logger.log('chain', actions)
       groupEnd()
     }
 
     if (type === 'update' && options.updates) {
       groupStart(`🙌 ${sourceActions.map(a => a.type).join(' → ')}`, true)
+      logger.log('payload', action.payload)
       logger.log('chain', sourceActions)
       logger.log('update', action.payload)
       logger.log('prev state', prevState)
       logger.log('curr state', atom.get())
-      logger.log('payload', action.payload)
       groupEnd()
       if (options.diff) {
         diff(prevState, atom.get())
@@ -73,7 +73,7 @@ module.exports = (options = {}) => {
       case 'D':
         return [path.join('.')]
       case 'A':
-        return [`${path.join('.')}[${index}]`, `${dictionary[item.kind].atext}${render(item).join(' ')}`]
+        return [`${path.join('.')}[${index}]`, dictionary[item.kind].atext].concat(render(item).slice(1))
       default:
         return []
     }

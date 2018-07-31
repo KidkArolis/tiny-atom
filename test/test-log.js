@@ -27,8 +27,8 @@ test('logs out formatted messages', async t => {
 
   t.deepEqual(buffer, [
     ' 🚀 foo',
-    'chain [{"type":"foo","seq":1}]',
-    'payload undefined'
+    'payload undefined',
+    'chain [{"type":"foo","seq":1}]'
   ])
 
   const atom = { get: () => ({ state: 1, list: [2, 3] }) }
@@ -41,11 +41,11 @@ test('logs out formatted messages', async t => {
   }, logger)
 
   t.deepEqual(buffer.slice(4), [
+    'payload {"slice":1}',
     'chain []',
     'update {"slice":1}',
     'prev state {"state":0,"list":[1]}',
     'curr state {"state":1,"list":[2,3]}',
-    'payload {"slice":1}',
     '%c CHANGED: color: #2196F3; font-weight: bold; state 0 → 1',
     '%c ARRAY: color: #2196F3; font-weight: bold; list[1] added 3',
     '%c CHANGED: color: #2196F3; font-weight: bold; list.0 1 → 2'
