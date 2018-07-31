@@ -1,5 +1,5 @@
 const createAtom = require('tiny-atom')
-const debug = require('tiny-atom/log')
+const log = require('tiny-atom/log')
 
 const actions = {
   increment: ({ get, set }, x) => {
@@ -15,7 +15,7 @@ const actions = {
   }
 }
 
-const atom = createAtom({ count: 0 }, actions, { debug })
+const atom = createAtom({ count: 0 }, actions, { debug: log() })
 
 atom.observe(function render (atom) {
   document.body.innerHTML = `Count ${atom.get().count}`

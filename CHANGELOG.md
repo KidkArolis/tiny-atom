@@ -1,3 +1,12 @@
+## 3.0.0-beta.0
+
+The version 2.0.0 wasn't ready for prime time and should have been released under both beta channel and beta name. We're doing this with 3.0.0 instead.
+
+Summary of changes
+
+* New logger, both `tiny-atom/log` and `tiny-atom/devtools` are now factory functions that need to be called to create the actual log function. This is so they could take options, e.g. `log({ diff: false })`. The new logger outputs simpler looking output, prints the diff of all the state changes and uses emojis 🙌!
+* Version 3.0.0 brings back `<Provider />`, because it's a great way of wiring up the application at runtime. This makes it easier to construct the atom lazily and inject it into the render tree via Provider at runtime.
+
 ## 2.0.0
 
 A major refactor of tiny-atom's codebase and API.

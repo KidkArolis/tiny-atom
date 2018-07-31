@@ -5,8 +5,8 @@ const createConnector = require('tiny-atom/react')
 const devtools = require('tiny-atom/devtools')
 const log = require('tiny-atom/log')
 
-const atom = window.atom = createAtom({ count: 0 }, actions(), {
-  debug: [log, devtools]
+const atom = window.atom = createAtom({ count: 0, list: [1] }, actions(), {
+  debug: [log(), devtools()]
 })
 
 const { Consumer } = createConnector(atom)
@@ -19,6 +19,8 @@ function actions () {
 
     decrement: ({ get, set }, payload) => {
       set({ count: get().count - payload })
+      const l = Math.round(Math.random() * 10)
+      set({ list: Array.from({length: l}, () => Math.floor(Math.random() * l)) })
     },
 
     asyncIncrement: ({ get, set, dispatch }, payload) => {
