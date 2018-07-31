@@ -15,45 +15,40 @@ test('calls functions at most once a frame', async t => {
   // no renders yet
   t.is(renders, 0)
 
-  // rendered once, immediately even before the frame
+  // still no renders
   render()
-  t.is(renders, 1)
+  t.is(renders, 0)
 
   // all subsequent renders are deferred
   render()
   render()
   render()
-  t.is(renders, 1)
+  t.is(renders, 0)
 
   // once the frame kicks in, one of the deferred renders goes through
   frame()
+  t.is(renders, 1)
+
+  // frames fire, no extra renders happen
+  frame()
+  frame()
+  t.is(renders, 1)
+
+  // the next render is deferred again
+  render()
+  render()
+  render()
+  t.is(renders, 1)
+
+  // frame kicks in
+  frame()
   t.is(renders, 2)
 
   // frames fire, no extra renders happen
   frame()
   frame()
+  frame()
   t.is(renders, 2)
-
-  // the next render goes in immediately
-  render()
-  render()
-  render()
-  t.is(renders, 3)
-
-  // but the next ones are waiting for a frame
-  render()
-  render()
-  t.is(renders, 3)
-
-  // render kicks in
-  frame()
-  t.is(renders, 4)
-
-  // frames fire, no extra renders happen
-  frame()
-  frame()
-  frame()
-  t.is(renders, 4)
 })
 
 test('gets pollyfilled with ts on the server or other envs', async t => {
@@ -67,43 +62,39 @@ test('gets pollyfilled with ts on the server or other envs', async t => {
   // no renders yet
   t.is(renders, 0)
 
-  // rendered once, immediately even before the frame
+  // no renders yet
   render()
-  t.is(renders, 1)
+  t.is(renders, 0)
 
   // all subsequent renders are deferred
   render()
   render()
   render()
-  t.is(renders, 1)
+  t.is(renders, 0)
 
   // once the frame kicks in, one of the deferred renders goes through
   await tick()
-  t.is(renders, 2)
+  t.is(renders, 1)
 
   // frames fire, no extra renders happen
   await tick()
   await tick()
+  t.is(renders, 1)
+
+  // this one's not deferred, due to how
+  // the polyfill works
+  render()
+  render()
+  render()
   t.is(renders, 2)
 
-  // // the next render goes in immediately
-  // render()
-  // render()
-  // // render()
-  // t.is(renders, 3)
+  // one more render kicks in due to polyfill
+  await tick()
+  t.is(renders, 3)
 
-  // // but the next ones are waiting for a frame
-  // render()
-  // render()
-  // t.is(renders, 3)
-
-  // // render kicks in
-  // await tick()
-  // t.is(renders, 4)
-
-  // // frames fire, no extra renders happen
-  // await tick()
-  // await tick()
-  // await tick()
-  // t.is(renders, 4)
+  // frames fire, no extra renders happen
+  await tick()
+  await tick()
+  await tick()
+  t.is(renders, 3)
 })

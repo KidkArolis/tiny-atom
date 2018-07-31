@@ -1,23 +1,32 @@
 const React = require('react')
 const raf = require('./raf')
 
-module.exports = function createContext (atom) {
-  class Consumer extends React.Component {
+function createContext () {
+  const AtomContext = React.createContext()
+
+  class Provider extends React.Component {
+    render () {
+      return (
+        <AtomContext.Provider value={this.props.atom}>
+          {this.props.children}
+        </AtomContext.Provider>
+      )
+    }
+  }
+
+  class ConsumerInner extends React.Component {
     constructor (props) {
       super()
       this.state = {}
       this.pure = typeof props.pure === 'undefined' ? true : props.pure
       this.scheduleUpdate = props.sync
         ? () => this.update()
-        : raf(() => this.update(), { initial: false })
+        : raf(() => this.update())
     }
 
     componentDidMount () {
       this.dirty = false
-      this.unobserve = atom.observe(() => {
-        this.dirty = true
-        this.cancelUpdate = this.scheduleUpdate()
-      })
+      this.observe()
     }
 
     componentWillUnmount () {
@@ -31,14 +40,25 @@ module.exports = function createContext (atom) {
       if (this.props.children !== nextProps.children) return true
       // our state is mappedProps, this is the main optimisation
       if (differ(this.state, nextState)) return true
-      // in connect() case don't need to diff further, we're in control
+      // in connect() case don't need to diff further, no extra props
       if (this.props.originalProps) return false
       // in <Consumer /> case we also diff props
       return differ(this.props, nextProps)
     }
 
-    componentDidUpdate () {
+    componentDidUpdate (prevProps) {
       this.dirty = false
+      if (prevProps.atom !== this.props.atom) {
+        this.observe()
+      }
+    }
+
+    observe () {
+      this.unobserve && this.unobserve()
+      this.unobserve = this.props.atom.observe(() => {
+        this.dirty = true
+        this.cancelUpdate = this.scheduleUpdate()
+      })
     }
 
     update () {
@@ -46,17 +66,23 @@ module.exports = function createContext (atom) {
     }
 
     render () {
-      const { actions, originalProps, render, children } = this.props
+      const { atom, actions, originalProps, render, children } = this.props
       const mappedProps = this.state
       const boundActions = bindActions(actions, atom.dispatch, mappedProps)
       return (render || children)(Object.assign({}, originalProps, mappedProps, boundActions))
     }
   }
 
-  Consumer.getDerivedStateFromProps = (props, state) => {
-    const { originalProps, map } = props
+  ConsumerInner.getDerivedStateFromProps = (props, state) => {
+    const { atom, originalProps, map } = props
     return Object.assign({}, originalProps, map ? map(atom.get(), originalProps) : {})
   }
+
+  const Consumer = props => (
+    <AtomContext.Consumer>
+      {atom => <ConsumerInner {...props} atom={atom} />}
+    </AtomContext.Consumer>
+  )
 
   function connect (map, actions, options = {}) {
     return function connectComponent (Component) {
@@ -93,5 +119,8 @@ module.exports = function createContext (atom) {
     return false
   }
 
-  return { Consumer, connect }
+  return { Provider, Consumer, connect }
 }
+
+const { Provider, Consumer, connect } = createContext()
+module.exports = { Provider, Consumer, connect, createContext }

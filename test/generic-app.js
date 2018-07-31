@@ -1,7 +1,7 @@
 const { JSDOM } = require('jsdom')
 const createAtom = require('../src')
 
-module.exports = function app ({ h, createContext }) {
+module.exports = function app ({ h, Provider, Consumer, connect, createContext }) {
   const dom = new JSDOM('<!doctype html><div id="root"></div>')
   global.window = dom.window
   global.document = dom.window.document
@@ -16,7 +16,12 @@ module.exports = function app ({ h, createContext }) {
     }
   })
 
-  const { Consumer, connect } = createContext(atom)
+  if (createContext) {
+    const context = createContext(atom)
+    Provider = context.Provider
+    Consumer = context.Consumer
+    connect = context.connect
+  }
 
   const App = () => {
     const map = (state) => ({
@@ -28,16 +33,18 @@ module.exports = function app ({ h, createContext }) {
     })
 
     return (
-      <Consumer map={map} actions={actions}>
-        {({ count, inc }) => (
-          <div>
-            <div id='count-outer'>{count}</div>
-            <button id='increment-outer' onClick={() => inc()} />
-            <ChildWithRenderProp multiplier={10} />
-            <ChildWithConnect id='connected' multiplier={50} />
-          </div>
-        )}
-      </Consumer>
+      <Provider atom={atom}>
+        <Consumer map={map} actions={actions}>
+          {({ count, inc }) => (
+            <div>
+              <div id='count-outer'>{count}</div>
+              <button id='increment-outer' onClick={() => inc()} />
+              <ChildWithRenderProp multiplier={10} />
+              <ChildWithConnect id='connected' multiplier={50} />
+            </div>
+          )}
+        </Consumer>
+      </Provider>
     )
   }
 
@@ -74,6 +81,8 @@ module.exports = function app ({ h, createContext }) {
     render: (fn) => fn(App),
 
     assert: async function (t) {
+      await frame()
+
       t.is(childWithConnectRenderCount, 1)
 
       t.is(document.getElementById('count-outer').innerHTML, '0')
@@ -117,5 +126,5 @@ function click (dom) {
 }
 
 function frame () {
-  return new Promise(resolve => setTimeout(resolve, 1.5 * (1000 / 30)))
+  return new Promise(resolve => setTimeout(resolve, 2 * (1000 / 60)))
 }
