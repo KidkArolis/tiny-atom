@@ -1,5 +1,5 @@
 const Preact = require('preact') //eslint-disable-line
-const { Consumer } = require('./atom')
+const { Consumer } = require('tiny-atom/preact')
 require('./App.css')
 
 const map = state => {
@@ -23,8 +23,8 @@ module.exports = () => (
         </form>
 
         {state.todo.items.map((item, i) => (
-          <div className='Todo'>
-            <span className='Todo-done' onClick={() => dispatch('todo.done', i)}>☐</span>
+          <div className='Todo' onClick={() => dispatch('todo.done', i)}>
+            <span className='Todo-done'>☐</span>
             {item}
           </div>
         ))}
@@ -45,10 +45,6 @@ function onSubmit (dispatch, $input) {
   return function (e) {
     e.preventDefault()
     dispatch('todo.add')
-    window.requestAnimationFrame(() => {
-      setTimeout(() => {
-        $input.focus()
-      }, 1)
-    })
+    $input && $input.focus()
   }
 }
