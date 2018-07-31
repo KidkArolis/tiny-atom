@@ -17,7 +17,7 @@ test('logs out formatted messages', async t => {
     log: push
   }
 
-  const log = createLog({ logger })
+  const log = createLog({ actions: true, logger })
 
   log({
     type: 'action',
@@ -46,8 +46,8 @@ test('logs out formatted messages', async t => {
     'update {"slice":1}',
     'prev state {"state":0,"list":[1]}',
     'curr state {"state":1,"list":[2,3]}',
-    '%c CHANGED: color: #2196F3; font-weight: bold; state 0 → 1',
-    '%c ARRAY: color: #2196F3; font-weight: bold; list[1] added 3',
-    '%c CHANGED: color: #2196F3; font-weight: bold; list.0 1 → 2'
+    '%c   CHANGED: color: #2196F3; font-weight: bold; state 0 → 1',
+    '%c   ARRAY: color: #2196F3; font-weight: bold; list[1] added 3',
+    '%c   CHANGED: color: #2196F3; font-weight: bold; list.0 1 → 2'
   ])
 })

@@ -21,7 +21,7 @@ Create the logger.
 
 #### actions
 *type*: `boolean`
-*default*: `true`
+*default*: `false`
 
 Print actions.
 

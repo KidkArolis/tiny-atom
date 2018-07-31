@@ -23,7 +23,7 @@ const dictionary = {
 
 module.exports = (options = {}) => {
   options.diff = typeof options.diff === 'undefined' ? true : options.diff
-  options.actions = typeof options.actions === 'undefined' ? true : options.actions
+  options.actions = typeof options.actions === 'undefined' ? false : options.actions
   options.updates = typeof options.updates === 'undefined' ? true : options.updates
   options.include = options.include || []
   options.exclude = options.exclude || []
@@ -43,7 +43,7 @@ module.exports = (options = {}) => {
     }
 
     if (type === 'update' && options.updates) {
-      groupStart(`🙌 ${sourceActions.map(a => a.type).join(' → ')}`, true)
+      groupStart(`🙌 ${sourceActions.map(a => a.type).join(' → ') || '–'}`, true)
       logger.log('payload', action.payload)
       logger.log('chain', sourceActions)
       logger.log('update', action.payload)
@@ -85,7 +85,7 @@ module.exports = (options = {}) => {
       diff.forEach((elem) => {
         const { kind } = elem
         const output = render(elem)
-        logger.log(`%c ${dictionary[kind].text}`, style(kind), ...output)
+        logger.log(`%c   ${dictionary[kind].text}`, style(kind), ...output)
       })
     }
   }
