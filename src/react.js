@@ -14,14 +14,14 @@ function createContext () {
     }
   }
 
-  class ConsumerWithAtom extends React.Component {
+  class ConsumerInner extends React.Component {
     constructor (props) {
       super()
       this.state = {}
       this.pure = typeof props.pure === 'undefined' ? true : props.pure
       this.scheduleUpdate = props.sync
         ? () => this.update()
-        : raf(() => this.update(), { initial: false })
+        : raf(() => this.update())
     }
 
     componentDidMount () {
@@ -40,7 +40,7 @@ function createContext () {
       if (this.props.children !== nextProps.children) return true
       // our state is mappedProps, this is the main optimisation
       if (differ(this.state, nextState)) return true
-      // in connect() case don't need to diff further, we're in control
+      // in connect() case don't need to diff further, no extra props
       if (this.props.originalProps) return false
       // in <Consumer /> case we also diff props
       return differ(this.props, nextProps)
@@ -49,12 +49,12 @@ function createContext () {
     componentDidUpdate (prevProps) {
       this.dirty = false
       if (prevProps.atom !== this.props.atom) {
-        this.unobserve && this.unobserve()
         this.observe()
       }
     }
 
     observe () {
+      this.unobserve && this.unobserve()
       this.unobserve = this.props.atom.observe(() => {
         this.dirty = true
         this.cancelUpdate = this.scheduleUpdate()
@@ -73,14 +73,14 @@ function createContext () {
     }
   }
 
-  ConsumerWithAtom.getDerivedStateFromProps = (props, state) => {
+  ConsumerInner.getDerivedStateFromProps = (props, state) => {
     const { atom, originalProps, map } = props
     return Object.assign({}, originalProps, map ? map(atom.get(), originalProps) : {})
   }
 
   const Consumer = props => (
     <AtomContext.Consumer>
-      {atom => <ConsumerWithAtom {...props} atom={atom} />}
+      {atom => <ConsumerInner {...props} atom={atom} />}
     </AtomContext.Consumer>
   )
 
