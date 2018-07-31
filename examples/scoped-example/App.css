@@ -13,6 +13,7 @@ h1 {
 .Todo {
   border-bottom: 1px solid #eee;
   padding: 20px;
+  cursor: pointer;
 }
 
 .Todo-done {
