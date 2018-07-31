@@ -1,0 +1,40 @@
+.App {
+  font-family: sans-serif;
+  width: 400px;
+  margin: 40px auto;
+}
+
+h1 {
+  text-align: center;
+  font-size: 14px;
+  padding: 20px;
+}
+
+.Todo {
+  border-bottom: 1px solid #eee;
+  padding: 20px;
+  cursor: pointer;
+}
+
+.Todo-done {
+  cursor: pointer;
+  padding: 10px;
+  font-size: 150%;
+}
+
+.Todo-input {
+  padding: 10px;
+  font-size: 18px;
+  width: 100%;
+}
+
+.Todo-empty {
+  text-align: center;
+  padding: 40px;
+}
+
+.Hint {
+  color: #555;
+  font-size: 14px;
+  margin: 20px;
+}
