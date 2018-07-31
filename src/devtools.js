@@ -1,4 +1,4 @@
-module.exports = function dev (info) {
+module.exports = () => (info) => {
   const type = info.type
   const atom = info.atom
   const sourceActions = info.sourceActions

@@ -35,10 +35,7 @@ const actions = {
 }
 
 const atom = window.atom = createAtom({ count: 0 }, actions, {
-  debug: (info) => {
-    log(info)
-    // devtools(info)
-  }
+  debug: log()
 })
 
 const mapAtom = (state) => ({

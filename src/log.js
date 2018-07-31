@@ -1,41 +1,110 @@
-const gray = 'color: #888'
-const green = 'color: #05823d'
-const blue = 'color: blue'
+const differ = require('deep-diff')
 
-module.exports = function log (info, logger) {
-  const { log, groupCollapsed, groupEnd } = logger || console
-  const isAction = info.type === 'action'
-  const isUpdate = info.type === 'update'
-
-  const label = info.sourceActions
-    .map(actionName)
-    .concat(isAction ? ['%c' + actionName(info.action)] : !info.sourceActions.length ? ['——'] : [])
-    .join(' → ') + (!isAction ? '%c' : '')
-
-  if (isAction) {
-    groupCollapsed('★ action %c' + label, gray, green, { payload: info.action.payload })
-    log('type %caction', blue)
-    log('action', info.action)
-    log('source', info.sourceActions)
-    groupEnd()
-  }
-
-  if (isUpdate) {
-    groupCollapsed('  update %c' + label, gray, green, ifDef(info.action.payload, '∅'))
-    log('type %cupdate', blue)
-    log('action', info.action)
-    log('source', info.sourceActions)
-    log('patch', info.action.payload)
-    log('prevState', info.prevState)
-    log('currState', info.atom.get())
-    groupEnd()
+const dictionary = {
+  E: {
+    color: '#2196F3',
+    text: 'CHANGED:'
+  },
+  N: {
+    color: '#4CAF50',
+    text: 'ADDED:',
+    atext: 'added'
+  },
+  D: {
+    color: '#F44336',
+    text: 'DELETED:',
+    atext: 'deleted'
+  },
+  A: {
+    color: '#2196F3',
+    text: 'ARRAY:'
   }
 }
 
-function actionName (action) {
-  return action.type + ' (' + action.seq + ')'
-}
+module.exports = (options = {}) => {
+  options.diff = typeof options.diff === 'undefined' ? true : options.diff
+  options.actions = typeof options.actions === 'undefined' ? true : options.actions
+  options.updates = typeof options.updates === 'undefined' ? true : options.updates
+  options.include = options.include || []
+  options.exclude = options.exclude || []
+  const logger = options.logger || console
 
-function ifDef (val, fallback) {
-  return typeof val === 'undefined' ? fallback : val
+  return ({ type, atom, action, sourceActions, prevState }) => {
+    const sourceAction = type === 'action' ? action : sourceActions[sourceActions.length - 1] || {}
+    if (options.include.length && !options.include.includes(sourceAction.type)) return
+    if (options.exclude.length && options.exclude.includes(sourceAction.type)) return
+
+    if (type === 'action' && options.actions) {
+      const actions = sourceActions.concat(action)
+      groupStart(`🚀 ${actions.map(a => a.type).join(' → ')}`, true)
+      logger.log('chain', actions)
+      logger.log('payload', action.payload)
+      groupEnd()
+    }
+
+    if (type === 'update' && options.updates) {
+      groupStart(`🙌 ${sourceActions.map(a => a.type).join(' → ')}`, true)
+      logger.log('chain', sourceActions)
+      logger.log('update', action.payload)
+      logger.log('prev state', prevState)
+      logger.log('curr state', atom.get())
+      logger.log('payload', action.payload)
+      groupEnd()
+      if (options.diff) {
+        diff(prevState, atom.get())
+      }
+    }
+  }
+
+  function style (kind) {
+    return `color: ${dictionary[kind].color}; font-weight: bold;`
+  }
+
+  function render (diff) {
+    let { kind, path, lhs, rhs, index, item } = diff
+
+    path = path || []
+
+    switch (kind) {
+      case 'E':
+        return [path.join('.'), lhs, '→', rhs]
+      case 'N':
+        return [path.join('.'), rhs]
+      case 'D':
+        return [path.join('.')]
+      case 'A':
+        return [`${path.join('.')}[${index}]`, `${dictionary[item.kind].atext}${render(item).join(' ')}`]
+      default:
+        return []
+    }
+  }
+
+  function diff (prev, next) {
+    const diff = differ(prev, next)
+    if (diff) {
+      diff.forEach((elem) => {
+        const { kind } = elem
+        const output = render(elem)
+        logger.log(`%c ${dictionary[kind].text}`, style(kind), ...output)
+      })
+    }
+  }
+
+  function groupStart (msg, isCollapsed) {
+    try {
+      if (isCollapsed) {
+        logger.groupCollapsed(msg)
+      } else {
+        logger.group(msg)
+      }
+    } catch (e) {
+      logger.log(msg)
+    }
+  }
+
+  function groupEnd () {
+    try {
+      logger.groupEnd()
+    } catch (e) {}
+  }
 }

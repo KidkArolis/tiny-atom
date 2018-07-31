@@ -40,5 +40,8 @@
   "ava": {
     "files": "test/test-*.js",
     "require": "./test/helpers/setup.js"
+  },
+  "dependencies": {
+    "deep-diff": "^1.0.1"
   }
 }
