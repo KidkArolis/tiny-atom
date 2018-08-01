@@ -15,7 +15,7 @@ const actions = [
   'addItem'
 ]
 
-module.exports = () => (
+const App = () => (
   <Consumer map={map} actions={actions}>
     {({ todo, hint, updateItem, completeItem, addItem }) => (
       <div className='App'>
@@ -49,6 +49,8 @@ module.exports = () => (
     )}
   </Consumer>
 )
+
+module.exports = App
 
 function onSubmit (addItem, $input) {
   return function (e) {
