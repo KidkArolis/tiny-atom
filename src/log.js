@@ -1,4 +1,4 @@
-const differ = require('deep-diff')
+const computeDiff = require('deep-diff')
 
 const dictionary = {
   E: {
@@ -23,6 +23,7 @@ const dictionary = {
 
 module.exports = (options = {}) => {
   options.diff = typeof options.diff === 'undefined' ? true : options.diff
+  options.diffLimit = typeof options.diffLimit === 'undefined' ? 5 : options.diffLimit
   options.actions = typeof options.actions === 'undefined' ? false : options.actions
   options.updates = typeof options.updates === 'undefined' ? true : options.updates
   options.include = options.include || []
@@ -36,22 +37,35 @@ module.exports = (options = {}) => {
 
     if (type === 'action' && options.actions) {
       const actions = sourceActions.concat(action)
-      groupStart(`🚀 ${actions.map(a => a.type).join(' → ')}`, true)
+      groupStart(`🚀 ${actions.map(a => a.type).join(' → ')}`)
       logger.log('payload', action.payload)
       logger.log('chain', actions)
       groupEnd()
     }
 
     if (type === 'update' && options.updates) {
-      groupStart(`🙌 ${sourceActions.map(a => a.type).join(' → ') || '–'}`, true)
+      let diff
+      if (options.diff) {
+        diff = computeDiff(prevState, atom.get())
+      }
+
+      groupStart(`🙌 ${sourceActions.map(a => a.type).join(' → ') || '–'}`)
       logger.log('payload', action.payload)
       logger.log('chain', sourceActions)
       logger.log('update', action.payload)
       logger.log('prev state', prevState)
       logger.log('curr state', atom.get())
       groupEnd()
-      if (options.diff) {
-        diff(prevState, atom.get())
+
+      if (diff) {
+        const diffHead = options.diffLimit !== -1 ? diff.slice(0, options.diffLimit) : diff
+        const diffTail = diffHead.length < diff.length ? diff.slice(diffHead.length) : []
+        printDiff(diffHead)
+        if (diffTail.length) {
+          groupStart(`   and ${diffTail.length} more changes`)
+          printDiff(diffTail)
+          groupEnd()
+        }
       }
     }
   }
@@ -79,24 +93,16 @@ module.exports = (options = {}) => {
     }
   }
 
-  function diff (prev, next) {
-    const diff = differ(prev, next)
-    if (diff) {
-      diff.forEach((elem) => {
-        const { kind } = elem
-        const output = render(elem)
-        logger.log(`%c   ${dictionary[kind].text}`, style(kind), ...output)
-      })
-    }
+  function printDiff (diff) {
+    diff.forEach(elem => {
+      const { kind } = elem
+      logger.log(`%c   ${dictionary[kind].text}`, style(kind), ...render(elem))
+    })
   }
 
-  function groupStart (msg, isCollapsed) {
+  function groupStart (msg) {
     try {
-      if (isCollapsed) {
-        logger.groupCollapsed(msg)
-      } else {
-        logger.group(msg)
-      }
+      logger.groupCollapsed(msg)
     } catch (e) {
       logger.log(msg)
     }
