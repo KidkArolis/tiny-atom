@@ -25,7 +25,6 @@ function createContext () {
     }
 
     componentDidMount () {
-      this.dirty = false
       this.observe()
     }
 
@@ -34,7 +33,6 @@ function createContext () {
       this.unobserve && this.unobserve()
       this.observedAtom = atom
       this.unobserve = atom.observe(() => {
-        this.dirty = true
         this.cancelUpdate = this.scheduleUpdate()
       })
     }
@@ -63,7 +61,7 @@ function createContext () {
     }
 
     componentDidUpdate () {
-      this.dirty = false
+      this.cancelUpdate && this.cancelUpdate()
     }
 
     map (state, props) {
@@ -72,7 +70,6 @@ function createContext () {
     }
 
     update () {
-      if (!this.dirty) return
       const { atom } = this.context
       const nextMappedProps = this.map(atom.get(), this.props)
       this.setState(nextMappedProps)

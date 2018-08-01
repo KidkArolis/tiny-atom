@@ -25,7 +25,6 @@ function createContext () {
     }
 
     componentDidMount () {
-      this.dirty = false
       this.observe()
     }
 
@@ -47,7 +46,7 @@ function createContext () {
     }
 
     componentDidUpdate (prevProps) {
-      this.dirty = false
+      this.cancelUpdate && this.cancelUpdate()
       if (prevProps.atom !== this.props.atom) {
         this.observe()
       }
@@ -56,13 +55,12 @@ function createContext () {
     observe () {
       this.unobserve && this.unobserve()
       this.unobserve = this.props.atom.observe(() => {
-        this.dirty = true
         this.cancelUpdate = this.scheduleUpdate()
       })
     }
 
     update () {
-      if (this.dirty) this.setState({})
+      this.setState({})
     }
 
     render () {
