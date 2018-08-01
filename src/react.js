@@ -111,8 +111,8 @@ function createContext () {
     for (let i in mappedProps) {
       if (mappedProps[i] !== nextMappedProps[i]) return true
     }
-    for (let i in mappedProps) {
-      if (!(i in nextMappedProps)) return true
+    for (let i in nextMappedProps) {
+      if (!(i in mappedProps)) return true
     }
     return false
   }
