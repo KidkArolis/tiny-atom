@@ -37,6 +37,12 @@ Print updates.
 
 Print state diff to see what changed, what was added or removed.
 
+### diffLimit
+*type*: `number`
+*default*: `10`
+
+How many changes to log uncollapsed. Set to `-1` to print all changes.
+
 #### include
 *type*: `array`
 *default*: `[]`
