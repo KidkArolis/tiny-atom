@@ -16,7 +16,7 @@ module.exports = () => (info) => {
       if (message.type === 'DISPATCH') {
         if (message.payload.type === 'JUMP_TO_ACTION' || message.payload.type === 'JUMP_TO_STATE') {
           atom.devtools.ignoreNextUpdate = true
-          atom.split(JSON.parse(message.state))
+          atom.fuse(JSON.parse(message.state))
           atom.devtools.ignoreNextUpdate = false
         }
       }
