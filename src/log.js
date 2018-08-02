@@ -1,24 +1,10 @@
 const computeDiff = require('deep-diff')
 
 const dictionary = {
-  E: {
-    color: '#2196F3',
-    text: 'CHANGED:'
-  },
-  N: {
-    color: '#4CAF50',
-    text: 'ADDED:',
-    atext: 'added'
-  },
-  D: {
-    color: '#F44336',
-    text: 'DELETED:',
-    atext: 'deleted'
-  },
-  A: {
-    color: '#2196F3',
-    text: 'ARRAY:'
-  }
+  E: { color: '#2196F3', text: 'CHANGED:' },
+  N: { color: '#4CAF50', text: 'ADDED:', atext: 'added' },
+  D: { color: '#F44336', text: 'DELETED:', atext: 'deleted' },
+  A: { color: '#2196F3', text: 'ARRAY:' }
 }
 
 module.exports = (options = {}) => {
@@ -30,6 +16,11 @@ module.exports = (options = {}) => {
   options.exclude = options.exclude || []
   const logger = options.logger || console
 
+  const tryCatch = (fn, elseFn) => { try { fn() } catch (e) { elseFn() } }
+  const log = (...args) => logger.log(...args)
+  const groupStart = (...args) => tryCatch(() => logger.groupCollapsed(...args), () => logger.log(...args))
+  const groupEnd = () => tryCatch(() => logger.groupEnd(), () => {})
+
   return ({ type, atom, action, sourceActions, prevState }) => {
     const sourceAction = type === 'action' ? action : sourceActions[sourceActions.length - 1] || {}
     if (options.include.length && !options.include.includes(sourceAction.type)) return
@@ -38,8 +29,8 @@ module.exports = (options = {}) => {
     if (type === 'action' && options.actions) {
       const actions = sourceActions.concat(action)
       groupStart(`🚀 ${actions.map(a => a.type).join(' → ')}`)
-      logger.log('payload', action.payload)
-      logger.log('chain', actions)
+      log('payload', action.payload)
+      log('chain', actions)
       groupEnd()
     }
 
@@ -50,11 +41,11 @@ module.exports = (options = {}) => {
       }
 
       groupStart(`🙌 ${sourceActions.map(a => a.type).join(' → ') || '–'}`)
-      logger.log('payload', action.payload)
-      logger.log('chain', sourceActions)
-      logger.log('update', action.payload)
-      logger.log('prev state', prevState)
-      logger.log('curr state', atom.get())
+      log('payload', action.payload)
+      log('chain', sourceActions)
+      log('update', action.payload)
+      log('prev state', prevState)
+      log('curr state', atom.get())
       groupEnd()
 
       if (diff) {
@@ -98,19 +89,5 @@ module.exports = (options = {}) => {
       const { kind } = elem
       logger.log(`%c   ${dictionary[kind].text}`, style(kind), ...render(elem))
     })
-  }
-
-  function groupStart (msg) {
-    try {
-      logger.groupCollapsed(msg)
-    } catch (e) {
-      logger.log(msg)
-    }
-  }
-
-  function groupEnd () {
-    try {
-      logger.groupEnd()
-    } catch (e) {}
   }
 }
