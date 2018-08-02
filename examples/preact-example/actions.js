@@ -38,12 +38,12 @@ module.exports.actions = {
     set({ todo: { input } })
   },
 
-  showHint: ({ set }) => {
-    set({ hint: { show: true } })
+  showHint: ({ get, set }) => {
+    if (!get().hint.show) set({ hint: { show: true } })
   },
 
-  hideHint: ({ set }) => {
-    set({ hint: { show: false } })
+  hideHint: ({ get, set }) => {
+    if (get().hint.show) set({ hint: { show: false } })
   },
 
   trackEvent: ({ get, set }, event) => {
