@@ -1,5 +1,5 @@
 const React = require('react')
-const { Consumer } = require('tiny-atom/react')
+const { Consumer, connect } = require('tiny-atom/react')
 require('./App.css')
 
 const map = ({ todo, hint }) => {
@@ -15,8 +15,16 @@ const actions = [
   'addItem'
 ]
 
-module.exports = () => (
-  <Consumer map={map} actions={actions}>
+const Hint = connect(state => ({ hint: state.hint }))(function Hint (props) {
+  return (
+    <div className='Hint'>
+      {props.hint.show ? props.hint.text : ''}
+    </div>
+  )
+})
+
+const App = () => (
+  <Consumer displayName='App' map={map} actions={actions}>
     {({ todo, hint, updateItem, completeItem, addItem }) => (
       <div className='App'>
         <h1>tiny todo</h1>
@@ -42,13 +50,13 @@ module.exports = () => (
           <div className='Todo-empty'>Take a break!</div>
         }
 
-        <div className='Hint'>
-          {hint.show ? hint.text : ''}
-        </div>
+        <Hint />
       </div>
     )}
   </Consumer>
 )
+
+module.exports = App
 
 function onSubmit (addItem, $input) {
   return function (e) {

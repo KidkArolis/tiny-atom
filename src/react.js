@@ -1,5 +1,8 @@
 const React = require('react')
 const raf = require('./raf')
+const printDebug = require('./debug')
+
+const dev = process.env.NODE_ENV !== 'production'
 
 function createContext () {
   const AtomContext = React.createContext()
@@ -7,7 +10,7 @@ function createContext () {
   class Provider extends React.Component {
     render () {
       return (
-        <AtomContext.Provider value={this.props.atom}>
+        <AtomContext.Provider value={{ atom: this.props.atom, debug: this.props.debug }}>
           {this.props.children}
         </AtomContext.Provider>
       )
@@ -35,14 +38,39 @@ function createContext () {
 
     shouldComponentUpdate (nextProps, nextState) {
       if (!this.pure) return true
+
       // if it's <Consumer> with dynamic children, shortcut the check
-      if (this.props.children !== nextProps.children) return true
+      if (this.props.children !== nextProps.children) {
+        if (dev && (this.context.debug || this.props.debug)) {
+          printDebug.children(this.debugName(), this.props.children, nextProps.children)
+        }
+        return true
+      }
+
       // our state is mappedProps, this is the main optimisation
-      if (differ(this.state, nextState)) return true
+      if (differ(this.state, nextState)) {
+        if (dev && (this.context.debug || this.props.debug)) {
+          printDebug.props(this.debugName(), this.state, nextState)
+        }
+        return true
+      }
+
       // in connect() case don't need to diff further, no extra props
       if (this.props.originalProps) return false
+
       // in <Consumer /> case we also diff props
-      return differ(this.props, nextProps)
+      if (differ(this.props, nextProps)) {
+        if (dev && (this.context.debug || this.props.debug)) {
+          printDebug.props(this.debugName(), this.props, nextProps)
+        }
+        return true
+      }
+
+      return false
+    }
+
+    debugName () {
+      return this.props.displayName || this.constructor.name
     }
 
     componentDidUpdate (prevProps) {
@@ -78,15 +106,16 @@ function createContext () {
 
   const Consumer = props => (
     <AtomContext.Consumer>
-      {atom => <ConsumerInner {...props} atom={atom} />}
+      {({ atom, debug }) => <ConsumerInner {...props} atom={atom} debug={debug} />}
     </AtomContext.Consumer>
   )
 
   function connect (map, actions, options = {}) {
     return function connectComponent (Component) {
       const render = mappedProps => <Component {...mappedProps} />
-      return (props) => (
+      const Connected = (props) => (
         <Consumer
+          displayName={Component.displayName || Component.name}
           map={map}
           actions={actions}
           pure={options.pure}
@@ -95,6 +124,7 @@ function createContext () {
           render={render}
         />
       )
+      return Connected
     }
   }
 
