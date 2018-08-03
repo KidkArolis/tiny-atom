@@ -120,6 +120,7 @@ function createContext () {
           actions={actions}
           pure={options.pure}
           sync={options.sync}
+          options={options.debug}
           originalProps={props}
           render={render}
         />
