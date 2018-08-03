@@ -65,7 +65,7 @@ Register a callback for when atom changes. Returns the unobserve function.
 
 ```js
 atom.observe(render)
-atom.observe(atom => render(atom.get(), atom.split))
+atom.observe(atom => render(atom.get(), atom.dispatch))
 ```
 
 ### `atom.fuse(state, actions)`
@@ -78,7 +78,7 @@ const state = {
 }
 
 const actions = {
-  star: (get, split) => split({
+  star: ({ get, set }) => set({
     project: { starred: true }
   })
 }

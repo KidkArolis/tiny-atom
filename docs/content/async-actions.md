@@ -8,7 +8,7 @@ An example of regular action:
 
 ```js
 const actions = {
-  increment: ({ get, split }, payload) {
+  increment: ({ get, dispatch }, payload) {
     set({ count: get().count + 1 })
   }
 }
