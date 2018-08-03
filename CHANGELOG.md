@@ -1,6 +1,6 @@
-## 3.0.0-beta.0
+## 3.0.0
 
-The version 2.0.0 wasn't ready for prime time and should have been released under both beta channel and beta name. We're doing this with 3.0.0 instead.
+Improves upon the work started in 2.0.0.
 
 Summary of changes:
 
