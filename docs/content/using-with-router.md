@@ -12,7 +12,7 @@ Here's how it looks with [space-router](https://github.com/KidkArolis/space-rout
 const Preact = require('preact')
 const createAtom = require('tiny-atom')
 const createRouter = require('space-router')
-const createConnector = require('tiny-atom/preact')
+const { Consumer } = require('tiny-atom/preact')
 
 const router = createRouter([
   ['/', require('./Main')],
@@ -24,8 +24,6 @@ const atom = createAtom({ count: 0 }, {
   navigate: (atom, route) => router.push(route.path, route),
   navigated: ({ set }, route) => set({ route })
 })
-
-const { Consumer } = createConnector(atom)
 
 const App = () => (
   <Consumer map={state => state.route}>

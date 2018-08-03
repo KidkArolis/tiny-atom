@@ -32,24 +32,12 @@ const actions = {
 module.exports = createAtom(initialState, actions)
 ```
 
-Next, let's add React connector that we will use in our components to connect to the atom, retrieve the state and rerender upon changes.
-
-**connect.js**
-```js
-const createConnector = require('tiny-atom/react')
-const atom = require('./atom')
-
-const { connect } = createConnector(atom)
-
-module.exports = connect
-```
-
-Next, create the App component.
+Next, create the App component and use the connector to subscribe to the atom state.
 
 **App.js**
 ```js
 const React = require('react')
-const connect = require('./connect')
+const { connect } = require('tiny-atom/connect')
 
 const mapStateToProps = (state) => {
   return {
@@ -80,8 +68,13 @@ And finally render the application.
 const React = require('react')
 const ReactDOM = require('react-dom')
 const App = require('./App')
+const atom = require('./atom')
 
-ReactDOM.render(<App />, document.body)
+ReactDOM.render((
+  <Provider atom={atom}>
+    <App />
+  </Provider>
+), document.body)
 ```
 
 When a user clicks one of the Increment or Decrement buttons, the state will be updated and the connected components will efficiently rerender.

@@ -4,38 +4,41 @@
 * single store modified via actions
 * tiny api - easy to understand, easy to adapt
 * tiny size - 1KB
-+ react and preact bindings included
-+ console logger and redux devtools integration
+* react and preact bindings included
+* react and preact debug mode for identifying re-renders
+* beautiful console logger
+* redux devtools integration
 
 ## Installation
 
-    npm install --save tiny-atom@beta
+    npm install tiny-atom
 
 ## Example
 
 ```js
 const createAtom = require('tiny-atom')
 
-const atom = createAtom({
-  clicks: 0,
-  items: []
-}, {
-  countClicks: ({ get, set }, n) => {
-    set({ clicks: get().clicks + n })
+const atom = createAtom({ unicorns: 0, rainbows: [] }, {
+  incrementUnicorns ({ get, set }, n) {
+    set({ unicorns: get().unicorns + n })
   },
 
-  fetchItems: async ({ set, dispatch }) => {
+  async fetchRainbows ({ set, dispatch }) {
     set({ loading: true })
-    const { data: items } = await axios.get('/api/items')
-    set({ items, loading: false })
-    dispatch('countClicks', 1)
+    const { data: rainbows } = await axios.get('/api/rainbows')
+    set({ rainbows, loading: false })
+    dispatch('incrementUnicorns', 1)
   }
 })
 
-atom.observe(function render (atom) {
-  const { items, clicks } = atom.get()
-  onClick(e => atom.dispatch('countClicks', 10))
+atom.observe((atom) => {
+  console.log('atom', atom)
+  const { rainbows, unicorns } = atom.get()
+  render(unicorns).onClick(e => atom.dispatch('incrementUnicorns', 10))
 })
 ```
 
-**How is this different from redux?** The key difference is that action functions in tiny-atom can read and update the state and call other actions. Action functions are self contained units of business logic. This removes layers of boilerplate while preserving the benefits of redux like stores.
+**How is this different from redux?** The key differences are:
+
+* actions in tiny-atom can read and update the state and dispatch other actions. Actions are self contained units of business logic. This removes layers of boilerplate while preserving the benefits of redux like stores.
+* tiny-atom includes useful utilities to make it completely sufficient for building application of any size.

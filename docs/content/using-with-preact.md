@@ -2,12 +2,18 @@
 title: Using with Preact
 ---
 
-**Tiny Atom** comes with connectors for mapping atom state to your components and reacting to changes efficiently. To create the connectors, use `tiny-atom/preact` module:
+**Tiny Atom** comes with connectors for mapping atom state to your components and reacting to changes efficiently. The connectors can all be found in `tiny-atom/preact` module:
 
 ```js
-const createConnectors = require('tiny-atom/preact')
-const { connect, Consumer } = createConnectors(atom)
-export { connect, Consumer }
+import preact from 'preact'
+import { Provider, Consumer, connect } from 'tiny-atom/preact'
+import App from './App'
+
+preact.render((
+  <Provider atom={atom}>
+    <App />
+  </Provider>
+), root)
 ```
 
 ## `connect(map, actions, options)(Component)`
@@ -38,10 +44,16 @@ If the connection is `pure`, the mapped props are compared to previously mapped 
 
 By default, the change listeners are debounced such that at most one render occurs per frame. Set to true to rerender immediately on change state.
 
+#### options.debug
+*type*: `boolean`
+*default*: `false`
+
+Log information about changed props when this component re-renders. Useful when optimising the application to remove needless re-renders.
+
 ### Example
 
 ```js
-import { connect } from './connect'
+import { connect } from 'tiny-atom/connect'
 
 const map = (state) => {
   return {
@@ -90,10 +102,16 @@ If the connection is `pure`, the mapped props are compared to previously mapped 
 
 By default, the change listeners are debounced such that at most one render occurs per frame. Set to true to rerender immediately on change state.
 
+#### debug
+*type*: `boolean`
+*default*: `false`
+
+Log information about changed props when this component re-renders. Useful when optimising the application to remove needless re-renders.
+
 ### Example
 
 ```js
-import { Consumer } from './connect'
+import { Consumer } from 'tiny-atom/connect'
 
 const map = (state) => {
   return {
@@ -119,6 +137,21 @@ export default () => {
   </Consumer>
 }
 ```
+
+## `<Provider />`
+
+Injects atom into the context of the render tree.
+
+#### atom
+*type*: `object`
+
+Your atom instance created by `createAtom`.
+
+#### debug
+*type*: `boolean`
+*default*: `false`
+
+Log information about changed props when all of the connected components re-render. Useful when optimising the application to remove needless re-renders.
 
 ## Example
 
