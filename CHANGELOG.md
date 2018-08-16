@@ -1,3 +1,7 @@
+## 3.0.1
+
+* Switch to using the official deep-diff package.
+
 ## 3.0.0
 
 Improves upon the work started in 2.0.0.
