@@ -18,6 +18,10 @@ The initial state of the atom. If custom data structure is used (e.g. Immutable)
 
 An object with action functions. The signature of an action function is `({ get, set, dispatch }, payload)`. If you provide nested action objects or other structure, make sure to also specify an appropriate `options.evolve` implementation to handle your actions appropriately.
 
+* `get()` - returns the current state
+* `set(patch, options)` - updates the state with the patch object by merging the patch using `options.merge` function. The default implementation is deep merge. Use `{ replace: true }` option to replace the state instead of merging in the patch.
+* `dispatch` - same as `atom.dispatch`, dispatches an action.
+
 #### options.merge
 *type*: `function`
 

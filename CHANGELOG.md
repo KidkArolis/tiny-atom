@@ -1,3 +1,7 @@
+## 3.1.0
+
+* Calling set with replace option replaces the whole `set(state, { replace: true })` state. Useful when you need to bypass the default deep merge behaviour which can make it difficult to remove keys.
+
 ## 3.0.1
 
 * Switch to using the official deep-diff package.

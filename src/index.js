@@ -63,10 +63,10 @@ module.exports = function createAtom (initialState = {}, actions = {}, options =
 
   function createSet (sourceActions) {
     sourceActions = sourceActions || []
-    return function set (update) {
+    return function set (update, options = {}) {
       let action = { payload: update }
       let prevState = state
-      state = merge(state, action.payload)
+      state = options.replace ? action.payload : merge(state, action.payload)
       if (debug) report('update', action, sourceActions, prevState)
       listeners.forEach(f => f(atom))
     }
