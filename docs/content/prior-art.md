@@ -51,7 +51,7 @@ function todos ({ get, set, dispatch }, { type, payload }) {
   switch (type) {
     case 'addTodo':
       let { list } = get()
-      set({ list: list.concat([payload.text])
+      set({ list: list.concat([payload.text]) })
       break
   }
 }
