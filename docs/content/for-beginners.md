@@ -144,7 +144,6 @@ let atom = createAtom({ count: 0 }, {
     set({ count: count + 1 })
   }
 })
-```
 
 const map = (state) => {
   return { count: state.count }
