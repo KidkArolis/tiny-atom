@@ -23,32 +23,26 @@ function createContext () {
       super()
       this.state = this.map(atom.get(), props)
       this.pure = typeof props.pure === 'undefined' ? true : props.pure
-      this.scheduleUpdate = props.sync
-        ? () => this.update()
-        : raf(() => this.update())
-    }
-
-    getChildContext () {
-      return {
-        atomObserver: this.observer
-      }
-    }
-
-    componentDidMount () {
-      this.observe()
+      this.scheduleUpdate = props.sync ? () => this.update() : raf(() => this.update())
     }
 
     observe () {
-      const { atom, atomObserver } = this.context
+      const { atom } = this.context
       this.unobserve && this.unobserve()
+      this.unobserve = atom.observe(() => { this.cancelUpdate = this.scheduleUpdate() })
       this.observedAtom = atom
-      this.observer = () => { this.cancelUpdate = this.scheduleUpdate() }
-      this.unobserve = atom.observe(this.observer, { after: atomObserver })
+      delete this.boundActions
+      delete this.boundActionsSpec
     }
 
     componentWillUnmount () {
       this.unobserve && this.unobserve()
       this.cancelUpdate && this.cancelUpdate()
+      delete this.unobserve
+      delete this.cancelUpdate
+      delete this.observedAtom
+      delete this.boundActions
+      delete this.boundActionsSpec
     }
 
     shouldComponentUpdate (nextProps, nextState) {
@@ -114,12 +108,27 @@ function createContext () {
       this.setState(nextMappedProps)
     }
 
+    bindActions (actions, dispatch, mappedProps) {
+      if (!actions) return { dispatch }
+      if (typeof actions === 'function') return actions(dispatch, mappedProps)
+      if (!this.boundActions || this.boundActionsSpec !== actions) {
+        this.boundActionsSpec = actions
+        this.boundActions = actions.reduce((acc, action) => {
+          acc[action] = payload => dispatch(action, payload)
+          return acc
+        }, {})
+      }
+      return this.boundActions
+    }
+
     render ({ actions, originalProps, render, children }, state, { atom }) {
-      // we don't have a hook to check atom in the <Provider> has been
-      // swapped, so check here if we're still observing the right atom
-      if (this.observedAtom !== this.context.atom) this.observe()
+      // do this in render, because:
+      //  doing in constructor would cause memory leaks in SSR
+      //  doing in componentDidMount leads to the wrong order of subscriptions
+      //  we don't have another hook in Preact's context to check if atom was swapped
+      if (!this.unobserve || this.observedAtom !== this.context.atom) this.observe()
       const mappedProps = this.state
-      const boundActions = bindActions(actions, atom.dispatch, mappedProps)
+      const boundActions = this.bindActions(actions, atom.dispatch, mappedProps)
       return (render || children[0])(Object.assign({}, originalProps, mappedProps, boundActions))
     }
   }
@@ -140,15 +149,6 @@ function createContext () {
       )
       return Connected
     }
-  }
-
-  function bindActions (actions, dispatch, mappedProps) {
-    if (!actions) return { dispatch }
-    if (typeof actions === 'function') return actions(dispatch, mappedProps)
-    return actions.reduce((acc, action) => {
-      acc[action] = payload => dispatch(action, payload)
-      return acc
-    }, {})
   }
 
   function differ (mappedProps, nextMappedProps) {

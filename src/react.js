@@ -6,7 +6,6 @@ const dev = process.env.NODE_ENV !== 'production'
 
 function createContext () {
   const AtomContext = React.createContext()
-  const NestingContext = React.createContext()
 
   class Provider extends React.Component {
     render () {
@@ -23,18 +22,25 @@ function createContext () {
       super()
       this.state = {}
       this.pure = typeof props.pure === 'undefined' ? true : props.pure
-      this.scheduleUpdate = props.sync
-        ? () => this.update()
-        : raf(() => this.update())
+      this.scheduleUpdate = props.sync ? () => this.update() : raf(() => this.update())
     }
 
-    componentDidMount () {
-      this.observe()
+    observe () {
+      this.unobserve && this.unobserve()
+      this.unobserve = this.props.atom.observe(() => { this.cancelUpdate = this.scheduleUpdate() })
+      this.observedAtom = this.props.atom
+      delete this.boundActions
+      delete this.boundActionsSpec
     }
 
     componentWillUnmount () {
       this.unobserve && this.unobserve()
       this.cancelUpdate && this.cancelUpdate()
+      delete this.unobserve
+      delete this.cancelUpdate
+      delete this.observedAtom
+      delete this.boundActions
+      delete this.boundActionsSpec
     }
 
     shouldComponentUpdate (nextProps, nextState) {
@@ -80,30 +86,34 @@ function createContext () {
 
     componentDidUpdate (prevProps) {
       this.cancelUpdate && this.cancelUpdate()
-      if (prevProps.atom !== this.props.atom) {
-        this.observe()
-      }
-    }
-
-    observe () {
-      this.unobserve && this.unobserve()
-      this.observer = () => { this.cancelUpdate = this.scheduleUpdate() }
-      this.unobserve = this.props.atom.observe(this.observer, { after: this.props.parentObserver })
     }
 
     update () {
       this.setState({})
     }
 
+    bindActions (actions, dispatch, mappedProps) {
+      if (!actions) return { dispatch }
+      if (typeof actions === 'function') return actions(dispatch, mappedProps)
+      if (!this.boundActions || this.boundActionsSpec !== actions) {
+        this.boundActionsSpec = actions
+        this.boundActions = actions.reduce((acc, action) => {
+          acc[action] = payload => dispatch(action, payload)
+          return acc
+        }, {})
+      }
+      return this.boundActions
+    }
+
     render () {
+      // do this in render, because:
+      //  doing in constructor would cause memory leaks in SSR
+      //  doing in componentDidMount leads to the wrong order of subscriptions
+      if (!this.unobserve || this.observedAtom !== this.props.atom) this.observe()
       const { atom, actions, originalProps, render, children } = this.props
       const mappedProps = this.state
-      const boundActions = bindActions(actions, atom.dispatch, mappedProps)
-      return (
-        <NestingContext.Provider value={this.observer}>
-          {(render || children)(Object.assign({}, originalProps, mappedProps, boundActions))}
-        </NestingContext.Provider>
-      )
+      const boundActions = this.bindActions(actions, atom.dispatch, mappedProps)
+      return (render || children)(Object.assign({}, originalProps, mappedProps, boundActions))
     }
   }
 
@@ -113,13 +123,9 @@ function createContext () {
   }
 
   const Consumer = props => (
-    <NestingContext.Consumer>
-      {(parentObserver) => (
-        <AtomContext.Consumer>
-          {({ atom, debug }) => <ConsumerInner {...props} atom={atom} debug={debug} parentObserver={parentObserver} />}
-        </AtomContext.Consumer>
-      )}
-    </NestingContext.Consumer>
+    <AtomContext.Consumer>
+      {({ atom, debug }) => <ConsumerInner {...props} atom={atom} debug={debug} />}
+    </AtomContext.Consumer>
   )
 
   function connect (map, actions, options = {}) {
@@ -139,15 +145,6 @@ function createContext () {
       )
       return Connected
     }
-  }
-
-  function bindActions (actions, dispatch, mappedProps) {
-    if (!actions) return { dispatch }
-    if (typeof actions === 'function') return actions(dispatch, mappedProps)
-    return actions.reduce((acc, action) => {
-      acc[action] = payload => dispatch(action, payload)
-      return acc
-    }, {})
   }
 
   function differ (mappedProps, nextMappedProps) {

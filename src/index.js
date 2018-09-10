@@ -29,9 +29,8 @@ module.exports = function createAtom (initialState = {}, actions = {}, options =
     return actions[action.type](atom, action.payload)
   }
 
-  function observe (f, { after } = {}) {
-    const index = after ? listeners.indexOf(after) + 1 : 0
-    listeners.splice(index, 0, f)
+  function observe (f) {
+    listeners.push(f)
     return function unobserve () {
       if (listeners.indexOf(f) >= 0) {
         listeners.splice(listeners.indexOf(f), 1)
@@ -39,9 +38,9 @@ module.exports = function createAtom (initialState = {}, actions = {}, options =
     }
   }
 
-  function fuse (moreState, moreActions) {
+  function fuse (moreState, moreActions, options) {
     Object.assign(actions, moreActions)
-    if (moreState) set(moreState)
+    if (moreState) set(moreState, options)
   }
 
   function createDispatch (sourceActions) {
