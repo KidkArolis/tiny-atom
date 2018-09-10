@@ -38,9 +38,9 @@ module.exports = function createAtom (initialState = {}, actions = {}, options =
     }
   }
 
-  function fuse (moreState, moreActions) {
+  function fuse (moreState, moreActions, options) {
     Object.assign(actions, moreActions)
-    if (moreState) set(moreState)
+    if (moreState) set(moreState, options)
   }
 
   function createDispatch (sourceActions) {
