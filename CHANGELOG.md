@@ -1,8 +1,14 @@
+## 3.3.0
+
+* **Improvement** - Avoid recomputing bound actions if the action list hasn't changed.
+* **Fix** - The rerendering ordering introduced in the previous release wasn't working with newly added nested connected components due to how componentDidMount is called inside out. This version simplifies the code and the component render tree by subscribing to store changes via `render`. This actually reverts the `{ after }` option introduced in the previous version – yay for removing things!
+* **Fix** - When jumping back in time with the devtools, correctly restore the state by using `{ replace: true }` to bypass deep merging.
+
 ## 3.2.0
 
 * **Improvement** - Ensure the order of observations and rerenders of all connected components is always top down. This is done by adding a new feature to `atom.observe(fn, { after })`. The `after` can specify another listener function.
 * **Improvement** - Avoid checking shouldComponentUpdate twice in case the mapped state hasn't changed.
-* **Fix** - name the Component produced by connect() in devtools for preact
+* **Fix** - Name the Component produced by connect() in devtools for preact
 
 ## 3.1.0
 
