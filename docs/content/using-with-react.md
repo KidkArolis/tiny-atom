@@ -45,6 +45,12 @@ If the connection is `pure`, the mapped props are compared to previously mapped 
 
 By default, the change listeners are debounced such that at most one render occurs per frame. Set to true to rerender immediately on change state.
 
+#### options.observe
+*type*: `boolean`
+*default*: `true` in the browser, `false` on the server
+
+Use this to control if the connector subscribes to the store or simply projects the state on parent rerenders.
+
 #### options.debug
 *type*: `boolean`
 *default*: `false`

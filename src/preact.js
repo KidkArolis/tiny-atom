@@ -3,6 +3,7 @@ const raf = require('./raf')
 const printDebug = require('./debug')
 
 const dev = process.env.NODE_ENV !== 'production'
+const canUseDOM = !!(typeof window !== 'undefined' && window.document && window.document.createElement)
 
 function createContext () {
   class Provider extends Preact.Component {
@@ -22,11 +23,13 @@ function createContext () {
     constructor (props, { atom }) {
       super()
       this.state = this.map(atom.get(), props)
-      this.pure = typeof props.pure === 'undefined' ? true : props.pure
+      this.isPure = typeof props.pure === 'undefined' ? true : props.pure
+      this.shouldObserve = typeof props.observe === 'undefined' ? canUseDOM : props.observe
       this.scheduleUpdate = props.sync ? () => this.update() : raf(() => this.update())
     }
 
     observe () {
+      if (!this.shouldObserve) return
       const { atom } = this.context
       this.unobserve && this.unobserve()
       this.unobserve = atom.observe(() => { this.cancelUpdate = this.scheduleUpdate() })
@@ -46,7 +49,7 @@ function createContext () {
     }
 
     shouldComponentUpdate (nextProps, nextState) {
-      if (!this.pure) return true
+      if (!this.isPure) return true
 
       // if it's <Consumer> with dynamic children, shortcut the check
       if (this.props.children !== nextProps.children) {
@@ -142,6 +145,7 @@ function createContext () {
           actions={actions}
           pure={options.pure}
           sync={options.sync}
+          observe={options.observe}
           debug={options.debug}
           originalProps={props}
           render={render}

@@ -1,3 +1,8 @@
+## 3.4.0
+
+* **Improvement** - It's now possible to turn on the default behaviour of subscribing to the store by setting `observe: false` when connecting.
+* **Fix** - Don't `observe` atom by default in server environment to avoid memory leaks in case the atom instance is being reused.
+
 ## 3.3.0
 
 * **Improvement** - Avoid recomputing bound actions if the action list hasn't changed.

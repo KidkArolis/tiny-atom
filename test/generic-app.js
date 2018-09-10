@@ -34,7 +34,7 @@ module.exports = function app ({ h, Provider, Consumer, connect, createContext }
 
     return (
       <Provider atom={atom}>
-        <Consumer map={map} actions={actions}>
+        <Consumer map={map} actions={actions} observe>
           {({ count, inc }) => (
             <div>
               <div id='count-outer'>{count}</div>
@@ -53,7 +53,7 @@ module.exports = function app ({ h, Provider, Consumer, connect, createContext }
       count: state.count
     })
     return (
-      <Consumer map={map}>
+      <Consumer map={map} observe>
         {({ count, dispatch }) => (
           <div>
             <div id='count-inner'>{multiplier * count}</div>
@@ -66,7 +66,7 @@ module.exports = function app ({ h, Provider, Consumer, connect, createContext }
 
   let childWithConnectRenderCount = 0
 
-  const ChildWithConnect = connect(({ count }) => ({ count }))(({ multiplier, count, dispatch }) => {
+  const ChildWithConnect = connect(({ count }) => ({ count }), null, { observe: true })(({ multiplier, count, dispatch }) => {
     childWithConnectRenderCount++
     return (
       <div>
