@@ -6,6 +6,7 @@ const dev = process.env.NODE_ENV !== 'production'
 
 function createContext () {
   const AtomContext = React.createContext()
+  const NestingContext = React.createContext()
 
   class Provider extends React.Component {
     render () {
@@ -56,7 +57,10 @@ function createContext () {
       }
 
       // in connect() case don't need to diff further, no extra props
-      if (this.props.originalProps) return false
+      if (this.props.originalProps) {
+        this.cancelUpdate && this.cancelUpdate()
+        return false
+      }
 
       // in <Consumer /> case we also diff props
       if (differ(this.props, nextProps)) {
@@ -66,6 +70,7 @@ function createContext () {
         return true
       }
 
+      this.cancelUpdate && this.cancelUpdate()
       return false
     }
 
@@ -82,9 +87,8 @@ function createContext () {
 
     observe () {
       this.unobserve && this.unobserve()
-      this.unobserve = this.props.atom.observe(() => {
-        this.cancelUpdate = this.scheduleUpdate()
-      })
+      this.observer = () => { this.cancelUpdate = this.scheduleUpdate() }
+      this.unobserve = this.props.atom.observe(this.observer, { after: this.props.parentObserver })
     }
 
     update () {
@@ -95,7 +99,11 @@ function createContext () {
       const { atom, actions, originalProps, render, children } = this.props
       const mappedProps = this.state
       const boundActions = bindActions(actions, atom.dispatch, mappedProps)
-      return (render || children)(Object.assign({}, originalProps, mappedProps, boundActions))
+      return (
+        <NestingContext.Provider value={this.observer}>
+          {(render || children)(Object.assign({}, originalProps, mappedProps, boundActions))}
+        </NestingContext.Provider>
+      )
     }
   }
 
@@ -105,9 +113,13 @@ function createContext () {
   }
 
   const Consumer = props => (
-    <AtomContext.Consumer>
-      {({ atom, debug }) => <ConsumerInner {...props} atom={atom} debug={debug} />}
-    </AtomContext.Consumer>
+    <NestingContext.Consumer>
+      {(parentObserver) => (
+        <AtomContext.Consumer>
+          {({ atom, debug }) => <ConsumerInner {...props} atom={atom} debug={debug} parentObserver={parentObserver} />}
+        </AtomContext.Consumer>
+      )}
+    </NestingContext.Consumer>
   )
 
   function connect (map, actions, options = {}) {

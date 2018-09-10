@@ -1,3 +1,9 @@
+## 3.2.0
+
+* **Improvement** - Ensure the order of observations and rerenders of all connected components is always top down. This is done by adding a new feature to `atom.observe(fn, { after })`. The `after` can specify another listener function.
+* **Improvement** - Avoid checking shouldComponentUpdate twice in case the mapped state hasn't changed.
+* **Fix** - name the Component produced by connect() in devtools for preact
+
 ## 3.1.0
 
 * Calling set with replace option replaces the whole `set(state, { replace: true })` state. Useful when you need to bypass the default deep merge behaviour which can make it difficult to remove keys.
