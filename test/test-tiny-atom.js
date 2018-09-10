@@ -134,14 +134,14 @@ test('observe callback is called on each update', t => {
   const unobserveB = atom.observe(atom => observations.push('b' + atom.get().v))
 
   atom.fuse({ v: 6 })
-  t.deepEqual(observations, ['b6', 'a6'])
+  t.deepEqual(observations, ['a6', 'b6'])
 
   unobserveB()
   unobserveB()
   const unobserveC = atom.observe(atom => observations.push('c' + atom.get().v))
 
   atom.fuse({ v: 7 })
-  t.deepEqual(observations, ['b6', 'a6', 'c7', 'a7'])
+  t.deepEqual(observations, ['a6', 'b6', 'a7', 'c7'])
 
   unobserveB()
   unobserveA()
