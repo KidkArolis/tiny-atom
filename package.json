@@ -1,6 +1,6 @@
 {
   "name": "tiny-atom",
-  "version": "3.3.0",
+  "version": "3.4.0",
   "description": "Minimal, yet awesome, state management.",
   "main": "index.js",
   "scripts": {
