@@ -28,17 +28,22 @@ function createContext () {
         : raf(() => this.update())
     }
 
+    getChildContext () {
+      return {
+        atomObserver: this.observer
+      }
+    }
+
     componentDidMount () {
       this.observe()
     }
 
     observe () {
-      const { atom } = this.context
+      const { atom, atomObserver } = this.context
       this.unobserve && this.unobserve()
       this.observedAtom = atom
-      this.unobserve = atom.observe(() => {
-        this.cancelUpdate = this.scheduleUpdate()
-      })
+      this.observer = () => { this.cancelUpdate = this.scheduleUpdate() }
+      this.unobserve = atom.observe(this.observer, { after: atomObserver })
     }
 
     componentWillUnmount () {
@@ -66,7 +71,10 @@ function createContext () {
       }
 
       // in connect() case don't need to diff further, no extra props
-      if (this.props.originalProps) return false
+      if (this.props.originalProps) {
+        this.cancelUpdate && this.cancelUpdate()
+        return false
+      }
 
       // in <Consumer /> case we also diff props
       if (differ(this.props, nextProps)) {
@@ -75,6 +83,8 @@ function createContext () {
         }
         return true
       }
+
+      this.cancelUpdate && this.cancelUpdate()
     }
 
     debugName () {
@@ -117,7 +127,7 @@ function createContext () {
   function connect (map, actions, options = {}) {
     return function connectComponent (Component) {
       const render = mappedProps => <Component {...mappedProps} />
-      return (props) => (
+      const Connected = (props) => (
         <Consumer
           map={map}
           actions={actions}
@@ -128,6 +138,7 @@ function createContext () {
           render={render}
         />
       )
+      return Connected
     }
   }
 

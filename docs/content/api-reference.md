@@ -45,7 +45,7 @@ createAtom({ count: 1 }, {
 })
 ```
 
-### `atom.get`
+### `atom.get()`
 
 Get current state.
 
@@ -54,7 +54,7 @@ atom.get()
 atom.get().feed.items
 ```
 
-### `atom.dispatch`
+### `atom.dispatch(type, payload)`
 
 Send an action
 
@@ -63,7 +63,7 @@ atom.dispatch('fetchMovies')
 atom.dispatch('increment', 5)
 ```
 
-### `atom.observe`
+### `atom.observe(cb, options)`
 
 Register a callback for when atom changes. Returns the unobserve function.
 
@@ -71,6 +71,8 @@ Register a callback for when atom changes. Returns the unobserve function.
 atom.observe(render)
 atom.observe(atom => render(atom.get(), atom.dispatch))
 ```
+
+The only option available is `after`. It's an advanced option for ordering the listeners. The value of `after` has to be a reference to another listener function that's already been registered as an observer.
 
 ### `atom.fuse(state, actions)`
 
