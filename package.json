@@ -43,6 +43,7 @@
     "require": "./test/helpers/setup.js"
   },
   "dependencies": {
-    "deep-diff": "^1.0.2"
+    "deep-diff": "^1.0.2",
+    "reselect": "^3.0.1"
   }
 }

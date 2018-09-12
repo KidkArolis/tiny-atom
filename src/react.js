@@ -122,7 +122,7 @@ function createContext () {
 
   ConsumerInner.getDerivedStateFromProps = (props, state) => {
     const { atom, originalProps, map } = props
-    return Object.assign({}, originalProps, map ? map(atom.get(), originalProps) : {})
+    return Object.assign({}, originalProps, map ? map(atom.get(), originalProps, atom.context) : {})
   }
 
   const Consumer = props => (
