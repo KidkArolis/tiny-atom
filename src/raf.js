@@ -1,36 +1,14 @@
+const immediate = callback => callback()
+const noop = () => {}
+
 function getRequestAnimationFrame () {
-  if (typeof window === 'undefined') {
-    return callback => callback()
-  }
-
-  const polyfill = (() => {
-    let clock = Date.now()
-    return (callback) => {
-      const currentTime = Date.now()
-      if (currentTime - clock > 16) {
-        clock = currentTime
-        callback(currentTime)
-      } else {
-        return setTimeout(() => {
-          polyfill(callback)
-        }, 0)
-      }
-    }
-  })()
-
-  return window.requestAnimationFrame ||
-    window.webkitRequestAnimationFrame ||
-    window.mozRequestAnimationFrame ||
-    polyfill
+  if (typeof window === 'undefined') return immediate
+  return window.requestAnimationFrame || immediate
 }
 
 function getCancelAnimationFrame () {
-  if (typeof window === 'undefined') {
-    return () => {}
-  }
-  return window.cancelAnimationFrame ||
-    window.mozCancelAnimationFrame ||
-    clearTimeout || (() => {})
+  if (typeof window === 'undefined') noop
+  return window.cancelAnimationFrame || noop
 }
 
 module.exports = function raf (fn) {
