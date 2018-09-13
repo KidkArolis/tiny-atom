@@ -36,5 +36,7 @@
       link: /using-with-zaphod
     - title: Using with Immutable.js
       link: /using-with-immutable
+    - title: Using with Immer
+      link: /using-with-immer
     - title: Hot reloading
       link: /hot-reloading
