@@ -17,8 +17,8 @@
       "path---using-with-zaphod-f09bb173fc8778c421f4.js.map"
     ],
     "path---using-with-react": [
-      "path---using-with-react-56fe5df56b5d84e2fa3d.js",
-      "path---using-with-react-56fe5df56b5d84e2fa3d.js.map"
+      "path---using-with-react-765f5c390e28eecaa1ce.js",
+      "path---using-with-react-765f5c390e28eecaa1ce.js.map"
     ],
     "path---": [
       "path----557518bd178906f8d58a.js",
@@ -37,12 +37,16 @@
       "component---node-modules-gatsby-plugin-offline-app-shell-js-5c4c5a0f7af9dc69d6d7.js.map"
     ],
     "component---src-layouts-index-js": [
-      "component---src-layouts-index-js-1264b18de37eed83e7fc.js",
-      "component---src-layouts-index-js-1264b18de37eed83e7fc.js.map"
+      "component---src-layouts-index-js-86df7d2c2d3f7f9205e1.js",
+      "component---src-layouts-index-js-86df7d2c2d3f7f9205e1.js.map"
+    ],
+    "path---using-with-immer": [
+      "path---using-with-immer-902c55ec30ca57cb35bf.js",
+      "path---using-with-immer-902c55ec30ca57cb35bf.js.map"
     ],
     "path---api-reference": [
-      "path---api-reference-b29f4dd7d47d9a6a04a2.js",
-      "path---api-reference-b29f4dd7d47d9a6a04a2.js.map"
+      "path---api-reference-7e5ab9b25991a9a40f72.js",
+      "path---api-reference-7e5ab9b25991a9a40f72.js.map"
     ],
     "path---index": [
       "path---index-381bd7a58b1bca2d2668.js",
@@ -53,8 +57,8 @@
       "path---basics-59b88fff4f06f6c76579.js.map"
     ],
     "path---using-with-preact": [
-      "path---using-with-preact-9d868c8f7b4764c39bea.js",
-      "path---using-with-preact-9d868c8f7b4764c39bea.js.map"
+      "path---using-with-preact-7661fefa0c5082f18425.js",
+      "path---using-with-preact-7661fefa0c5082f18425.js.map"
     ],
     "component---src-pages-404-js": [
       "component---src-pages-404-js-0b61ad4243409856d5ae.js",
@@ -81,9 +85,9 @@
       "path---hot-reloading-a568cba8c60f825367cb.js.map"
     ],
     "app": [
-      "app-ded160ced18602c23a6c.js",
+      "app-a421a58d45bea8d21ac6.js",
       "build-js-styles.css",
-      "app-ded160ced18602c23a6c.js.map",
+      "app-a421a58d45bea8d21ac6.js.map",
       "build-js-styles.css.map"
     ],
     "path---using-with-immutable": [
