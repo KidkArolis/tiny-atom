@@ -16,9 +16,10 @@ module.exports = function createBundles (initialBundles = [], options = {}) {
     // index all the actions
     Object.keys(bundle.actions || {}).forEach(action => {
       // allow init and react in each bundle
-      if ((action !== 'init' && action !== 'react') && actionsToBundles[action]) {
+      if ((action !== 'init' && action !== 'react') && !actionsToBundles[action]) {
         throw new Error(`Action ${selectorName} is duplicated!`)
       }
+      // TODO - init/react will be overwritten
       actionsToBundles[action] = bundle.name
     })
     // create and bind the selectors
@@ -37,10 +38,8 @@ module.exports = function createBundles (initialBundles = [], options = {}) {
     const bundleName = actionsToBundles[type]
     const bundle = bundles[bundleName]
     const action = bundle.actions[type]
-
     const get = () => getRoot()[bundleName]
     const set = (update) => setRoot({ [bundleName]: { ...get(), ...update } })
-
     return action({ get, getRoot, set, dispatch }, payload, context)
   }
 
