@@ -4,7 +4,7 @@ title: Using with immer
 
 **Tiny Atom** works best when you don't mutate your state objects and instead swap your state with a fresh copy.
 
-By default, **Tiny Atom** shallowly clones and merges state updates into the existing state without mutating the previous state. To perform more complicated state updates, libraries such as [Zaphod](/using-with-zaphod) can be very helpful.
+By default, **Tiny Atom** shallowly clones and merges state updates into the existing state without mutating the previous state. To perform more complicated state updates, libraries such as [Zaphod](/tiny-atom/using-with-zaphod) can be very helpful.
 
 Another really neat alternative to updating your state without mutating is enabled by a library called [immer](https://github.com/mweststrate/immer). Immer is using Proxies to keep track of changes you're making to the objects and then returns an efficiently cloned copy.
 
