@@ -42,13 +42,13 @@
 
 ## Docs
 
-Read the [full docs](https://qubitproducts.github.io/tiny-atom) or pick one of the highlights:
+Read the [full docs](https://kidkarolis.github.io/tiny-atom) or pick one of the highlights:
 
-  * [Basics](https://qubitproducts.github.io/tiny-atom/basics)
-  * [Prior art](https://qubitproducts.github.io/tiny-atom/prior-art)
-  * [Using with React](https://qubitproducts.github.io/tiny-atom/using-with-react)
-  * [Using with Preact](https://qubitproducts.github.io/tiny-atom/using-with-preact)
-  * [API Reference](https://qubitproducts.github.io/tiny-atom/api-reference)
+  * [Basics](https://kidkarolis.github.io/tiny-atom/basics)
+  * [Prior art](https://kidkarolis.github.io/tiny-atom/prior-art)
+  * [Using with React](https://kidkarolis.github.io/tiny-atom/using-with-react)
+  * [Using with Preact](https://kidkarolis.github.io/tiny-atom/using-with-preact)
+  * [API Reference](https://kidkarolis.github.io/tiny-atom/api-reference)
 
 ## Example
 
@@ -167,4 +167,4 @@ atom.fuse(state, actions)
 
 ## React / Preact bindings
 
-For documentation on the set of react and preact components `<Provider />`, `<Consumer />` and `connect` see [react](https://qubitproducts.github.io/tiny-atom/using-with-react) or [preact](https://qubitproducts.github.io/tiny-atom/using-with-preact) docs.
+For documentation on the set of react and preact components `<Provider />`, `<Consumer />` and `connect` see [react](https://kidkarolis.github.io/tiny-atom/using-with-react) or [preact](https://kidkarolis.github.io/tiny-atom/using-with-preact) docs.
