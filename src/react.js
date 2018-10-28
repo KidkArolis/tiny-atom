@@ -39,6 +39,11 @@ function createContext () {
     return payload => atom.dispatch(action, payload)
   }
 
+  function useActions () {
+    const { atom } = useContext(AtomContext)
+    return atom.actions
+  }
+
   function Provider ({ atom, debug, children }) {
     return (
       <AtomContext.Provider value={{ atom, debug }}>
@@ -210,7 +215,7 @@ function createContext () {
     return false
   }
 
-  return { Provider, Consumer, connect, useAtomState, useAtomAction, useAtom }
+  return { Provider, Consumer, connect, useAtomState, useAtomAction, useAtom, useActions }
 }
 
 const {
@@ -219,7 +224,8 @@ const {
   connect,
   useAtomState,
   useAtomAction,
-  useAtom
+  useAtom,
+  useActions
 } = createContext()
 module.exports = {
   Provider,
@@ -228,5 +234,6 @@ module.exports = {
   createContext,
   useAtomState,
   useAtomAction,
-  useAtom
+  useAtom,
+  useActions
 }

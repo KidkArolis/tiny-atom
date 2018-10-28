@@ -19,7 +19,8 @@ module.exports = function createAtom (initialState = {}, actions = {}, options =
   const get = () => state
   const set = createSet()
   const dispatch = createDispatch()
-  const atom = { get, dispatch, observe, fuse }
+  const boundActions = bindDispatchToActions(dispatch)
+  const atom = { get, dispatch, observe, fuse, actions: boundActions }
   const mutableAtom = { get, set, dispatch, observe, fuse }
   const evolve = options.evolve || defaultEvolve
   return atom
@@ -52,13 +53,21 @@ module.exports = function createAtom (initialState = {}, actions = {}, options =
         report('action', action, sourceActions)
         const history = sourceActions.concat([action])
         const dispatch = createDispatch(history)
+        const boundActions = bindDispatchToActions(dispatch)
         const set = createSet(history)
-        const actionAtom = Object.assign({}, mutableAtom, { dispatch, set })
+        const actionAtom = Object.assign({}, mutableAtom, { dispatch, set, actions: boundActions })
         return evolve(actionAtom, action, actions)
       } else {
         return evolve(mutableAtom, action, actions)
       }
     }
+  }
+
+  function bindDispatchToActions (dispatch) {
+    return Object.keys(actions).reduce((boundActions, action) => {
+      boundActions[action] = payload => dispatch(action, payload)
+      return boundActions
+    }, {})
   }
 
   function createSet (sourceActions) {
