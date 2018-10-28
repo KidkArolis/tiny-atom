@@ -60,7 +60,7 @@ Log information about changed props when this component re-renders. Useful when 
 ### Example
 
 ```js
-import { connect } from 'tiny-atom/connect'
+import { connect } from 'tiny-atom/react'
 
 const map = (state) => {
   return {
@@ -83,7 +83,7 @@ export default connect(map, actions, options)(Component)
 
 ## `<Consumer />`
 
-A render props style component that can be used inline of your component's render function to map the state similarly to how `connect works`. It supports the following props.
+A render props style component that can be used inline of your component's render function to map the state similarly to how `connect` works. It supports the following props.
 
 #### map
 *type*: `function`
@@ -168,4 +168,4 @@ Log information about changed props when all of the connected components re-rend
 
 ## Example
 
-To see a full working example, have a look at the [examples/react-example](https://github.com/QubitProducts/tiny-atom/tree/master/examples/react-example)
+To see a full working example, have a look at the [examples/react-example](https://github.com/KidkArolis/tiny-atom/tree/master/examples/react-example)
