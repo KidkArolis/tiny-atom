@@ -1,3 +1,7 @@
+## 3.4.1
+
+* **Fix** support for react-native by improving the check for server environment. Previously react-native was treated as server side rendering scenario and the connectors wouldn't subscribe to the store by default.
+
 ## 3.4.0
 
 * **Improvement** - It's now possible to turn on the default behaviour of subscribing to the store by setting `observe: false` when connecting.
