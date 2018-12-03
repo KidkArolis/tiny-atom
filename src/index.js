@@ -19,13 +19,21 @@ module.exports = function createAtom (initialState = {}, actions = {}, options =
   const set = createSet()
   const swap = createSwap()
   const dispatch = createDispatch()
-  const atom = { get, set, swap, dispatch, observe, fuse }
+  const bindActions = options.bindActions || defaultBindActions
+  const atom = { get, set, swap, dispatch, observe, fuse, actions: bindActions(dispatch, actions) }
   const evolve = options.evolve || defaultEvolve
   return atom
 
   function defaultEvolve (atom, action, actions) {
     if (!actions[action.type]) throw new Error(`Missing action: ${action.type}`)
     return actions[action.type](atom, action.payload)
+  }
+
+  function defaultBindActions (dispatch) {
+    return Object.keys(actions).reduce((boundActions, actionType) => {
+      boundActions[actionType] = payload => dispatch(actionType, payload)
+      return boundActions
+    }, {})
   }
 
   function observe (f) {
@@ -37,9 +45,10 @@ module.exports = function createAtom (initialState = {}, actions = {}, options =
     }
   }
 
-  function fuse (moreState, moreActions, options) {
+  function fuse (moreState, moreActions) {
     Object.assign(actions, moreActions)
-    if (moreState) set(moreState, options)
+    atom.actions = bindActions(dispatch, actions)
+    if (moreState) set(moreState)
   }
 
   function createDispatch (sourceActions) {

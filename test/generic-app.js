@@ -83,11 +83,10 @@ module.exports = function app ({ h, Provider, Consumer, connect, createContext }
     assert: async function (t) {
       await frame()
 
-      t.is(childWithConnectRenderCount, 1)
-
       t.is(document.getElementById('count-outer').innerHTML, '0')
       t.is(document.getElementById('count-inner').innerHTML, '0')
       t.is(document.getElementById('count-inner-2').innerHTML, '0')
+      t.is(childWithConnectRenderCount, 1)
 
       atom.dispatch('increment')
       await frame()

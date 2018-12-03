@@ -1,4 +1,4 @@
-<h5 align="center">Minimal, yet awesome, state management.</h5>
+<h5 align="center">Pragmatic and concise state management.</h5>
 <br />
 
 * single store modified via actions

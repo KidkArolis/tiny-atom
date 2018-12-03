@@ -58,7 +58,7 @@ function createContext () {
       }
 
       // our state is mappedProps, this is the main optimisation
-      if (differ(this.state, nextState)) {
+      if (differ(this.state, nextState, { objects: true })) {
         if (dev && (this.context.debug || this.props.debug)) {
           printDebug.props(this.debugName(), this.state, nextState)
         }
@@ -72,7 +72,7 @@ function createContext () {
       }
 
       // in <Consumer /> case we also diff props
-      if (differ(this.props, nextProps)) {
+      if (differ(this.props, nextProps, { objects: true })) {
         if (dev && (this.context.debug || this.props.debug)) {
           printDebug.props(this.debugName(), this.props, nextProps)
         }
@@ -151,7 +151,7 @@ function createContext () {
     }
   }
 
-  function differ (mappedProps, nextMappedProps) {
+  function differ (mappedProps, nextMappedProps, { objects = false } = {}) {
     if (mappedProps === nextMappedProps) {
       return false
     }
@@ -163,6 +163,9 @@ function createContext () {
     }
     for (let i in nextMappedProps) {
       if (!(i in mappedProps)) return true
+    }
+    if (!objects && mappedProps !== nextMappedProps) {
+      return true
     }
     return false
   }
