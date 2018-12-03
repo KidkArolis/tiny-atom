@@ -7,11 +7,17 @@ const isServer = typeof navigator === 'undefined'
 function useAtom (selector, options = {}) {
   selector = selector || (state => state)
   const { sync = false, pure = true, observe = !isServer } = options
-  const { atom } = useContext(AtomContext)
-  assert(atom, 'No atom found in context, did you forget to wrap your app with <Provider/>?')
   const schedule = sync ? fn => () => fn() : raf
+  const { atom } = useContext(AtomContext)
+  assert(atom, 'No atom found in context, did you forget to wrap your app in <Provider atom={atom} />?')
   const [mappedProps, setMappedProps] = useState(selector(atom.get()))
-  const ref = useRef({ mappedProps })
+  const ref = useRef({ mappedProps, atom })
+
+  // in case atom is swapped, unobserve
+  if (ref.current.unobserve && atom !== ref.current.atom) {
+    ref.current.unobserve()
+    ref.current.unobserve = null
+  }
 
   if (!ref.current.unobserve && observe) {
     ref.current.unobserve = atom.observe(() => {
