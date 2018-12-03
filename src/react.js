@@ -3,7 +3,7 @@ const raf = require('./raf')
 const printDebug = require('./debug')
 
 const dev = process.env.NODE_ENV !== 'production'
-const canUseDOM = !!(typeof window !== 'undefined' && window.document && window.document.createElement)
+const isServer = typeof navigator === 'undefined'
 
 function createContext () {
   const AtomContext = React.createContext()
@@ -23,7 +23,7 @@ function createContext () {
       super()
       this.state = {}
       this.isPure = typeof props.pure === 'undefined' ? true : props.pure
-      this.shouldObserve = typeof props.observe === 'undefined' ? canUseDOM : props.observe
+      this.shouldObserve = typeof props.observe === 'undefined' ? isServer : props.observe
       this.scheduleUpdate = props.sync ? () => this.update() : raf(() => this.update())
     }
 
