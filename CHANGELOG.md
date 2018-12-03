@@ -1,3 +1,56 @@
+## 4.0.0-rc.0
+
+**tl;dr**
+
+* update `set` to no longer deeply merge
+* add `swap` for swapping the entire state
+* remove `options.merge`, use `options.evolve` instead
+* expose `set` and `swap` on top level atom
+
+And with more details:
+
+* **BREAKING** Set no longer does a deep merge, this was a surprising unpredictable behaviour. For example, if you were trying to update the route in the store with `set({ route })`, you would not think that the url or query parameters got merged between the old route and the new route.
+
+So now, instead of:
+
+```js
+set({ display: { hidden: true } })
+```
+
+You could instead do:
+
+```js
+const { display } = get()
+set({ display: { ...display, hidden: true } })
+```
+
+This is more explicit about what gets merged and what doesn't. Note, the set still does a shallow merge of the top level attributes, just like React's `setState`. If you want to completely replace the state, use `swap` instead of `set`.
+
+If you do want to keep the old behaviour, you can through implementing a custom evolver:
+
+```js
+function evolve ({ get, set, swap, dispatch }, action) {
+  set = update => deepMerge(get(), update)
+  actions[action.type]({ get, set, swap, dispatch }, action.payload)
+}
+```
+
+* **BREAKING** Set used to take an options object as second argument, with the `replace` option. Use `swap` instead.
+
+Before:
+
+```js
+set(nextState, { replace: true })
+```
+
+After:
+
+```js
+swap(nextState)
+```
+
+* **Improvement** Readd `set` and (now also `swap`) to the top level atom. The `fuse` was often abused not for adding extra actions, but for adding extra state or resetting the state to the atom. Instead of abusing `fuse`, just expose `set` and `swap` to allow changing atom's values more easily.
+
 ## 3.4.2
 
 * **Fix** the fix. When turning `canUseDOM` into `isServer`, the boolean value has to be inverted.
