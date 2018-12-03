@@ -1,3 +1,7 @@
+## 3.4.2
+
+* **Fix** the fix. When turning `canUseDOM` into `isServer`, the boolean value has to be inverted.
+
 ## 3.4.1
 
 * **Fix** support for react-native by improving the check for server environment. Previously react-native was treated as server side rendering scenario and the connectors wouldn't subscribe to the store by default.

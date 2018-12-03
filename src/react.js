@@ -23,7 +23,7 @@ function createContext () {
       super()
       this.state = {}
       this.isPure = typeof props.pure === 'undefined' ? true : props.pure
-      this.shouldObserve = typeof props.observe === 'undefined' ? isServer : props.observe
+      this.shouldObserve = typeof props.observe === 'undefined' ? !isServer : props.observe
       this.scheduleUpdate = props.sync ? () => this.update() : raf(() => this.update())
     }
 
