@@ -4,11 +4,18 @@ require('./App.css')
 
 const Hint = function Hint (props) {
   const { show, text } = useAtom(state => state.hint)
+  const count = useAtom(state => state.count)
+  console.log('Rendering Hint')
   return (
     <div className='Hint'>
-      {show ? text : ''}
+      Count {count} {show ? text : ''}
     </div>
   )
+}
+
+const Modal = () => {
+  const count = useAtom(state => state.count)
+  return <div style={{position: 'absolute', top: '10px', left: '10px', background: 'wheat'}}>{count}</div>
 }
 
 const App = () => {
@@ -19,6 +26,8 @@ const App = () => {
   return (
     <div className='App'>
       <h1>tiny todo {count}</h1>
+
+      {count > 5 && <Modal />}
 
       <form onSubmit={onSubmit(addItem, this.$input)}>
         <input

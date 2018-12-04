@@ -36,11 +36,26 @@ module.exports = function createAtom (initialState = {}, actions = {}, options =
     }, {})
   }
 
-  function observe (f) {
-    listeners.push(f)
+  function insert (listeners, f, i) {
+    if (typeof i !== 'undefined') {
+      for (let j = 0; j < listeners.length; j++) {
+        if (listeners[j].i > i) {
+          listeners.splice(j, 0, { f, i })
+          return
+        }
+      }
+    }
+    listeners.push({ f, i })
+  }
+
+  function observe (f, i) {
+    insert(listeners, f, i)
     return function unobserve () {
-      if (listeners.indexOf(f) >= 0) {
-        listeners.splice(listeners.indexOf(f), 1)
+      for (let j = 0; j < listeners.length; j++) {
+        if (listeners[j].f === f) {
+          listeners.splice(j, 1)
+          break
+        }
       }
     }
   }
@@ -77,7 +92,7 @@ module.exports = function createAtom (initialState = {}, actions = {}, options =
       let prevState = state
       state = swap ? action.payload : Object.assign({}, state, action.payload)
       if (debug) report('update', action, sourceActions, prevState)
-      listeners.forEach(f => f(atom))
+      listeners.forEach(l => l.f(atom))
     }
   }
 

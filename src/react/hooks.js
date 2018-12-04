@@ -13,13 +13,17 @@ function useAtom (selector, options = {}) {
   const [mappedProps, setMappedProps] = useState(selector(atom.get()))
   const ref = useRef({ mappedProps, atom })
 
-  // in case atom is swapped, unobserve
-  if (ref.current.unobserve && atom !== ref.current.atom) {
-    ref.current.unobserve()
-    ref.current.unobserve = null
+  // keep track of rendering order
+  // this is important for correctness – parent must rerender first
+  // and performance – parent rerendering children should cancel
+  // children's scheduled rerenders
+  if (!ref.current.order) {
+    atom._i = atom._i ? atom._i + 1 : 1
+    ref.current.order = atom._i
   }
 
-  if (!ref.current.unobserve && observe) {
+  useEffect(() => {
+    if (!observe) return
     ref.current.unobserve = atom.observe(() => {
       // store updates happening in rapid sequence
       // get cancelled and rescheduled
@@ -35,31 +39,23 @@ function useAtom (selector, options = {}) {
           setMappedProps(nextMappedProps)
         }
       })()
-    })
-  }
+    }, ref.current.order)
+    return () => {
+      ref.current.unobserve && ref.current.unobserve()
+      if (ref.current.cancelUpdate) {
+        ref.current.cancelUpdate()
+        ref.current.cancelUpdate = null
+      }
+    }
+  }, [atom])
 
   // cancel a scheduled update on render
-  // we just rendered - don't need to render again
+  // we're being rendered right now
+  // so don't need to render again later
   if (ref.current.cancelUpdate) {
     ref.current.cancelUpdate()
     ref.current.cancelUpdate = null
   }
-
-  // unsubscribe from the store
-  useEffect(
-    () => {
-      // note, we already subscribed on first render
-      // this effect is only for unsubscribing
-      return () => {
-        ref.current.unobserve && ref.current.unobserve()
-        if (ref.current.cancelUpdate) {
-          ref.current.cancelUpdate()
-          ref.current.cancelUpdate = null
-        }
-      }
-    },
-    [atom]
-  )
 
   // always return fresh mapped props, in case
   // this is a parent rerendering children
