@@ -58,7 +58,7 @@ function createContext () {
       }
 
       // our state is mappedProps, this is the main optimisation
-      if (differ(this.state, nextState, { objects: true })) {
+      if (differ(this.state, nextState)) {
         if (dev && (this.context.debug || this.props.debug)) {
           printDebug.props(this.debugName(), this.state, nextState)
         }
@@ -72,7 +72,7 @@ function createContext () {
       }
 
       // in <Consumer /> case we also diff props
-      if (differ(this.props, nextProps, { objects: true })) {
+      if (differ(this.props, nextProps)) {
         if (dev && (this.context.debug || this.props.debug)) {
           printDebug.props(this.debugName(), this.props, nextProps)
         }
@@ -151,11 +151,14 @@ function createContext () {
     }
   }
 
-  function differ (mappedProps, nextMappedProps, { objects = false } = {}) {
+  function differ (mappedProps, nextMappedProps) {
     if (mappedProps === nextMappedProps) {
       return false
     }
     if (!mappedProps || !nextMappedProps) {
+      return true
+    }
+    if (!isObject(mappedProps) || !isObject(nextMappedProps)) {
       return true
     }
     for (let i in mappedProps) {
@@ -164,10 +167,12 @@ function createContext () {
     for (let i in nextMappedProps) {
       if (!(i in mappedProps)) return true
     }
-    if (!objects && mappedProps !== nextMappedProps) {
-      return true
-    }
     return false
+  }
+
+  function isObject (obj) {
+    return typeof obj === 'object' &&
+      Object.prototype.toString.call(obj) === '[object Object]'
   }
 
   return { AtomContext, Provider, Consumer, connect, differ }

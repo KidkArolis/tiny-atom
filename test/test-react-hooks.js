@@ -42,6 +42,20 @@ test.serial('usage', async t => {
   await frame()
   t.is(stats.childRenderCount, 4)
 
+  document.getElementById('increment-inner').dispatchEvent(click(dom))
+  await frame()
+  t.is(document.getElementById('count-outer').innerHTML, '5')
+  t.is(document.getElementById('count-inner').innerHTML, '50')
+  t.is(stats.childRenderCount, 5)
+
+  atom.dispatch('replaceUser', { loggedIn: true })
+  await frame()
+  t.is(stats.childRenderCount, 5)
+
+  atom.dispatch('replaceUser', { loggedIn: false })
+  await frame()
+  t.is(stats.childRenderCount, 6)
+
   ReactDOM.render(null, root)
 })
 
