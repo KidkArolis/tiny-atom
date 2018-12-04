@@ -69,7 +69,7 @@ function click (dom) {
 
 function frame () {
   flushEffects()
-  return new Promise(resolve => setTimeout(resolve, 2 * (1000 / 60)))
+  return new Promise(resolve => setTimeout(resolve, 5 * (1000 / 60)))
 }
 
 function flushEffects () {
