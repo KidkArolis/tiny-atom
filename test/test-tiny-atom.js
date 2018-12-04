@@ -49,16 +49,12 @@ test.cb('async action updates the state', t => {
 
 test('can be used in a mutating manner', t => {
   const initialState = { count: 0 }
-  const atom = createAtom(initialState, { increment }, { merge: mutate })
+  const atom = createAtom(initialState, { increment })
 
-  function mutate (empty, prev, next) {
-    return Object.assign(prev, next)
-  }
-
-  function increment ({ get, set }, payload) {
+  function increment ({ get, swap }, payload) {
     const state = get()
     state.count += payload
-    set(state)
+    swap(state)
   }
 
   atom.dispatch('increment', 3)
@@ -176,18 +172,6 @@ test('custom evolve', t => {
 
   atom.dispatch('increment', 5)
   t.deepEqual(atom.get(), { count: 6 })
-})
-
-test('custom merge', t => {
-  const merge = (oldState, newState) => oldState + newState
-  const add = ({ set }, x) => set(x)
-  const atom = createAtom(5, { add }, { merge })
-
-  atom.dispatch('add', 1)
-  t.deepEqual(atom.get(), 6)
-
-  atom.dispatch('add', 2)
-  t.deepEqual(atom.get(), 8)
 })
 
 test('fuse extends the state and actions', t => {
