@@ -128,16 +128,16 @@ atom.get().feed.items
 
 ### `atom.set(update)`
 
-Update current state by merging the update shallowly.
+Update state by shallowly merging an update.
 
 ```js
 atom.set({ user })
-atom.set({ entities: { ...entities, posts } })
+atom.set({ entities: { ...get().entities, posts } })
 ```
 
 ### `atom.swap(state)`
 
-Replace the state with the provided one.
+Replace the entire state with the provided one.
 
 ```js
 atom.swap(nextState)
@@ -152,7 +152,7 @@ atom.dispatch('fetchMovies')
 atom.dispatch('increment', 5)
 ```
 
-### `atom.observe(cb`
+### `atom.observe(cb)`
 
 Register a callback for when atom changes. Returns the unobserve function.
 
