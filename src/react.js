@@ -152,6 +152,15 @@ function createContext () {
   }
 
   function differ (mappedProps, nextMappedProps) {
+    if (mappedProps === nextMappedProps) {
+      return false
+    }
+    if (!mappedProps || !nextMappedProps) {
+      return true
+    }
+    if (!isObject(mappedProps) || !isObject(nextMappedProps)) {
+      return true
+    }
     for (let i in mappedProps) {
       if (mappedProps[i] !== nextMappedProps[i]) return true
     }
@@ -161,8 +170,13 @@ function createContext () {
     return false
   }
 
-  return { Provider, Consumer, connect }
+  function isObject (obj) {
+    return typeof obj === 'object' &&
+      Object.prototype.toString.call(obj) === '[object Object]'
+  }
+
+  return { AtomContext, Provider, Consumer, connect, differ }
 }
 
-const { Provider, Consumer, connect } = createContext()
-module.exports = { Provider, Consumer, connect, createContext }
+const { AtomContext, Provider, Consumer, connect, differ } = createContext()
+module.exports = { AtomContext, Provider, Consumer, connect, differ, createContext }

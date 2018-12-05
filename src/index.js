@@ -19,7 +19,8 @@ module.exports = function createAtom (initialState = {}, actions = {}, options =
   const set = createSet()
   const swap = createSwap()
   const dispatch = createDispatch()
-  const atom = { get, set, swap, dispatch, observe, fuse }
+  const bindActions = options.bindActions || defaultBindActions
+  const atom = { get, set, swap, dispatch, observe, fuse, actions: bindActions(dispatch, actions) }
   const evolve = options.evolve || defaultEvolve
   return atom
 
@@ -28,18 +29,41 @@ module.exports = function createAtom (initialState = {}, actions = {}, options =
     return actions[action.type](atom, action.payload)
   }
 
-  function observe (f) {
-    listeners.push(f)
+  function defaultBindActions (dispatch) {
+    return Object.keys(actions).reduce((boundActions, actionType) => {
+      boundActions[actionType] = payload => dispatch(actionType, payload)
+      return boundActions
+    }, {})
+  }
+
+  function insert (listeners, f, i) {
+    if (typeof i !== 'undefined') {
+      for (let j = 0; j < listeners.length; j++) {
+        if (listeners[j].i > i) {
+          listeners.splice(j, 0, { f, i })
+          return
+        }
+      }
+    }
+    listeners.push({ f, i })
+  }
+
+  function observe (f, i) {
+    insert(listeners, f, i)
     return function unobserve () {
-      if (listeners.indexOf(f) >= 0) {
-        listeners.splice(listeners.indexOf(f), 1)
+      for (let j = 0; j < listeners.length; j++) {
+        if (listeners[j].f === f) {
+          listeners.splice(j, 1)
+          break
+        }
       }
     }
   }
 
-  function fuse (moreState, moreActions, options) {
+  function fuse (moreState, moreActions) {
     Object.assign(actions, moreActions)
-    if (moreState) set(moreState, options)
+    atom.actions = bindActions(dispatch, actions)
+    if (moreState) set(moreState)
   }
 
   function createDispatch (sourceActions) {
@@ -68,7 +92,7 @@ module.exports = function createAtom (initialState = {}, actions = {}, options =
       let prevState = state
       state = swap ? action.payload : Object.assign({}, state, action.payload)
       if (debug) report('update', action, sourceActions, prevState)
-      listeners.forEach(f => f(atom))
+      listeners.forEach(l => l.f(atom))
     }
   }
 

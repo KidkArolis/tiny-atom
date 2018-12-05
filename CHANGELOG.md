@@ -2,12 +2,34 @@
 
 **tl;dr**
 
+* 💥 react hooks – `useAtom`, `useActions` and `useDispatch`
 * update `set` to no longer deeply merge
 * add `swap` for swapping the entire state
 * remove `options.merge`, use `options.evolve` instead
 * expose `set` and `swap` on top level atom
 
 And with more details:
+
+* **Improvement** you can now use react hooks to bind to the tiny atom state, it's probably the most concise way of using tiny-atom yet:
+
+```js
+import { useAtom, useActions } from 'tiny-atom/react/hooks'
+
+export default function Card () {
+  const { name, role } = useAtom(state => state.user)
+  const { message } = useActions()
+
+  return (
+    <div>
+      <div>{name}</div>
+      <div>{role}</div>
+      <button onClick={() => message('hello')} />
+    </div>
+  )
+}
+```
+
+Note: when using `connect`, tiny-atom made sure to eliminite rerendering entire subtrees using `shouldComponentUpdate`. With hooks, it's your own responsibility to wrap components with `React.memo()` to make sure the entire application doesn't needlessly rerender. If you wrap certain root components or simply most of the components using `React.memo()`, this will ensure that only "hooked" components rerender as and when needed.
 
 * **BREAKING** Set no longer does a deep merge, this was a surprising unpredictable behaviour. For example, if you were trying to update the route in the store with `set({ route })`, you would not think that the url or query parameters got merged between the old route and the new route.
 
