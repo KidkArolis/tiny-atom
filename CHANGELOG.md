@@ -1,3 +1,7 @@
+## 4.0.1
+
+Nothing changed. Previous release was done using the wrong command.
+
 ## 4.0.0
 
 **tl;dr**
