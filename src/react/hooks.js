@@ -24,12 +24,10 @@ function useAtom (selector, options = {}) {
 
   // cancel any pending scheduled updates after each render
   // since we just go rerendered by the parent component
-  useEffect(() => {
-    if (ref.current.cancelUpdate) {
-      ref.current.cancelUpdate()
-      ref.current.cancelUpdate = null
-    }
-  })
+  if (ref.current.cancelUpdate) {
+    ref.current.cancelUpdate()
+    ref.current.cancelUpdate = null
+  }
 
   useEffect(() => {
     if (!observe) return

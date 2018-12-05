@@ -9,6 +9,9 @@ module.exports = function renderHooksApp ({ h, root, useAtom, useActions, useDis
     increment: ({ get, set }, payload = 1) => {
       set({ count: get().count + payload })
     },
+    decrement: ({ get, set }, payload = 1) => {
+      set({ count: get().count - payload })
+    },
     incrementUnrelated: ({ get, set }) => {
       set({ unrelated: get().unrelated + 1 })
     },

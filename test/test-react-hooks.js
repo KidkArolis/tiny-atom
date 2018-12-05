@@ -73,7 +73,11 @@ test.serial('minimal rerenders required', async t => {
   t.is(stats.childRenderCount, 1)
   stats.childRenderCount = 0
 
-  for (let i = 1; i < 10; i++) {
+  for (let i = 1; i < 20; i++) {
+    atom.dispatch('increment')
+    atom.dispatch('decrement')
+    atom.dispatch('increment')
+    atom.dispatch('decrement')
     atom.dispatch('increment')
     await frame()
     t.is(document.getElementById('count-outer').innerHTML, String(i))
