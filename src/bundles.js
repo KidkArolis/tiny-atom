@@ -1,57 +1,31 @@
-const createAtom = require('.')
-const createSelectorCreator = require('./selectors')
-
-module.exports = function createBundles (initialBundles = [], options = {}) {
-  const actionsToBundles = {}
-  const atom = createAtom({}, {}, Object.assign({ evolve }, options))
-  const createSelector = createSelectorCreator(atom.context, options.isEqual)
-  const bundles = atom.bundles = {}
-
-  // add is used to add a bundle to atom
-  atom.add = function add (bundle) {
-    // fuse in the state
-    atom.fuse({ [bundle.name]: bundle.initialState })
+module.exports = function createBundles () {
+  function fuse (bundle, atom) {
+    const bundles = atom.bundles = atom.bundles || { map: {}, byAction: {} }
     // store the bundle
-    bundles[bundle.name] = bundle
+    bundles.map[bundle.slice] = bundle
     // index all the actions
     Object.keys(bundle.actions || {}).forEach(action => {
-      // allow init and react in each bundle
-      if ((action !== 'init' && action !== 'react') && !actionsToBundles[action]) {
-        throw new Error(`Action ${selectorName} is duplicated!`)
+      if (bundles.byAction[action]) {
+        throw new Error(`Action ${action} duplicated, exists in both ${bundles.byAction[action].slice} and ${bundle.slice}`)
+      } else {
+        bundles.byAction[action] = bundle
       }
-      // TODO - init/react will be overwritten
-      actionsToBundles[action] = bundle.name
     })
-    // create and bind the selectors
-    Object.keys(bundle.selectors || {}).forEach(selectorName => {
-      if (atom.context[selectorName]) {
-        throw new Error(`Selector ${selectorName} is duplicated!`)
-      }
-      const selector = createSelector(bundle.selectors[selectorName])
-      atom.context[selectorName] = () => selector(atom.get())
-    })
+    // merge in the state
+    atom.set({ [bundle.slice]: bundle.initialState })
   }
 
-  function evolve ({ get: getRoot, set: setRoot, dispatch }, { type, payload }, context) {
-    if (!actionsToBundles[type] && type === 'react') return
-    if (!actionsToBundles[type]) throw new Error(`Missing action ${type}`)
-    const bundleName = actionsToBundles[type]
-    const bundle = bundles[bundleName]
+  function evolve ({ get: getRoot, set: setRoot, swap: swapRoot, dispatch }, { type, payload }, actions, atom) {
+    const bundles = atom.bundles || {}
+    const byAction = bundles.byAction || {}
+    if (!byAction[type]) throw new Error(`Missing action ${type}`)
+    const bundle = byAction[type]
     const action = bundle.actions[type]
-    const get = () => getRoot()[bundleName]
-    const set = (update) => setRoot({ [bundleName]: { ...get(), ...update } })
-    return action({ get, getRoot, set, dispatch }, payload, context)
+    const get = () => getRoot()[bundle.slice]
+    const set = (update) => setRoot({ [bundle.slice]: { ...get(), ...update } })
+    const swap = (state) => setRoot({ [bundle.slice]: state })
+    return action({ get, getRoot, set, swap, dispatch }, payload)
   }
 
-  // add in all of the initial bundles
-  initialBundles.forEach(atom.add)
-
-  // reactor feature
-  let prev = atom.get()
-  atom.observe(() => {
-    atom.dispatch('react', { prev })
-    prev = atom.get()
-  })
-
-  return atom
+  return { fuse, evolve }
 }

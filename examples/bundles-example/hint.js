@@ -1,5 +1,5 @@
 module.exports = {
-  name: 'hint',
+  slice: 'hint',
 
   initialState: {
     text: 'Type + hit enter',

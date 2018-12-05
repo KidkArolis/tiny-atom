@@ -1,12 +1,14 @@
-const React = require('react')
-const { Consumer, connect } = require('tiny-atom/react')
-require('./App.css')
+import { selectTodoCount } from './todo'
+import React from 'react'
+import { Consumer, connect } from 'tiny-atom/react'
+import './App.css'
 
-const map = ({ todo, hint }, props, { todoCount }) => {
+const map = (state, props) => {
+  const { todo, hint } = state
   return {
     todo,
     hint,
-    todoCount: todoCount()
+    todoCount: selectTodoCount(state)
   }
 }
 
@@ -30,16 +32,7 @@ const App = () => (
       <div className='App'>
         <h1>tiny todo - {todoCount}</h1>
 
-        <form onSubmit={onSubmit(addItem, this.$input)}>
-          <input
-            className='Todo-input'
-            type='text'
-            ref={el => { this.$input = el }}
-            onChange={(e) => updateItem(e.target.value)}
-            value={todo.input}
-          />
-        </form>
-
+      
         {todo.items.map((item, i) => (
           <div className='Todo' key={i} onClick={() => completeItem(i)}>
             <span className='Todo-done'>☐</span>
@@ -55,8 +48,6 @@ const App = () => (
   </Consumer>
 )
 
-module.exports = App
-
 function onSubmit (addItem, $input) {
   return function (e) {
     e.preventDefault()
@@ -64,3 +55,5 @@ function onSubmit (addItem, $input) {
     $input.focus()
   }
 }
+
+export default App
