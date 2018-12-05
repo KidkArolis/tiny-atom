@@ -30,4 +30,4 @@ In addition, the React and Preact connectors `connect` and `<Consumer>` are opti
 
 ## Extend
 
-Don't be afraid to read the code of **Tiny Atom** to really understand what's going on under the hood. Once you understand the concepts behind it - consider using custom `evolve` or `merge` hooks to fit your specific application needs.
+Don't be afraid to read the code of **Tiny Atom** to really understand what's going on under the hood. Once you understand the concepts behind it - consider using a custom `evolve` hook to fit your specific application needs.

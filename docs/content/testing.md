@@ -6,9 +6,9 @@ An example of how you could go about unit testing individual actions. Say you ha
 
 **actions.js**
 ```js
-const axios = require('axios')
+import axios from 'axios'
 
-module.exports = {
+export default {
   fetchMetrics: async ({ get, set, dispatch }, id) => {
     set({ loading: true })
     try {
@@ -24,11 +24,11 @@ module.exports = {
 
 **test.js**
 ```js
-const { deepEqual } = require('assert')
-const createAtom = require('tiny-atom')
-const axios = require('axios')
-const sinon = require('sinon')
-const actions = require('./actions')
+import { deepEqual } from 'assert'
+import createAtom from 'tiny-atom'
+import axios from 'axios'
+import sinon from 'sinon'
+import actions from './actions'
 
 suite('actions')
 

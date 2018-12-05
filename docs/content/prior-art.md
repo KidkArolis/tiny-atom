@@ -24,7 +24,7 @@ Let's look at some code snippets comparing the two.
 #### Redux
 
 ```js
-const { createStore } = require('redux')
+import { createStore } from 'redux'
 
 function todos (state = [], action) {
   switch (action.type) {
@@ -45,7 +45,7 @@ console.log(store.getState())
 #### Tiny Atom
 
 ```js
-const createStore = require('tiny-atom')
+import createAtom from 'tiny-atom'
 
 function todos ({ get, set, dispatch }, { type, payload }) {
   switch (type) {
@@ -55,7 +55,7 @@ function todos ({ get, set, dispatch }, { type, payload }) {
       break
   }
 }
-const store = createStore({ list: ['Use Tiny Atom'] }, {}, { evolve: todos })
+const store = createAtom({ list: ['Use Tiny Atom'] }, {}, { evolve: todos })
 
 store.dispatch('addTodo', { text: 'Read the docs' })
 
@@ -66,7 +66,7 @@ console.log(store.get())
 The power of **Tiny Atom** comes from being able to perform many different related state transitions in a single action. Here's an example:
 
 ```js
-const createAtom = require('tiny-atom')
+import createAtom from 'tiny-atom'
 
 const actions = {
   fetch: async ({ get, set, dispatch }) => {

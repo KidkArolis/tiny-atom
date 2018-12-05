@@ -1,12 +1,12 @@
-## 4.0.0-rc.0
+## 4.0.0
 
 **tl;dr**
 
-* 💥 react hooks – `useAtom`, `useActions` and `useDispatch`
+* react hooks – `useAtom`, `useActions` and `useDispatch` 💥
 * update `set` to no longer deeply merge
 * add `swap` for swapping the entire state
-* remove `options.merge`, use `options.evolve` instead
 * expose `set` and `swap` on top level atom
+* remove `options.merge`, use `options.evolve` instead
 
 And with more details:
 

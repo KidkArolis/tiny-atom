@@ -76,7 +76,7 @@ atom.dispatch('fetchMovies')
 atom.dispatch('increment', 5)
 ```
 
-### `atom.observe(cb`
+### `atom.observe(cb)`
 
 Register a callback for when atom changes. Returns the unobserve function.
 

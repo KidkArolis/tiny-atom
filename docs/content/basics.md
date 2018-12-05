@@ -14,7 +14,7 @@ First, we create our `atom` that stores a count and can be updated with two acti
 
 **atom.js**
 ```js
-const createAtom = require('tiny-atom')
+import createAtom from 'tiny-atom'
 
 const initialState = { count: 0 }
 
@@ -29,15 +29,15 @@ const actions = {
   }
 }
 
-module.exports = createAtom(initialState, actions)
+export default createAtom(initialState, actions)
 ```
 
 Next, create the App component and use the connector to subscribe to the atom state.
 
 **App.js**
 ```js
-const React = require('react')
-const { connect } = require('tiny-atom/connect')
+import React from 'react'
+import { connect } from 'tiny-atom/connect'
 
 const mapStateToProps = (state) => {
   return {
@@ -58,17 +58,17 @@ const App = ({ count, increment, decrement }) => (
   </div>
 )
 
-module.exports = connect(map, actions)(App)
+export default connect(map, actions)(App)
 ```
 
 And finally render the application.
 
 **index.js**
 ```js
-const React = require('react')
-const ReactDOM = require('react-dom')
-const App = require('./App')
-const atom = require('./atom')
+import React from 'react'
+import ReactDOM from 'react-dom'
+import App from './App'
+import atom from './atom'
 
 ReactDOM.render((
   <Provider atom={atom}>

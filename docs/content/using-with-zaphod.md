@@ -6,9 +6,9 @@ title: Using with Zaphod
 
 **actions.js**
 ```js
-const { getIn, setIn, updateIn, merge } = require('zaphod/compat')
+import { getIn, setIn, updateIn, merge } from 'zaphod/compat'
 
-module.exports = {
+export default {
   fetchMoreItems: async ({ get, set }) => {
     // check if we're already loading
     if (getIn(get(), ['feed', 'loading'])) return

@@ -15,8 +15,8 @@
   <a href="http://img.badgesize.io/https://cdn.jsdelivr.net/npm/tiny-atom/index.min.js?compression=gzip">
     <img src="http://img.badgesize.io/https://cdn.jsdelivr.net/npm/tiny-atom/index.min.js?compression=gzip" alt="size" />
   </a>
-  <a href="https://travis-ci.org/QubitProducts/tiny-atom">
-    <img src="https://travis-ci.org/QubitProducts/tiny-atom.svg?branch=master" alt="Build Status" />
+  <a href="https://travis-ci.org/KidkArolis/tiny-atom">
+    <img src="https://travis-ci.org/KidkArolis/tiny-atom.svg?branch=master" alt="Build Status" />
   </a>
   <a href="https://github.com/standard/standard">
     <img src="https://img.shields.io/badge/code_style-standard-brightgreen.svg" alt="code style: standard" />
@@ -25,16 +25,17 @@
 
 * single store modified via actions
 * tiny api - easy to understand, easy to adapt
-* tiny size - 1KB
+* tiny size - 1KB, or 2KB with (p)react bindings
 * react and preact bindings included
-* react and preact debug mode for identifying re-renders
+* react hooks support
+* highly optimised with batched rerenders
 * beautiful console logger
 * redux devtools integration
 
 **How is this different from redux?** The key differences are:
 
-* actions in tiny-atom can read and update the state and dispatch other actions. Actions are self contained units of business logic. This removes layers of boilerplate while preserving the benefits of redux like stores.
-* tiny-atom includes useful utilities to make it completely sufficient for building application of any size.
+* Actions in tiny-atom are self contained units of business logic. They can read and update the state and dispatch other actions any number of times. This removes layers of boilerplate while preserving the benefits of redux like stores.
+* Tiny-atom includes useful utilities to make it completely sufficient for building application of any size.
 
 ## Installation
 
@@ -53,7 +54,7 @@ Read the [full docs](https://kidkarolis.github.io/tiny-atom) or pick one of the 
 ## Example
 
 ```js
-const createAtom = require('tiny-atom')
+import createAtom from 'tiny-atom'
 
 const atom = createAtom({ unicorns: 0, rainbows: [] }, {
   incrementUnicorns ({ get, set }, n) {
@@ -68,13 +69,51 @@ const atom = createAtom({ unicorns: 0, rainbows: [] }, {
   }
 })
 
-atom.observe((atom) => {
+atom.observe(atom => {
   console.log('atom', atom)
   const { rainbows, unicorns } = atom.get()
   render(unicorns).onClick(e => atom.dispatch('incrementUnicorns', 10))
 })
 ```
 
+## React Example
+
+Provide the store:
+
+```js
+import React from 'react'
+import ReactDOM from 'react-dom'
+import createAtom from 'tiny-atom'
+import { Provider } from 'tiny-atom/react'
+
+const atom = createAtom({ user: { name: 'Atom' } }, {
+  message ({ get, set, swap, dispatch}, msg) {
+    console.log(msg)
+  }
+})
+
+ReactDOM.render((
+  <Provider atom={atom}>
+    <App />
+  </Provider>
+), document.querySelector('root'))
+```
+
+Connect using React hooks:
+
+```js
+import React from 'react'
+import { useAtom, useActions } from 'tiny-atom/react/hooks'
+
+export default function Hello () {
+  const user = useAtom(state => state.user)
+  const { message } = useActions()
+
+  return (
+    <button onClick={() => message('hi')}>{user.name}</button>
+  )
+}
+```
 
 ## API
 
@@ -182,4 +221,4 @@ atom.fuse(state, actions)
 
 ## React / Preact bindings
 
-For documentation on the set of react and preact components `<Provider />`, `<Consumer />` and `connect` see [react](https://kidkarolis.github.io/tiny-atom/using-with-react) or [preact](https://kidkarolis.github.io/tiny-atom/using-with-preact) docs.
+For documentation on the set of react and preact components `<Provider />`, `<Consumer />`, `connect`, `useAtom`, `useActions` and `useDispatch` see [react](https://kidkarolis.github.io/tiny-atom/using-with-react) or [preact](https://kidkarolis.github.io/tiny-atom/using-with-preact) docs.

@@ -9,14 +9,16 @@ The url and all url changes are sent to `atom`. Therefore url changes rerender t
 Here's how it looks with [space-router](https://github.com/KidkArolis/space-router).
 
 ```js
-const Preact = require('preact')
-const createAtom = require('tiny-atom')
-const createRouter = require('space-router')
-const { Consumer } = require('tiny-atom/preact')
+import Preact from 'preact'
+import createAtom from 'tiny-atom'
+import createRouter from 'space-router'
+import { Consumer } from 'tiny-atom/preact'
+import Main from './Main'
+import Space from './Space'
 
 const router = createRouter([
-  ['/', require('./Main')],
-  ['/space', require('./Space')],
+  ['/', Main],
+  ['/space', Space],
 ])
 
 const atom = createAtom({ count: 0 }, {

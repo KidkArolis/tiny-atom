@@ -7,8 +7,8 @@ title: Devtools
 Once you have the browser extension, using the devtools is as easy as:
 
 ```js
-const createAtom = require('tiny-atom')
-const devtools = require('tiny-atom/devtools')
+import createAtom from 'tiny-atom'
+import devtools from 'tiny-atom/devtools'
 
 const atom = createAtom({}, evolve, render, { debug: devtools() })
 ```

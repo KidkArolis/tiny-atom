@@ -6,20 +6,20 @@ title: Using with immer
 
 By default, **Tiny Atom** shallowly clones and merges state updates into the existing state without mutating the previous state. To perform more complicated state updates, libraries such as [Zaphod](/tiny-atom/using-with-zaphod) can be very helpful.
 
-Another really neat alternative to updating your state without mutating is enabled by a library called [immer](https://github.com/mweststrate/immer). Immer is using Proxies to keep track of changes you're making to the objects and then returns an efficiently cloned copy.
+Another neat alternative to updating your state without mutating is enabled by a library called [immer](https://github.com/mweststrate/immer). Immer is using Proxies to keep track of changes you're making to the objects and then returns an efficiently cloned copy.
 
 Let's look at how you'd use it with tiny-atom.
 
 ```js
-const immer = require('immer')
-const createAtom = require('tiny-atom')
+import rawImmer from 'immer'
+import createAtom from 'tiny-atom'
 
 const actions = {
-  async fetchItem ({ get, set }, { id }) => {
+  async fetchItem ({ get, immer }, { id }) => {
     // using immer api! it's a callback where you can
     // mutate the state with regular js mutations
     // without actually mutating the original object
-    set(state => {
+    immer(state => {
       state.loading = true
     })
 
@@ -28,13 +28,13 @@ const actions = {
 
       // immer makes it convenient to make multiple,
       // deep changes to your state
-      set(state => {
+      immer(state => {
         state.loading = false
         state.entities.items[item.id] = item
         state.feed.items.push(item.id)
       })
     } catch (err) {
-      set(state => {
+      immer(state => {
         state.loading = false
         state.error = 'Fetching failed'
       })
@@ -42,8 +42,14 @@ const actions = {
   }
 }
 
-// immer's signature matches that of atom's merge option
-const atom = createAtom({}, { actions }, { merge: immer })
+// use a custom evolver helper to inject a state bound immer into your actions
+// this is entirely optional as you could just use immer directly in your actions
+function evolve ({ get, set, swap, dispatch }, { type, payload }, actions) {
+  const immer = fn => swap(rawImmer(get(), fn))
+  actions[type]({ get, set, swap, immer, dispatch }, payload)
+}
+
+const atom = createAtom({}, { actions }, { evolve })
 
 atom.dispatch('fetchItems')
 ```

@@ -14,9 +14,9 @@ if (module.hot) {
 
 **app.js**
 ```js
-const createAtom = require('tiny-atom')
-const evolve = require('./evolve')
-const render = require('./render')
+import createAtom from 'tiny-atom'
+import evolve from './evolve'
+import render from './render'
 
 const atom = createAtom(initialState(), evolve, onChange)
 

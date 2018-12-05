@@ -6,14 +6,13 @@ title: Using with Immutable.js
 
 By default, **Tiny Atom** shallowly clones and merges state updates into the existing state without mutating the previous state. To perform more complicated state updates, libraries such as [Zaphod](/using-with-zaphod) can be very helpful.
 
-Another way to actually force immutability in your `atom` is to use an immutable data structure library such as [Immutable.js](https://facebook.github.io/immutable-js/). For this to work with **Tiny Atom** you'll have to pass a custom `initialState` and a custom `merge` function.
+Another way to actually force immutability in your `atom` is to use an immutable data structure library such as [Immutable.js](https://facebook.github.io/immutable-js/). For this to work with **Tiny Atom** you'll have to pass a custom `initialState` and use `swap` instead of `set` in your actions.
 
 ```js
-const { Map } = require('immutable')
-const createAtom = require('tiny-atom')
+import { Map } = from 'immutable'
+import createAtom from 'tiny-atom'
 
-const merge = (state, update) => state.merge(update)
-const atom = createAtom(initialState(), actions(), { merge })
+const atom = createAtom(initialState(), actions())
 
 const initialState = function () {
   return Map({ count: 0 })
@@ -21,16 +20,16 @@ const initialState = function () {
 
 function actions () {
   return {
-    increment: ({ get, set }, action) => {
+    increment: ({ get, swap }, action) => {
       const state = get()
       const count = state.get('count')
       const update = Map({ count: count + 1 })
-      set(update)
+      swap(update)
     },
 
-    decrement: ({ get, set }, action) => {
+    decrement: ({ get, swap }, action) => {
       const nextState = get().set('count', 5)
-      set(nextState)
+      swap(nextState)
     }
   }
 }
