@@ -22,6 +22,15 @@ function useAtom (selector, options = {}) {
     ref.current.order = atom._i
   }
 
+  // cancel any pending scheduled updates after each render
+  // since we just go rerendered by the parent component
+  useEffect(() => {
+    if (ref.current.cancelUpdate) {
+      ref.current.cancelUpdate()
+      ref.current.cancelUpdate = null
+    }
+  })
+
   useEffect(() => {
     if (!observe) return
     ref.current.unobserve = atom.observe(() => {
@@ -48,14 +57,6 @@ function useAtom (selector, options = {}) {
       }
     }
   }, [atom])
-
-  // cancel a scheduled update on render
-  // we're being rendered right now
-  // so don't need to render again later
-  if (ref.current.cancelUpdate) {
-    ref.current.cancelUpdate()
-    ref.current.cancelUpdate = null
-  }
 
   // always return fresh mapped props, in case
   // this is a parent rerendering children

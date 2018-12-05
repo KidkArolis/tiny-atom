@@ -59,6 +59,31 @@ test.serial('usage', async t => {
   ReactDOM.render(null, root)
 })
 
+test.serial('minimal rerenders required', async t => {
+  const h = global.h = React.createElement
+  const dom = new JSDOM('<!doctype html><div id="root"></div>')
+  global.window = dom.window
+  global.document = dom.window.document
+  const root = document.getElementById('root')
+
+  const { atom, stats } = renderHooksApp({ h, useAtom, useActions, useDispatch, root })
+
+  await frame()
+
+  t.is(stats.childRenderCount, 1)
+  stats.childRenderCount = 0
+
+  for (let i = 1; i < 10; i++) {
+    atom.dispatch('increment')
+    await frame()
+    t.is(document.getElementById('count-outer').innerHTML, String(i))
+    t.is(document.getElementById('count-inner').innerHTML, String(i * 10))
+    t.is(stats.childRenderCount, i)
+  }
+
+  ReactDOM.render(null, root)
+})
+
 function click (dom) {
   return new dom.window.MouseEvent('click', {
     'view': dom.window,
@@ -69,7 +94,7 @@ function click (dom) {
 
 function frame () {
   flushEffects()
-  return new Promise(resolve => setTimeout(resolve, 5 * (1000 / 60)))
+  return new Promise(resolve => setTimeout(resolve, 2 * (1000 / 60)))
 }
 
 function flushEffects () {

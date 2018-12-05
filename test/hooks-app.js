@@ -17,7 +17,9 @@ module.exports = function renderHooksApp ({ h, root, useAtom, useActions, useDis
     }
   })
 
+  stats.appRenderCount = 0
   const App = () => {
+    stats.appRenderCount++
     const count = useAtom(state => state.count, { observe: true })
     const { increment } = useActions()
 
@@ -33,12 +35,12 @@ module.exports = function renderHooksApp ({ h, root, useAtom, useActions, useDis
   stats.childRenderCount = 0
   const Child = ({ multiplier }) => {
     stats.childRenderCount++
-    const count = useAtom(state => state.count, { observe: true }) * multiplier
+    const count = useAtom(state => state.count, { observe: true })
     const user = useAtom(state => state.user, { observe: true })
     const dispatch = useDispatch()
     return (
       <div>
-        <div id='count-inner'>{count}</div>
+        <div id='count-inner'>{count * multiplier}</div>
         <div>Logged in: {user.loggedIn}</div>
         <button id='increment-inner' onClick={() => dispatch('increment', 2)} />
       </div>

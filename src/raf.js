@@ -3,20 +3,9 @@ function getRequestAnimationFrame () {
     return callback => callback()
   }
 
-  const polyfill = (() => {
-    let clock = Date.now()
-    return (callback) => {
-      const currentTime = Date.now()
-      if (currentTime - clock > 16) {
-        clock = currentTime
-        callback(currentTime)
-      } else {
-        return setTimeout(() => {
-          polyfill(callback)
-        }, 0)
-      }
-    }
-  })()
+  const polyfill = (callback) => {
+    return setTimeout(callback, 16)
+  }
 
   return window.requestAnimationFrame ||
     window.webkitRequestAnimationFrame ||

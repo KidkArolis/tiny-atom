@@ -81,20 +81,18 @@ test('gets pollyfilled with ts on the server or other envs', async t => {
   await tick()
   t.is(renders, 1)
 
-  // this one's not deferred, due to how
-  // the polyfill works
   render()
   render()
   render()
+  await tick()
   t.is(renders, 2)
 
-  // one more render kicks in due to polyfill
   await tick()
-  t.is(renders, 3)
+  t.is(renders, 2)
 
   // frames fire, no extra renders happen
   await tick()
   await tick()
   await tick()
-  t.is(renders, 3)
+  t.is(renders, 2)
 })
