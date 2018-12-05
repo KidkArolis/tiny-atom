@@ -15,21 +15,19 @@ if (module.hot) {
 **app.js**
 ```js
 import createAtom from 'tiny-atom'
-import evolve from './evolve'
+import actions from './actions'
 import render from './render'
 
-const atom = createAtom(initialState(), evolve, onChange)
+const atom = createAtom(initialState(), actions)
 
 function initialState () {
-  // when reloading the code, initialise the state from hotAtom
+  // when loading/reloading the app, initialise the state
+  // from an atom copy stored on window.hotAtom
   return Object.assign({ count: 5 }, window.hotAtom)
 }
 
-function onChange (atom) {
+atom.observe(function onChange (atom) {
   // on each state change, store it in hotAtom for hot reloading
   window.hotAtom = atom.get()
-  render(atom)
-}
-
-render(atom)
+})
 ```
