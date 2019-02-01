@@ -72,10 +72,20 @@ function useDispatch () {
   return atom.dispatch
 }
 
+function useDispatchEffect (onRender, onUnrender, deps = []) {
+  useEffect(() => {
+    onRender()
+    return () => {
+      onUnrender()
+    }
+  }, deps)
+}
+
 function assert (cond, error) {
   if (!cond) {
     throw new Error(error)
   }
 }
 
-module.exports = { useAtom, useActions, useDispatch }
+
+module.exports = { useAtom, useActions, useDispatch, useDispatchEffect }

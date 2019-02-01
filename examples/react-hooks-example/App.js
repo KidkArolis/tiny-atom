@@ -1,14 +1,50 @@
 const React = require('react')
-const { useAtom, useActions } = require('tiny-atom/react/hooks')
+const { useAtom, useActions, useDispatchEffect } = require('tiny-atom/react/hooks')
+const { useLocalAtom } = require('tiny-atom/react/local')
 require('./App.css')
+
+const hintAtom = () => {
+  let interval
+  return {
+    state: {
+      time: new Date()
+    },
+    actions: {
+      logShiz ({ get, root, dispatch }) {
+        console.log('local time', get())
+        console.log('root item count', root().todo.items.length)
+        dispatch("logMoreShiz")
+        dispatch("updateItem", 'aha! it works!')
+      },
+      logMoreShiz () {
+        console.log('more shiz!')
+      },
+      startTicking ({ get, set }) {
+        console.log('started')
+        interval = setInterval(() => {
+          set({ time: new Date() })
+        }, 1000)
+      },
+      stopTicking () {
+        console.log('stopped')
+        clearInterval(interval)
+      }
+    }
+  }
+}
 
 const Hint = function Hint (props) {
   const { show, text } = useAtom(state => state.hint)
-  const count = useAtom(state => state.count)
-  console.log('Rendering Hint')
+  const count = useAtom(state => state.todo.items.length)
+
+  const { state, actions } = useLocalAtom(hintAtom())
+  useDispatchEffect(actions.startTicking, actions.stopTicking)
+
   return (
     <div className='Hint'>
-      Count {count} {show ? text : ''}
+      Count {count} {show ? text : ''}.
+      <br />
+      <div onClick={actions.logShiz}>And time {state.time.toISOString()}</div>
     </div>
   )
 }
