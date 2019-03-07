@@ -41,13 +41,12 @@ test('logs out formatted messages', async t => {
   }, logger)
 
   t.deepEqual(buffer.slice(4), [
-    'payload {"slice":1}',
-    'chain []',
+    'curr {"state":1,"list":[2,3]}',
+    'prev {"state":0,"list":[1]}',
     'update {"slice":1}',
-    'prev state {"state":0,"list":[1]}',
-    'curr state {"state":1,"list":[2,3]}',
-    '%c   CHANGED: color: #2196F3; font-weight: bold; state 0 → 1',
-    '%c   ARRAY: color: #2196F3; font-weight: bold; list[1] added 3',
-    '%c   CHANGED: color: #2196F3; font-weight: bold; list.0 1 → 2'
+    ' chain',
+    '%cUPDATED color: #2196F3; font-weight: bold; state 0 → 1',
+    '%cARRAY color: #2196F3; font-weight: bold; list[1] added 3',
+    '%cUPDATED color: #2196F3; font-weight: bold; list.0 1 → 2'
   ])
 })
