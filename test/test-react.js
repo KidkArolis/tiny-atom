@@ -4,7 +4,7 @@ const ReactDOM = require('react-dom')
 const { Provider, Consumer, connect, createContext } = require('../src/react')
 const testApp = require('./generic-app')
 
-test.serial('usage', async t => {
+test.serial('usage', async function (t) {
   const h = global.h = React.createElement
   const { root, assert, render } = testApp({ h, Provider, Consumer, connect })
   render(App => ReactDOM.render(h(App), root))
@@ -12,7 +12,7 @@ test.serial('usage', async t => {
   ReactDOM.render(null, root)
 })
 
-test.serial('usage with createContext', async t => {
+test.serial('usage with createContext', async function (t) {
   const h = global.h = React.createElement
   const { root, assert, render } = testApp({ h, createContext })
   render(App => ReactDOM.render(h(App), root))

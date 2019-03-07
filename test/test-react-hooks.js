@@ -7,7 +7,7 @@ const { Provider } = require('../src/react')
 const { useAtom, useActions, useDispatch } = require('../src/react/hooks')
 const renderHooksApp = require('./hooks-app')
 
-test.serial('usage', async t => {
+test.serial('usage', async function (t) {
   const h = global.h = React.createElement
   const dom = new JSDOM('<!doctype html><div id="root"></div>')
   global.window = dom.window
@@ -61,7 +61,7 @@ test.serial('usage', async t => {
   ReactDOM.render(null, root)
 })
 
-test.serial('minimal rerenders required', async t => {
+test.serial('minimal rerenders required', async function (t) {
   const h = global.h = React.createElement
   const dom = new JSDOM('<!doctype html><div id="root"></div>')
   global.window = dom.window
@@ -90,7 +90,7 @@ test.serial('minimal rerenders required', async t => {
   ReactDOM.render(null, root)
 })
 
-test.serial('a race condition between commit phase/observing and atom changing', async t => {
+test.serial('a race condition between commit phase/observing and atom changing', async function (t) {
   const h = global.h = React.createElement
   const dom = new JSDOM('<!doctype html><div id="root"></div>')
   global.window = dom.window
@@ -133,7 +133,7 @@ test.serial('a race condition between commit phase/observing and atom changing',
   t.is(document.getElementById('count-inner').innerHTML, String(1))
 })
 
-test.serial('edge case where we rerender via parent and then via observation', async t => {
+test.serial('edge case where we rerender via parent and then via observation', async function (t) {
   const h = global.h = React.createElement
   const dom = new JSDOM('<!doctype html><div id="root"></div>')
   global.window = dom.window

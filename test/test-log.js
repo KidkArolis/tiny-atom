@@ -1,7 +1,7 @@
 const test = require('ava')
 const createLog = require('../src/log')
 
-test('logs out formatted messages', async t => {
+test('logs out formatted messages', async function (t) {
   const buffer = []
   const push = (...msg) => {
     const start = msg.slice(0, -1)

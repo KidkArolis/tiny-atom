@@ -21,17 +21,17 @@
   ],
   "license": "ISC",
   "devDependencies": {
-    "ava": "^0.25.0",
-    "buble": "^0.19.3",
-    "execa": "^0.10.0",
-    "jetpack": "^0.8.0",
-    "jsdom": "^11.3.0",
-    "np": "^3.0.4",
-    "nyc": "^12.0.2",
+    "ava": "^1.3.1",
+    "buble": "^0.19.6",
+    "execa": "^1.0.0",
+    "jetpack": "^0.13.0",
+    "jsdom": "^13.2.0",
+    "np": "^4.0.2",
+    "nyc": "^13.3.0",
     "preact": "^8.4.2",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
-    "standard": "^11.0.0"
+    "standard": "^12.0.1"
   },
   "standard": {
     "ignore": [

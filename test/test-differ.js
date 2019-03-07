@@ -1,7 +1,7 @@
 const test = require('ava')
 const { differ } = require('../src/react')
 
-test('compares values shallowly', async t => {
+test('compares values shallowly', async function (t) {
   t.is(differ(1, 1), false)
   t.is(differ(1, 2), true)
   t.is(differ(0, 1), true)

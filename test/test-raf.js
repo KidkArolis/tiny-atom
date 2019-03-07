@@ -2,7 +2,7 @@ const test = require('ava')
 const { JSDOM } = require('jsdom')
 const raf = require('../src/raf')
 
-test('calls functions at most once a frame', async t => {
+test('calls functions at most once a frame', async function (t) {
   const dom = new JSDOM()
   global.window = dom.window
 
@@ -51,7 +51,7 @@ test('calls functions at most once a frame', async t => {
   t.is(renders, 2)
 })
 
-test('gets pollyfilled with ts on the server or other envs', async t => {
+test('gets pollyfilled with ts on the server or other envs', async function (t) {
   const dom = new JSDOM()
   const tick = () => new Promise(resolve => setTimeout(resolve, 20))
   global.window = dom.window

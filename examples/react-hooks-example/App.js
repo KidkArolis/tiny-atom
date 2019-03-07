@@ -15,7 +15,7 @@ const Hint = function Hint (props) {
 
 const Modal = () => {
   const count = useAtom(state => state.count)
-  return <div style={{position: 'absolute', top: '10px', left: '10px', background: 'wheat'}}>{count}</div>
+  return <div style={{ position: 'absolute', top: '10px', left: '10px', background: 'wheat' }}>{count}</div>
 }
 
 const App = () => {

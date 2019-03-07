@@ -189,12 +189,12 @@ test('fuse extends the state and actions', t => {
   t.deepEqual(atom.get(), { count: 4, meta: 1, base: 2 })
 })
 
-test('async actions are testable', async t => {
+test('async actions are testable', async function (t) {
   let atom, history, axios
 
   // action under test
   const actions = {
-    fetchMetrics: async ({ get, set, dispatch }, id) => {
+    fetchMetrics: async function ({ get, set, dispatch }, id) {
       set({ loading: true })
       try {
         const res = await axios.get('/metrics/' + id)
