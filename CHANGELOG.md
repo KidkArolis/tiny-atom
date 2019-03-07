@@ -1,3 +1,12 @@
+## 4.1.0
+
+Important fixes in the hooks implementation
+
+* Fix #69 - a race condition where atom could change before useEffect is flushed leading to incosistent render output
+* Fix #70 - an issue caused by incorrect usage of useState, where a new React version does not rerender if useState is called with the same value
+* Optimise the hook by only mapping state to props once per render instead of twice
+* Make the logger output less noisy by default, don't show full diff information, only an inline summary
+
 ## 4.0.1
 
 Nothing changed. Previous release was done using the wrong command.
