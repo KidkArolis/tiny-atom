@@ -11,7 +11,10 @@ function useAtom (selector, options = {}) {
   const { atom } = useContext(AtomContext)
   assert(atom, 'No atom found in context, did you forget to wrap your app in <Provider atom={atom} />?')
   const [, triggerRerender] = useState({})
-  const ref = useRef({ mappedProps: selector(atom.get()), atom })
+  const ref = useRef({ mappedProps: null, atom: null })
+
+  ref.current.atom = atom
+  ref.current.mappedProps = selector(atom.get())
 
   // keep track of rendering order
   // this is important for correctness – parent must rerender first
@@ -60,7 +63,6 @@ function useAtom (selector, options = {}) {
 
   // always return fresh mapped props, in case
   // this is a parent rerendering children
-  ref.current.mappedProps = selector(atom.get())
   return ref.current.mappedProps
 }
 
