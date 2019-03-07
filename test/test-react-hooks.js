@@ -2,6 +2,8 @@ const test = require('ava')
 const React = require('react')
 const ReactDOM = require('react-dom')
 const { JSDOM } = require('jsdom')
+const createAtom = require('../src')
+const { Provider } = require('../src/react')
 const { useAtom, useActions, useDispatch } = require('../src/react/hooks')
 const renderHooksApp = require('./hooks-app')
 
@@ -84,6 +86,111 @@ test.serial('minimal rerenders required', async t => {
     t.is(document.getElementById('count-inner').innerHTML, String(i * 10))
     t.is(stats.childRenderCount, i)
   }
+
+  ReactDOM.render(null, root)
+})
+
+test.serial('a race condition between commit phase/observing and atom changing', async t => {
+  const h = global.h = React.createElement
+  const dom = new JSDOM('<!doctype html><div id="root"></div>')
+  global.window = dom.window
+  global.document = dom.window.document
+  const root = document.getElementById('root')
+
+  const atom = createAtom({ count: 0, extra: 0 })
+
+  const App = () => {
+    const mapState = state => state.count + state.extra
+    const count = useAtom(mapState, { observe: true })
+    return (
+      h('div', {}, [
+        h('div', { key: 'a', id: 'count-outer' }, count),
+        h(Child, { key: 'b' })
+      ])
+    )
+  }
+
+  const Child = () => {
+    const count = useAtom(state => state.count, { observe: true })
+    return h('div', { id: 'count-inner' }, count)
+  }
+
+  ReactDOM.render(h(Provider, { atom }, h(App)), root)
+
+  // assert
+  t.is(atom.get().count, 0)
+
+  // note, update atom immediately after render
+  // this "reveals" an edge case where changes to atom
+  // before useEffect() is called could get missed
+  atom.set({ count: 1 })
+
+  await frame()
+
+  // expect DOM to match atom, even if atom changed before useEffect/atom.observe was flushed
+  t.is(atom.get().count, 1)
+  t.is(document.getElementById('count-outer').innerHTML, String(1))
+  t.is(document.getElementById('count-inner').innerHTML, String(1))
+})
+
+test.serial('edge case where we rerender via parent and then via observation', async t => {
+  const h = global.h = React.createElement
+  const dom = new JSDOM('<!doctype html><div id="root"></div>')
+  global.window = dom.window
+  global.document = dom.window.document
+  const root = document.getElementById('root')
+
+  const atom = createAtom({ count: 0, extra: 0 })
+
+  const App = () => {
+    const mapState = state => state.count + state.extra
+    const count = useAtom(mapState, { observe: true })
+    return (
+      h('div', {}, [
+        h('div', { key: 'a', id: 'count-outer' }, count),
+        h(Child, { key: 'b' })
+      ])
+    )
+  }
+
+  const Child = () => {
+    const count = useAtom(state => state.count, { observe: true })
+    return h('div', { id: 'count-inner' }, count)
+  }
+
+  ReactDOM.render(h(Provider, { atom }, h(App)), root)
+
+  // note, update atom immediately after render
+  // this "reveals" an edge case where changes to atom
+  // before useEffect() is called, that is before React's
+  // commit phase, could get missed
+  atom.set({ count: 1, extra: 0 })
+  await frame()
+  t.is(atom.get().count, 1)
+  t.is(document.getElementById('count-outer').innerHTML, String(1))
+  t.is(document.getElementById('count-inner').innerHTML, String(1))
+
+  atom.set({ count: 2, extra: 0 })
+  await frame()
+  t.is(atom.get().count, 2)
+  t.is(document.getElementById('count-outer').innerHTML, String(2))
+  t.is(document.getElementById('count-inner').innerHTML, String(2))
+
+  // OK, time to reveal the edge case
+  // we set the state in such a way where we rendered components in
+  // the following way:
+  // 1. App -> Child
+  // 2. App -> Child
+  // 3. Child only
+  // We expect Child to correctly rerender, but there was a bug here
+  // where Child's local state was count 1 since the first render
+  // and updated state is also 1, setState(1) when it's already 1
+  // was not rerendering the Child.
+  atom.set({ count: 1, extra: 1 })
+  await frame()
+  t.is(atom.get().count, 1)
+  t.is(document.getElementById('count-outer').innerHTML, String(2))
+  t.is(document.getElementById('count-inner').innerHTML, String(1))
 
   ReactDOM.render(null, root)
 })

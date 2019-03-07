@@ -28,9 +28,9 @@
     "jsdom": "^11.3.0",
     "np": "^3.0.4",
     "nyc": "^12.0.2",
-    "preact": "^8.2.9",
-    "react": "^16.7.0-alpha.2",
-    "react-dom": "^16.7.0-alpha.2",
+    "preact": "^8.4.2",
+    "react": "^16.8.4",
+    "react-dom": "^16.8.4",
     "standard": "^11.0.0"
   },
   "standard": {

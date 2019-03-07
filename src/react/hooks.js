@@ -10,8 +10,8 @@ function useAtom (selector, options = {}) {
   const schedule = sync ? fn => () => fn() : raf
   const { atom } = useContext(AtomContext)
   assert(atom, 'No atom found in context, did you forget to wrap your app in <Provider atom={atom} />?')
-  const [mappedProps, setMappedProps] = useState(selector(atom.get()))
-  const ref = useRef({ mappedProps, atom })
+  const [, triggerRerender] = useState({})
+  const ref = useRef({ mappedProps: selector(atom.get()), atom })
 
   // keep track of rendering order
   // this is important for correctness – parent must rerender first
@@ -31,7 +31,9 @@ function useAtom (selector, options = {}) {
 
   useEffect(() => {
     if (!observe) return
-    ref.current.unobserve = atom.observe(() => {
+    ref.current.unobserve = atom.observe(onChange, ref.current.order)
+    onChange()
+    function onChange () {
       // store updates happening in rapid sequence
       // get cancelled and rescheduled
       if (ref.current.cancelUpdate) {
@@ -43,10 +45,10 @@ function useAtom (selector, options = {}) {
         ref.current.cancelUpdate = null
         const nextMappedProps = selector(atom.get())
         if (!pure || differ(ref.current.mappedProps, nextMappedProps)) {
-          setMappedProps(nextMappedProps)
+          triggerRerender({})
         }
       })()
-    }, ref.current.order)
+    }
     return () => {
       ref.current.unobserve && ref.current.unobserve()
       if (ref.current.cancelUpdate) {
