@@ -1,5 +1,6 @@
 const React = require('react')
 const { useAtom, useActions } = require('tiny-atom/react/hooks')
+const { useRef } = React
 require('./App.css')
 
 const Hint = function Hint (props) {
@@ -21,6 +22,7 @@ const Modal = () => {
 const App = () => {
   const todo = useAtom(state => state.todo)
   const count = useAtom(state => state.count)
+  const input = useRef()
   const { updateItem, completeItem, addItem } = useActions()
 
   return (
@@ -29,11 +31,11 @@ const App = () => {
 
       {count > 5 && <Modal />}
 
-      <form onSubmit={onSubmit(addItem, this.$input)}>
+      <form onSubmit={onSubmit(addItem, input)}>
         <input
           className='Todo-input'
           type='text'
-          ref={el => { this.$input = el }}
+          ref={input}
           onChange={(e) => updateItem(e.target.value)}
           value={todo.input}
         />
