@@ -16,16 +16,27 @@ function useAtom (selectorFn = identity, options = {}) {
   const { atom } = useContext(AtomContext)
   assert(atom, 'No atom found in context, did you forget to wrap your app in <Provider atom={atom} />?')
 
+  // cache the schedule and selector functions
   const schedule = useCallback(sync ? immediate : delayed, [sync])
   const selector = useCallback(selectorFn, options.deps)
+
+  // we use a state to trigger a rerender when relevant atom
+  // state changes, we don't store the actual mapped atom state
+  // here, because that is only 1 of 2 ways that the component
+  // gets rerendered, the other way is being rerended by parent
   const [, rerender] = useState({})
-  const mappedProps = useRef()
-  const cancelUpdate = useRef(null)
-  const order = useRef()
 
   // keep track of rendering order, this is important for:
   // - correctness – parent must rerender first
   // - performance – parent rerendering children should cancel children's scheduled rerenders
+  const order = useRef()
+
+  // keep last used props here for diffing upon each change
+  const mappedProps = useRef()
+
+  // for cancelling scheduled updates in case of parent renders
+  const cancelUpdate = useRef(null)
+
   if (!order.current) {
     order.current = nextOrder()
   }
