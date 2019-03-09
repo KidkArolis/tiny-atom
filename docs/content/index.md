@@ -24,18 +24,18 @@ const atom = createAtom({ unicorns: 0, rainbows: [] }, {
     set({ unicorns: get().unicorns + n })
   },
 
-  async fetchRainbows ({ set, dispatch }) {
+  async fetchRainbows ({ set, actions }) {
     set({ loading: true })
     const { data: rainbows } = await axios.get('/api/rainbows')
     set({ rainbows, loading: false })
-    dispatch('incrementUnicorns', 1)
+    actions.incrementUnicorns(1)
   }
 })
 
 atom.observe((atom) => {
   console.log('atom', atom)
   const { rainbows, unicorns } = atom.get()
-  render(unicorns).onClick(e => atom.dispatch('incrementUnicorns', 10))
+  render(unicorns).onClick(e => atom.actions.incrementUnicorns(10))
 })
 ```
 
@@ -50,7 +50,7 @@ import createAtom from 'tiny-atom'
 import { Provider } from 'tiny-atom/react'
 
 const atom = createAtom({ user: { name: 'Atom' } }, {
-  message ({ get, set, swap, dispatch}, msg) {
+  message ({ get, set, swap, actions }, msg) {
     console.log(msg)
   }
 })

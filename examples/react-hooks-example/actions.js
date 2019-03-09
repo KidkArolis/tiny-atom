@@ -21,21 +21,21 @@ module.exports.initialState = {
 }
 
 module.exports.actions = {
-  addItem: ({ get, set, dispatch }, payload) => {
+  addItem: ({ get, set, actions }, payload) => {
     const { todo } = get()
     const { items, input } = todo
     const nextItems = items.concat([input])
     set({ todo: { ...todo, items: nextItems, input: '' } })
-    dispatch('hideHint')
-    dispatch('trackEvent', { type: 'added' })
+    actions.hideHint()
+    actions.trackEvent({ type: 'added' })
   },
 
-  completeItem: ({ get, set, dispatch }, index) => {
+  completeItem: ({ get, set, actions }, index) => {
     const { todo } = get()
     const { items } = todo
     const nextItems = items.filter((item, i) => i !== index)
     set({ todo: { ...todo, items: nextItems } })
-    dispatch('trackEvent', { user: 'anonymous', type: 'completed' })
+    actions.trackEvent({ user: 'anonymous', type: 'completed' })
   },
 
   updateItem: ({ get, set }, input) => {

@@ -61,18 +61,18 @@ const atom = createAtom({ unicorns: 0, rainbows: [] }, {
     set({ unicorns: get().unicorns + n })
   },
 
-  async fetchRainbows ({ set, dispatch }) {
+  async fetchRainbows ({ set, actions }) {
     set({ loading: true })
     const { data: rainbows } = await axios.get('/api/rainbows')
     set({ rainbows, loading: false })
-    dispatch('incrementUnicorns', 1)
+    actions.incrementUnicorns(1)
   }
 })
 
 atom.observe(atom => {
   console.log('atom', atom)
   const { rainbows, unicorns } = atom.get()
-  render(unicorns).onClick(e => atom.dispatch('incrementUnicorns', 10))
+  render(unicorns).onClick(e => atom.actions.incrementUnicorns(10))
 })
 ```
 
@@ -87,7 +87,7 @@ import createAtom from 'tiny-atom'
 import { Provider } from 'tiny-atom/react'
 
 const atom = createAtom({ user: { name: 'Atom' } }, {
-  message ({ get, set, swap, dispatch}, msg) {
+  message ({ get, set, swap, actions }, msg) {
     console.log(msg)
   }
 })
@@ -131,12 +131,13 @@ The initial state of the atom.
 *type*: `object`
 *default*: `{}`
 
-An object with action functions. The signature of an action function is `({ get, set, dispatch }, payload)`. If you provide nested action objects or other structure, make sure to also specify an appropriate `options.evolve` implementation to handle your actions appropriately.
+An object with action functions. The signature of an action function is `({ get, set, swap, actions, dispatch }, payload)`. If you provide nested action objects or other structure, make sure to also specify an appropriate `options.evolve` implementation to handle your actions appropriately.
 
 * `get()` - returns the current state
 * `set(patch)` - updates the state with the patch object by merging the patch using `Object.assign`
 * `swap(state)` - replace the entire state with the provided one
 * `dispatch` - same as `atom.dispatch`, dispatches an action
+* `actions` - actions prebound to dispatch, i.e. actions.increment(1) is equivalent to dispatch('increment', 1)
 
 #### options.evolve
 *type*: `function`
@@ -152,7 +153,7 @@ A function that will be called on each action and state update. The function is 
 ```js
 createAtom({ count: 1 }, {
   increment: ({ get, set }, payload) => set({ count: get().count + payload }),
-  inc: ({ dispatch }, payload) => dispatch('increment', payload)
+  inc: ({ actions }, payload) => actions.increment(payload)
 })
 ```
 
@@ -190,6 +191,21 @@ Send an action
 atom.dispatch('fetchMovies')
 atom.dispatch('increment', 5)
 ```
+
+### `atom.actions`
+
+A map of prebound actions. For example, if your actions passed to atom are
+
+```js
+const actions = {
+  increment ({ get, set }) {
+    const { count } = get()
+    set({ count: count + 1 })
+  }
+}
+```
+
+They will be bound such that calling `atom.actions.increment(1)` dispatches action with `dispatch('increment', 1).
 
 ### `atom.observe(cb)`
 
