@@ -13,10 +13,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/QubitProducts/tiny-atom.git"
+    "url": "git+https://github.com/KidkArolis/tiny-atom.git"
   },
   "contributors": [
-    "Karolis Narkevicius <karolis@qubit.com>",
+    "Karolis Narkevicius <hello@kn8.lt>",
     "Alan Clarke <alan@qubit.com>"
   ],
   "license": "ISC",
