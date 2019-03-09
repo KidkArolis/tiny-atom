@@ -8,7 +8,7 @@ An example of regular action:
 
 ```js
 const actions = {
-  increment ({ get, dispatch }, payload) {
+  increment ({ get, set }, payload) {
     set({ count: get().count + 1 })
   }
 }
@@ -18,14 +18,14 @@ And here's how an async action looks like:
 
 ```js
 const actions = {
-  async fetchMetrics ({ get, set, dispatch }) {
+  async fetchMetrics ({ get, set, actions }) {
     set({ loading: true })
     try {
       const { data } = await axios.get('/metrics')
       set({ loading: false, metrics: data })
     } catch (err) {
       set({ loading: false, error: err.message })
-      dispatch('showError', err)
+      actions.showError(err)
     }
   }
 }

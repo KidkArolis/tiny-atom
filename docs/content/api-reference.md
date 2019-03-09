@@ -16,12 +16,13 @@ The initial state of the atom.
 *type*: `object`
 *default*: `{}`
 
-An object with action functions. The signature of an action function is `({ get, set, dispatch }, payload)`. If you provide nested action objects or other structure, make sure to also specify an appropriate `options.evolve` implementation to handle your actions appropriately.
+An object with action functions. The signature of an action function is `({ get, set, swap, actions, dispatch }, payload)`. If you provide nested action objects or other structure, make sure to also specify an appropriate `options.evolve` implementation to handle your actions appropriately.
 
 * `get()` - returns the current state
 * `set(patch)` - updates the state with the patch object by merging the patch using `Object.assign`
 * `swap(state)` - replace the entire state with the provided one
 * `dispatch` - same as `atom.dispatch`, dispatches an action
+* `actions` - actions prebound to dispatch, i.e. actions.increment(1) is equivalent to dispatch('increment', 1)
 
 #### options.evolve
 *type*: `function`
@@ -37,7 +38,7 @@ A function that will be called on each action and state update. The function is 
 ```js
 createAtom({ count: 1 }, {
   increment: ({ get, set }, payload) => set({ count: get().count + payload }),
-  inc: ({ dispatch }, payload) => dispatch('increment', payload)
+  inc: ({ actions }, payload) => actions.increment(payload)
 })
 ```
 
@@ -74,6 +75,19 @@ Send an action
 ```js
 atom.dispatch('fetchMovies')
 atom.dispatch('increment', 5)
+```
+
+### `atom.actions`
+
+A map of prebound actions. For example, if your actions passed to atom are
+
+```js
+const actions = {
+  increment ({ get, set }) {
+    const { count } = get()
+    set({ count: count + 1 })
+  }
+}
 ```
 
 ### `atom.observe(cb)`

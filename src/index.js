@@ -29,7 +29,7 @@ module.exports = function createAtom (initialState = {}, actions = {}, options =
     return actions[action.type](atom, action.payload)
   }
 
-  function defaultBindActions (dispatch) {
+  function defaultBindActions (dispatch, actions) {
     return Object.keys(actions).reduce((boundActions, actionType) => {
       boundActions[actionType] = payload => dispatch(actionType, payload)
       return boundActions
@@ -77,7 +77,8 @@ module.exports = function createAtom (initialState = {}, actions = {}, options =
         const dispatch = createDispatch(history)
         const set = createSet(history)
         const swap = createSwap(history)
-        const actionAtom = Object.assign({}, atom, { dispatch, set, swap })
+        const boundActions = bindActions(dispatch, actions)
+        const actionAtom = Object.assign({}, atom, { dispatch, actions: boundActions, set, swap })
         return evolve(actionAtom, action, actions)
       } else {
         return evolve(atom, action, actions)
