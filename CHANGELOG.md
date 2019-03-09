@@ -1,3 +1,12 @@
+## 4.2.0
+
+Improvements to hooks and a new feature – calling actions from actions is now easier.
+
+* **Improvement** In useAtom hook, react to changes to sync, observe, atom and selector, for selector to be updated, pass `options.deps = [...]` to the hook
+* **Improvement** In hooks actions are called by `actions.doSomething()`, this can now be done in actions too, the new action signature is `({ get, set, swap, actions, dispatch }, payload). Dispatch is still available, but is now considered an advanced feature and does not have to be used when using Tiny Atom.
+* **Fix** Correctly unsubscribe from atom by using an extra local variable to avoid sync effect race condition
+
+
 ## 4.1.0
 
 Important fixes in the hooks implementation
