@@ -1,3 +1,7 @@
+## 4.2.2
+
+* Run the correct release command
+
 ## 4.2.1
 
 * **Fix** infinite rerender loop where selector callback was changing and causing rerenders
