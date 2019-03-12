@@ -18,7 +18,7 @@ function useAtom (selectorFn = identity, options = {}) {
 
   // cache the schedule and selector functions
   const schedule = useCallback(sync ? immediate : delayed, [sync])
-  const selector = useCallback(selectorFn, options.deps)
+  const selector = useCallback(selectorFn, options.deps || [])
 
   // we use a state to trigger a rerender when relevant atom
   // state changes, we don't store the actual mapped atom state
