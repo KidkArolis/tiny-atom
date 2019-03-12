@@ -1,3 +1,7 @@
+## 4.2.1
+
+* **Fix** infinite rerender loop where selector callback was changing and causing rerenders
+
 ## 4.2.0
 
 Improvements to hooks and a new feature – calling actions from actions is now easier.
