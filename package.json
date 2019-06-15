@@ -12,6 +12,7 @@
     "lint": "healthier && prettier --check '**/*.{js,json,css,yml}'",
     "format": "prettier --write '**/*.{js,json,css,yml}'",
     "build": "node ./tasks/build.js",
+    "build:docs": "sitedown . -b docs-next --layout layout.html",
     "version": "npm run build",
     "release": "np --contents dist",
     "release-beta": "np --tag=beta --contents=dist"
@@ -44,7 +45,8 @@
     "preact": "^8.4.2",
     "prettier": "^1.18.2",
     "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "react-dom": "^16.8.6",
+    "sitedown": "^3.3.2"
   },
   "healthier": {
     "ignore": [
