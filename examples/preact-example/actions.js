@@ -1,10 +1,6 @@
 module.exports.initialState = {
   todo: {
-    items: [
-      'learn tiny-atom',
-      'use tiny-atom',
-      'star tiny-atom'
-    ],
+    items: ['learn tiny-atom', 'use tiny-atom', 'star tiny-atom'],
     input: ''
   },
 

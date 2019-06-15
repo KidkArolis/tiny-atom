@@ -1,14 +1,12 @@
 const test = require('ava')
 const createLog = require('../src/log')
 
-test('logs out formatted messages', async function (t) {
+test('logs out formatted messages', async function(t) {
   const buffer = []
   const push = (...msg) => {
     const start = msg.slice(0, -1)
     const end = msg.slice(-1)[0]
-    buffer.push(
-      `${start.join(' ')} ${(typeof end === 'string' ? end : JSON.stringify(end))}`
-    )
+    buffer.push(`${start.join(' ')} ${typeof end === 'string' ? end : JSON.stringify(end)}`)
   }
   const logger = {
     groupCollapsed: push,
@@ -25,20 +23,19 @@ test('logs out formatted messages', async function (t) {
     sourceActions: []
   })
 
-  t.deepEqual(buffer, [
-    ' 🚀 foo',
-    'payload undefined',
-    'chain [{"type":"foo","seq":1}]'
-  ])
+  t.deepEqual(buffer, [' 🚀 foo', 'payload undefined', 'chain [{"type":"foo","seq":1}]'])
 
   const atom = { get: () => ({ state: 1, list: [2, 3] }) }
-  log({
-    type: 'update',
-    action: { payload: { slice: 1 }, seq: 2 },
-    sourceActions: [],
-    atom,
-    prevState: { state: 0, list: [1] }
-  }, logger)
+  log(
+    {
+      type: 'update',
+      action: { payload: { slice: 1 }, seq: 2 },
+      sourceActions: [],
+      atom,
+      prevState: { state: 0, list: [1] }
+    },
+    logger
+  )
 
   t.deepEqual(buffer.slice(4), [
     'curr {"state":1,"list":[2,3]}',

@@ -1,20 +1,23 @@
 const { JSDOM } = require('jsdom')
 const createAtom = require('../src')
 
-module.exports = function app ({ h, Provider, Consumer, connect, createContext }) {
+module.exports = function app({ h, Provider, Consumer, connect, createContext }) {
   const dom = new JSDOM('<!doctype html><div id="root"></div>')
   global.window = dom.window
   global.document = dom.window.document
   const root = document.getElementById('root')
 
-  const atom = createAtom({ count: 0, unrelated: 1 }, {
-    increment: ({ get, set }, payload = 1) => {
-      set({ count: get().count + payload })
-    },
-    incrementUnrelated: ({ get, set }) => {
-      set({ unrelated: get().unrelated + 1 })
+  const atom = createAtom(
+    { count: 0, unrelated: 1 },
+    {
+      increment: ({ get, set }, payload = 1) => {
+        set({ count: get().count + payload })
+      },
+      incrementUnrelated: ({ get, set }) => {
+        set({ unrelated: get().unrelated + 1 })
+      }
     }
-  })
+  )
 
   if (createContext) {
     const context = createContext(atom)
@@ -24,11 +27,11 @@ module.exports = function app ({ h, Provider, Consumer, connect, createContext }
   }
 
   const App = () => {
-    const map = (state) => ({
+    const map = state => ({
       count: state.count
     })
 
-    const actions = (dispatch) => ({
+    const actions = dispatch => ({
       inc: x => dispatch('increment', x)
     })
 
@@ -49,7 +52,7 @@ module.exports = function app ({ h, Provider, Consumer, connect, createContext }
   }
 
   const ChildWithRenderProp = ({ multiplier }) => {
-    const map = (state) => ({
+    const map = state => ({
       count: state.count
     })
     return (
@@ -66,7 +69,11 @@ module.exports = function app ({ h, Provider, Consumer, connect, createContext }
 
   let childWithConnectRenderCount = 0
 
-  const ChildWithConnect = connect(({ count }) => ({ count }), null, { observe: true })(({ multiplier, count, dispatch }) => {
+  const ChildWithConnect = connect(
+    ({ count }) => ({ count }),
+    null,
+    { observe: true }
+  )(({ multiplier, count, dispatch }) => {
     childWithConnectRenderCount++
     return (
       <div>
@@ -78,9 +85,9 @@ module.exports = function app ({ h, Provider, Consumer, connect, createContext }
 
   return {
     root,
-    render: (fn) => fn(App),
+    render: fn => fn(App),
 
-    assert: async function (t) {
+    assert: async function(t) {
       await frame()
 
       t.is(document.getElementById('count-outer').innerHTML, '0')
@@ -116,14 +123,14 @@ module.exports = function app ({ h, Provider, Consumer, connect, createContext }
   }
 }
 
-function click (dom) {
+function click(dom) {
   return new dom.window.MouseEvent('click', {
-    'view': dom.window,
-    'bubbles': true,
-    'cancelable': true
+    view: dom.window,
+    bubbles: true,
+    cancelable: true
   })
 }
 
-function frame () {
+function frame() {
   return new Promise(resolve => setTimeout(resolve, 2 * (1000 / 60)))
 }

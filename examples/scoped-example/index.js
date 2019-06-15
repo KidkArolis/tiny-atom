@@ -5,15 +5,17 @@ const App = require('./App')
 const actions = require('./actions')
 const createAtom = require('./scoped-atom')
 
-const atom = window.atom = createAtom({ debug: log() })
+const atom = (window.atom = createAtom({ debug: log() }))
 
 Object.keys(actions).forEach(pack => {
   const p = actions[pack]
   atom.fuse(pack, p.state, p.actions)
 })
 
-Preact.render((
+Preact.render(
   <Provider atom={atom}>
     <App />
-  </Provider>
-), document.body, document.body.lastElementChild)
+  </Provider>,
+  document.body,
+  document.body.lastElementChild
+)

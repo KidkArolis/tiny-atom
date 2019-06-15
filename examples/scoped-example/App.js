@@ -3,7 +3,7 @@ const { Consumer } = require('tiny-atom/preact')
 require('./App.css')
 
 const map = state => {
-  return ({ state })
+  return { state }
 }
 
 module.exports = () => (
@@ -16,8 +16,10 @@ module.exports = () => (
           <input
             className='Todo-input'
             type='text'
-            ref={el => { this.$input = el }}
-            onChange={(e) => dispatch('todo.update', e.target.value)}
+            ref={el => {
+              this.$input = el
+            }}
+            onChange={e => dispatch('todo.update', e.target.value)}
             value={state.todo.input}
           />
         </form>
@@ -29,20 +31,16 @@ module.exports = () => (
           </div>
         ))}
 
-        {state.todo.items.length === 0 &&
-          <div className='Todo-empty'>Take a break!</div>
-        }
+        {state.todo.items.length === 0 && <div className='Todo-empty'>Take a break!</div>}
 
-        <div className='Hint'>
-          {state.hint.show ? state.hint.text : ''}
-        </div>
+        <div className='Hint'>{state.hint.show ? state.hint.text : ''}</div>
       </div>
     )}
   </Consumer>
 )
 
-function onSubmit (dispatch, $input) {
-  return function (e) {
+function onSubmit(dispatch, $input) {
+  return function(e) {
     e.preventDefault()
     dispatch('todo.add')
     $input && $input.focus()

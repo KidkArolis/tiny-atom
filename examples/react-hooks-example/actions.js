@@ -2,11 +2,7 @@ module.exports.initialState = {
   count: 0,
 
   todo: {
-    items: [
-      'learn tiny-atom',
-      'use tiny-atom',
-      'star tiny-atom'
-    ],
+    items: ['learn tiny-atom', 'use tiny-atom', 'star tiny-atom'],
     input: ''
   },
 

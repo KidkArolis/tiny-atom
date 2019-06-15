@@ -17,7 +17,7 @@ const actions = {
 
 const atom = createAtom({ count: 0 }, actions, { debug: log() })
 
-atom.observe(function render (atom) {
+atom.observe(function render(atom) {
   document.body.innerHTML = `Count ${atom.get().count}`
   if (atom.get().loading) {
     document.body.innerHTML += ' (Loading...)'

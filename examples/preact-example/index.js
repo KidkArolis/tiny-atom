@@ -7,10 +7,11 @@ const { initialState, actions } = require('./actions')
 
 require('preact/debug')
 
-const atom = window.atom = createAtom(initialState, actions, { debug: log() })
+const atom = (window.atom = createAtom(initialState, actions, { debug: log() }))
 
-Preact.render((
+Preact.render(
   <Provider atom={atom}>
     <App />
-  </Provider>
-), document.querySelector('#root'))
+  </Provider>,
+  document.querySelector('#root')
+)

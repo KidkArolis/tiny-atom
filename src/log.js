@@ -67,11 +67,11 @@ module.exports = (options = {}) => {
     }
   }
 
-  function style (kind) {
+  function style(kind) {
     return `color: ${dictionary[kind].color}; font-weight: bold;`
   }
 
-  function render (diff) {
+  function render(diff) {
     let { kind, path, lhs, rhs, index, item } = diff
 
     path = path || []
@@ -90,7 +90,7 @@ module.exports = (options = {}) => {
     }
   }
 
-  function printDiff (diff) {
+  function printDiff(diff) {
     diff.forEach(elem => {
       const { kind } = elem
       logger.log(`%c${dictionary[kind].text}`, style(kind), ...render(elem))

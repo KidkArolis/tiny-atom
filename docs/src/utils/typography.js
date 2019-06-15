@@ -43,15 +43,7 @@ const options = {
     `Arial`,
     `sans-serif`
   ],
-  monospaceFontFamily: [
-    `SFMono-Regular`,
-    `Menlo`,
-    `Monaco`,
-    `Consolas`,
-    `Liberation Mono`,
-    `Courier New`,
-    `monospace`
-  ],
+  monospaceFontFamily: [`SFMono-Regular`, `Menlo`, `Monaco`, `Consolas`, `Liberation Mono`, `Courier New`, `monospace`],
   baseFontSize: `18px`,
   baseLineHeight: 1.5,
   headerLineHeight: 1.075,
@@ -88,9 +80,7 @@ const options = {
       blockquote: {
         paddingLeft: rhythm(options.blockMarginBottom),
         marginLeft: 0,
-        borderLeft: `${rhythm(
-          options.blockMarginBottom / 4
-        )} solid ${presets.brandLighter}`
+        borderLeft: `${rhythm(options.blockMarginBottom / 4)} solid ${presets.brandLighter}`
       },
       hr: {
         backgroundColor: '#eee'
@@ -136,9 +126,8 @@ const options = {
         marginRight: `${rhythm(-options.blockMarginBottom)}`,
         marginLeft: `${rhythm(-options.blockMarginBottom)}`,
         paddingRight: rhythm(options.blockMarginBottom),
-        paddingLeft: `${rhythm(options.blockMarginBottom / 5 * 4)}`,
-        borderLeft: `${rhythm(options.blockMarginBottom / 5 * 1)} solid ${colors
-          .a[3]}`,
+        paddingLeft: `${rhythm((options.blockMarginBottom / 5) * 4)}`,
+        borderLeft: `${rhythm((options.blockMarginBottom / 5) * 1)} solid ${colors.a[3]}`,
         display: `block`
       },
       '.gatsby-highlight::-webkit-scrollbar': {
@@ -172,8 +161,7 @@ const options = {
       '.main-body a': {
         color: `inherit`,
         textDecoration: `none`,
-        transition: `all ${presets.animation.speedFast} ${presets.animation
-          .curveDefault}`,
+        transition: `all ${presets.animation.speedFast} ${presets.animation.curveDefault}`,
         borderBottom: `1px solid ${presets.lightPurple}`,
         boxShadow: `inset 0 -2px 0px 0px ${presets.lightPurple}`,
         fontFamily: options.headerFontFamily.join(`,`),
@@ -239,12 +227,12 @@ const options = {
       [MOBILE_MEDIA_QUERY]: {
         // Make baseFontSize on mobile 16px.
         html: {
-          fontSize: `${16 / 16 * 100}%`
+          fontSize: `${(16 / 16) * 100}%`
         }
       },
       [TABLET_MEDIA_QUERY]: {
         html: {
-          fontSize: `${17 / 16 * 100}%`
+          fontSize: `${(17 / 16) * 100}%`
         }
       },
       [MIN_DEFAULT_MEDIA_QUERY]: {
@@ -260,13 +248,13 @@ const options = {
           marginRight: `${rhythm(-options.blockMarginBottom * 1.5)}`,
           marginLeft: `${rhythm(-options.blockMarginBottom * 1.5)}`,
           paddingRight: rhythm(options.blockMarginBottom * 1.5),
-          paddingLeft: `${rhythm(options.blockMarginBottom * 1.5 / 5 * 4)}`,
-          borderLeftWidth: `${rhythm(options.blockMarginBottom * 1.5 / 5 * 1)}`
+          paddingLeft: `${rhythm(((options.blockMarginBottom * 1.5) / 5) * 4)}`,
+          borderLeftWidth: `${rhythm(((options.blockMarginBottom * 1.5) / 5) * 1)}`
         }
       },
       [MIN_LARGER_DISPLAY_MEDIA_QUERY]: {
         html: {
-          fontSize: `${21 / 16 * 100}%`
+          fontSize: `${(21 / 16) * 100}%`
         }
       },
       '.token.comment,.token.block-comment,.token.prolog,.token.doctype,.token.cdata': {

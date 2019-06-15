@@ -7,8 +7,8 @@ const { Provider } = require('../src/react')
 const { useAtom, useActions, useDispatch } = require('../src/react/hooks')
 const renderHooksApp = require('./hooks-app')
 
-test.serial('usage', async function (t) {
-  const h = global.h = React.createElement
+test.serial('usage', async function(t) {
+  const h = (global.h = React.createElement)
   const dom = new JSDOM('<!doctype html><div id="root"></div>')
   global.window = dom.window
   global.document = dom.window.document
@@ -61,8 +61,8 @@ test.serial('usage', async function (t) {
   ReactDOM.render(null, root)
 })
 
-test.serial('minimal rerenders required', async function (t) {
-  const h = global.h = React.createElement
+test.serial('minimal rerenders required', async function(t) {
+  const h = (global.h = React.createElement)
   const dom = new JSDOM('<!doctype html><div id="root"></div>')
   global.window = dom.window
   global.document = dom.window.document
@@ -90,8 +90,8 @@ test.serial('minimal rerenders required', async function (t) {
   ReactDOM.render(null, root)
 })
 
-test.serial('a race condition between commit phase/observing and atom changing', async function (t) {
-  const h = global.h = React.createElement
+test.serial('a race condition between commit phase/observing and atom changing', async function(t) {
+  const h = (global.h = React.createElement)
   const dom = new JSDOM('<!doctype html><div id="root"></div>')
   global.window = dom.window
   global.document = dom.window.document
@@ -102,12 +102,7 @@ test.serial('a race condition between commit phase/observing and atom changing',
   const App = () => {
     const mapState = state => state.count + state.extra
     const count = useAtom(mapState, { observe: true })
-    return (
-      h('div', {}, [
-        h('div', { key: 'a', id: 'count-outer' }, count),
-        h(Child, { key: 'b' })
-      ])
-    )
+    return h('div', {}, [h('div', { key: 'a', id: 'count-outer' }, count), h(Child, { key: 'b' })])
   }
 
   const Child = () => {
@@ -133,8 +128,8 @@ test.serial('a race condition between commit phase/observing and atom changing',
   t.is(document.getElementById('count-inner').innerHTML, String(1))
 })
 
-test.serial('edge case where we rerender via parent and then via observation', async function (t) {
-  const h = global.h = React.createElement
+test.serial('edge case where we rerender via parent and then via observation', async function(t) {
+  const h = (global.h = React.createElement)
   const dom = new JSDOM('<!doctype html><div id="root"></div>')
   global.window = dom.window
   global.document = dom.window.document
@@ -145,12 +140,7 @@ test.serial('edge case where we rerender via parent and then via observation', a
   const App = () => {
     const mapState = state => state.count + state.extra
     const count = useAtom(mapState, { observe: true })
-    return (
-      h('div', {}, [
-        h('div', { key: 'a', id: 'count-outer' }, count),
-        h(Child, { key: 'b' })
-      ])
-    )
+    return h('div', {}, [h('div', { key: 'a', id: 'count-outer' }, count), h(Child, { key: 'b' })])
   }
 
   const Child = () => {
@@ -195,19 +185,19 @@ test.serial('edge case where we rerender via parent and then via observation', a
   ReactDOM.render(null, root)
 })
 
-function click (dom) {
+function click(dom) {
   return new dom.window.MouseEvent('click', {
-    'view': dom.window,
-    'bubbles': true,
-    'cancelable': true
+    view: dom.window,
+    bubbles: true,
+    cancelable: true
   })
 }
 
-function frame () {
+function frame() {
   flushEffects()
   return new Promise(resolve => setTimeout(resolve, 2 * (1000 / 60)))
 }
 
-function flushEffects () {
+function flushEffects() {
   ReactDOM.render(null, document.createElement('template'))
 }

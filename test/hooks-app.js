@@ -2,23 +2,26 @@ const ReactDOM = require('react-dom')
 const createAtom = require('../src')
 const { Provider } = require('../src/react')
 
-module.exports = function renderHooksApp ({ h, root, useAtom, useActions, useDispatch }) {
+module.exports = function renderHooksApp({ h, root, useAtom, useActions, useDispatch }) {
   const stats = {}
 
-  const atom = createAtom({ count: 0, unrelated: 1, user: { loggedIn: true } }, {
-    increment: ({ get, set }, payload = 1) => {
-      set({ count: get().count + payload })
-    },
-    decrement: ({ get, set }, payload = 1) => {
-      set({ count: get().count - payload })
-    },
-    incrementUnrelated: ({ get, set }) => {
-      set({ unrelated: get().unrelated + 1 })
-    },
-    replaceUser ({ get, set }, user) {
-      set({ user })
+  const atom = createAtom(
+    { count: 0, unrelated: 1, user: { loggedIn: true } },
+    {
+      increment: ({ get, set }, payload = 1) => {
+        set({ count: get().count + payload })
+      },
+      decrement: ({ get, set }, payload = 1) => {
+        set({ count: get().count - payload })
+      },
+      incrementUnrelated: ({ get, set }) => {
+        set({ unrelated: get().unrelated + 1 })
+      },
+      replaceUser({ get, set }, user) {
+        set({ user })
+      }
     }
-  })
+  )
 
   stats.appRenderCount = 0
   const App = () => {
@@ -50,7 +53,12 @@ module.exports = function renderHooksApp ({ h, root, useAtom, useActions, useDis
     )
   }
 
-  ReactDOM.render(<Provider atom={atom}><App /></Provider>, root)
+  ReactDOM.render(
+    <Provider atom={atom}>
+      <App />
+    </Provider>,
+    root
+  )
 
   return { atom, stats }
 }

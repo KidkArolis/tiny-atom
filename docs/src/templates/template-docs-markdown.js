@@ -5,7 +5,7 @@ import MarkdownPageFooter from '../components/markdown-page-footer'
 import Container from '../components/container'
 
 class DocsTemplate extends React.Component {
-  render () {
+  render() {
     const page = this.props.data.markdownRemark
     return (
       <Container>

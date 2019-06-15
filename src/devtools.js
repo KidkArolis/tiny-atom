@@ -1,4 +1,4 @@
-module.exports = () => (info) => {
+module.exports = () => info => {
   const type = info.type
   const atom = info.atom
   const sourceActions = info.sourceActions
@@ -12,7 +12,7 @@ module.exports = () => (info) => {
       return
     }
     atom.devtools = devExt.connect()
-    atom.devtools.subscribe(function (message) {
+    atom.devtools.subscribe(function(message) {
       if (message.type === 'DISPATCH') {
         if (message.payload.type === 'JUMP_TO_ACTION' || message.payload.type === 'JUMP_TO_STATE') {
           atom.devtools.ignoreNextUpdate = true
@@ -30,8 +30,10 @@ module.exports = () => (info) => {
 
   // send only updates into devtools, not actions
   if (type === 'update') {
-    const action = sourceActions.length ? sourceActions[sourceActions.length - 1] : { type: '--', payload: info.action.payload }
-    const updatedKeys = (!action.seq ? ' ' + ellipsis(Object.keys(action.payload || {}).join(', '), 10) : '')
+    const action = sourceActions.length
+      ? sourceActions[sourceActions.length - 1]
+      : { type: '--', payload: info.action.payload }
+    const updatedKeys = !action.seq ? ' ' + ellipsis(Object.keys(action.payload || {}).join(', '), 10) : ''
     const devtoolsAction = {
       seq: action.seq,
       sourceActions: sourceActions,
@@ -45,6 +47,6 @@ module.exports = () => (info) => {
   }
 }
 
-function ellipsis (str, n) {
+function ellipsis(str, n) {
   return str.substr(0, n) + (str.length <= n ? '' : '...')
 }

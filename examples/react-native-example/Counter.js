@@ -2,7 +2,7 @@ import React, { Fragment } from 'react'
 import { Button, Text } from 'react-native'
 import { connect } from 'tiny-atom/react'
 
-function mapState (state) {
+function mapState(state) {
   return {
     count: state.count
   }
@@ -11,7 +11,7 @@ function mapState (state) {
 const actions = ['inc', 'dec']
 
 class Counter extends React.Component {
-  render () {
+  render() {
     const { count, inc, dec } = this.props
     return (
       <Fragment>
@@ -23,7 +23,11 @@ class Counter extends React.Component {
   }
 }
 
-export default connect(mapState, actions, { sync: true })(Counter)
+export default connect(
+  mapState,
+  actions,
+  { sync: true }
+)(Counter)
 
 // const styles = StyleSheet.create({
 //   container: {

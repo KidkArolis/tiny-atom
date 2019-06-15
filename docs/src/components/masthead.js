@@ -82,9 +82,7 @@ const MastheadContent = () => (
       <CtaButton to='/docs/'>
         <span css={{ verticalAlign: `middle` }}>Get Started</span>
         {` `}
-        <ArrowForwardIcon
-          css={{ verticalAlign: `baseline`, marginLeft: `.2em` }}
-        />
+        <ArrowForwardIcon css={{ verticalAlign: `baseline`, marginLeft: `.2em` }} />
       </CtaButton>
     </div>
   </div>

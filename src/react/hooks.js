@@ -10,7 +10,7 @@ const delayed = fn => raf(fn)()
 let i = 0
 const nextOrder = () => ++i
 
-function useAtom (selectorFn = identity, options = {}) {
+function useAtom(selectorFn = identity, options = {}) {
   const { sync = false, pure = true, observe = !isServer } = options
 
   const { atom } = useContext(AtomContext)
@@ -49,68 +49,71 @@ function useAtom (selectorFn = identity, options = {}) {
   // since we just go rerendered by the parent component
   invoke(cancelUpdate)
 
-  useEffect(function observe () {
-    if (!observe) return
+  useEffect(
+    function observe() {
+      if (!observe) return
 
-    // very important to check for this, since
-    // our observe callback might have been removed
-    // from the atom's listeners array while atom is
-    // looping over the old list of listener references
-    let didUnobserve = false
+      // very important to check for this, since
+      // our observe callback might have been removed
+      // from the atom's listeners array while atom is
+      // looping over the old list of listener references
+      let didUnobserve = false
 
-    const unobserve = atom.observe(onChange, order.current)
+      const unobserve = atom.observe(onChange, order.current)
 
-    // avoid race render/commit phase conditions
-    // trigger this to check if atom's state change before
-    // we managed to subscribe in this effect
-    onChange()
+      // avoid race render/commit phase conditions
+      // trigger this to check if atom's state change before
+      // we managed to subscribe in this effect
+      onChange()
 
-    function onChange () {
-      if (didUnobserve) return
+      function onChange() {
+        if (didUnobserve) return
 
-      // take into account store updates happening in rapid sequence
-      // cancel each previously scheduled one and reschedule
-      invoke(cancelUpdate)
+        // take into account store updates happening in rapid sequence
+        // cancel each previously scheduled one and reschedule
+        invoke(cancelUpdate)
 
-      // schedule an update
-      cancelUpdate.current = schedule(function scheduledOnChange () {
-        cancelUpdate.current = null
-        const nextMappedProps = selector(atom.get())
-        if (!pure || differ(mappedProps.current, nextMappedProps)) {
-          rerender({})
-        }
-      })
-    }
+        // schedule an update
+        cancelUpdate.current = schedule(function scheduledOnChange() {
+          cancelUpdate.current = null
+          const nextMappedProps = selector(atom.get())
+          if (!pure || differ(mappedProps.current, nextMappedProps)) {
+            rerender({})
+          }
+        })
+      }
 
-    return function destroy () {
-      didUnobserve = true
-      unobserve()
-      invoke(cancelUpdate)
-    }
-  }, [atom, observe, pure, selector, schedule, order, mappedProps, cancelUpdate, rerender])
+      return function destroy() {
+        didUnobserve = true
+        unobserve()
+        invoke(cancelUpdate)
+      }
+    },
+    [atom, observe, pure, selector, schedule, order, mappedProps, cancelUpdate, rerender]
+  )
 
   // always return fresh mapped props, in case
   // this is a parent rerendering children
   return mappedProps.current
 }
 
-function useActions () {
+function useActions() {
   const { atom } = useContext(AtomContext)
   return atom.actions
 }
 
-function useDispatch () {
+function useDispatch() {
   const { atom } = useContext(AtomContext)
   return atom.dispatch
 }
 
-function assert (cond, error) {
+function assert(cond, error) {
   if (!cond) {
     throw new Error(error)
   }
 }
 
-function invoke (ref) {
+function invoke(ref) {
   if (ref.current) {
     ref.current()
     ref.current = null

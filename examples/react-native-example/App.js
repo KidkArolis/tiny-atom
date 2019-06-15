@@ -6,22 +6,22 @@ import Counter from './Counter'
 
 const atom = createAtom({ count: 0 }, { inc, dec })
 
-function inc ({ get, set }) {
+function inc({ get, set }) {
   set({ count: get().count + 1 })
   console.log('Incremented', get())
 }
 
-function dec ({ get, set }) {
+function dec({ get, set }) {
   set({ count: get().count - 1 })
   console.log('Decremented', get())
 }
 
-atom.observe(function () {
+atom.observe(function() {
   console.log('Changed!!?', atom.get())
 })
 
 export default class App extends React.Component {
-  render () {
+  render() {
     return (
       <Provider atom={atom}>
         <View style={styles.container}>

@@ -6,10 +6,11 @@ const log = require('tiny-atom/log')
 const App = require('./App')
 const { initialState, actions } = require('./actions')
 
-const atom = window.atom = createAtom(initialState, actions, { debug: log() })
+const atom = (window.atom = createAtom(initialState, actions, { debug: log() }))
 
-ReactDOM.render((
+ReactDOM.render(
   <Provider atom={atom}>
     <App />
-  </Provider>
-), document.querySelector('#root'))
+  </Provider>,
+  document.querySelector('#root')
+)

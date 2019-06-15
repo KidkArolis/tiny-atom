@@ -28,8 +28,7 @@ const listStyles = {
         fontWeight: `normal`,
         position: `absolute`,
         transform: `scale(0.1)`,
-        transition: `all ${presets.animation.speedDefault} ${presets.animation
-          .curveDefault}`,
+        transition: `all ${presets.animation.speedDefault} ${presets.animation.curveDefault}`,
         [presets.Hd]: {
           height: 6,
           width: 6,
@@ -61,26 +60,22 @@ const Section = props => (
     >
       {props.title}
     </h3>
-    <SectionLinks
-      {...props}
-      title={props.title}
-      isTutorial={props.title === `Tutorial`}
-    />
+    <SectionLinks {...props} title={props.title} isTutorial={props.title === `Tutorial`} />
   </div>
 )
 
 const SectionLinks = props => {
   const tutorialStyles = props.isTutorial
     ? {
-      '&&': {
-        '& > li': {
-          marginBottom: `1rem`,
-          '& > .nav-link': {
-            fontWeight: `bold`
+        '&&': {
+          '& > li': {
+            marginBottom: `1rem`,
+            '& > .nav-link': {
+              fontWeight: `bold`
+            }
           }
         }
       }
-    }
     : false
 
   return (
@@ -94,12 +89,7 @@ const SectionLinks = props => {
       }}
     >
       {props.items.map((item, index) => (
-        <SectionLink
-          node={item}
-          children={item.items}
-          key={index}
-          isInline={props.isInline}
-        />
+        <SectionLink node={item} children={item.items} key={index} isInline={props.isInline} />
       ))}
     </ul>
   )
@@ -149,12 +139,7 @@ const SectionLink = props => {
           {title}
         </a>
       ) : (
-        <Link
-          to={item.link}
-          activeClassName='nav-link-active'
-          className='nav-link'
-          exact
-        >
+        <Link to={item.link} activeClassName='nav-link-active' className='nav-link' exact>
           {title}
         </Link>
       )}
@@ -164,7 +149,7 @@ const SectionLink = props => {
 }
 
 class SidebarBody extends React.Component {
-  render () {
+  render() {
     const menu = this.props.yaml
     const isInline = this.props.inline
 
@@ -173,15 +158,15 @@ class SidebarBody extends React.Component {
     const fontSize = isInline ? scale(0).fontSize : scale(-2 / 10).fontSize
     const headerStyles = isInline
       ? {
-        fontSize: scale(2 / 5).fontSize
-      }
+          fontSize: scale(2 / 5).fontSize
+        }
       : {
-        fontSize: scale(-2 / 5).fontSize,
-        color: presets.brandLight,
-        textTransform: `uppercase`,
-        letterSpacing: `.1em`,
-        fontWeight: `normal`
-      }
+          fontSize: scale(-2 / 5).fontSize,
+          color: presets.brandLight,
+          textTransform: `uppercase`,
+          letterSpacing: `.1em`,
+          fontWeight: `normal`
+        }
 
     return (
       <div
@@ -196,13 +181,7 @@ class SidebarBody extends React.Component {
               fontSize
             }}
           >
-            <Section
-              {...section}
-              title={section.title}
-              headerStyles={headerStyles}
-              index={index}
-              isInline={isInline}
-            />
+            <Section {...section} title={section.title} headerStyles={headerStyles} index={index} isInline={isInline} />
           </div>
         ))}
       </div>

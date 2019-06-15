@@ -19,7 +19,7 @@ import 'typeface-spectral'
 import 'typeface-space-mono'
 
 class DefaultLayout extends React.Component {
-  render () {
+  render() {
     const sidebarStyles = {
       backgroundColor: presets.sidebar,
       // top: `calc(${presets.headerHeight} - 1px)`,
