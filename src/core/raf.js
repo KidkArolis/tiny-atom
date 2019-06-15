@@ -19,7 +19,7 @@ function getCancelAnimationFrame() {
   return window.cancelAnimationFrame || window.mozCancelAnimationFrame || clearTimeout || (() => {})
 }
 
-module.exports = function raf(fn) {
+export function raf(fn) {
   const requestAnimationFrame = getRequestAnimationFrame()
   const cancelAnimationFrame = getCancelAnimationFrame()
 

@@ -1,11 +1,12 @@
-const ReactDOM = require('react-dom')
-const createAtom = require('../src')
-const { Provider } = require('../src/react')
+import ReactDOM from 'react-dom'
+import { createStore, Provider } from '../src'
 
-module.exports = function renderHooksApp({ h, root, useAtom, useActions, useDispatch }) {
+/** @jsx h */
+
+module.exports = function renderHooksApp({ h, root, useSelector, useActions, useDispatch }) {
   const stats = {}
 
-  const atom = createAtom({
+  const atom = createStore({
     state: {
       count: 0,
       unrelated: 1,
@@ -30,7 +31,7 @@ module.exports = function renderHooksApp({ h, root, useAtom, useActions, useDisp
   stats.appRenderCount = 0
   const App = () => {
     stats.appRenderCount++
-    const count = useAtom(state => state.count, { observe: true })
+    const count = useSelector(state => state.count, { observe: true })
     const { increment } = useActions()
 
     return (
@@ -45,8 +46,8 @@ module.exports = function renderHooksApp({ h, root, useAtom, useActions, useDisp
   stats.childRenderCount = 0
   const Child = ({ multiplier }) => {
     stats.childRenderCount++
-    const count = useAtom(state => state.count, { observe: true })
-    const user = useAtom(state => state.user, { observe: true })
+    const count = useSelector(state => state.count, { observe: true })
+    const user = useSelector(state => state.user, { observe: true })
     const dispatch = useDispatch()
     return (
       <div>

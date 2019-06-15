@@ -1,20 +1,18 @@
-const test = require('ava')
-const React = require('react')
-const ReactDOM = require('react-dom')
-const { JSDOM } = require('jsdom')
-const createAtom = require('../src')
-const { Provider } = require('../src/react')
-const { useAtom, useActions, useDispatch } = require('../src/react/hooks')
-const renderHooksApp = require('./hooks-app')
+import test from 'ava'
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { JSDOM } from 'jsdom'
+import { createStore, Provider, useSelector, useActions, useDispatch } from '../src'
+import renderHooksApp from './hooks-app'
 
-test.serial('usage', async function(t) {
+test.serial.only('usage', async function(t) {
   const h = (global.h = React.createElement)
   const dom = new JSDOM('<!doctype html><div id="root"></div>')
   global.window = dom.window
   global.document = dom.window.document
   const root = document.getElementById('root')
 
-  const { atom, stats } = renderHooksApp({ h, useAtom, useActions, useDispatch, root })
+  const { atom, stats } = renderHooksApp({ h, useSelector, useActions, useDispatch, root })
 
   await frame()
 
@@ -68,7 +66,7 @@ test.serial('minimal rerenders required', async function(t) {
   global.document = dom.window.document
   const root = document.getElementById('root')
 
-  const { atom, stats } = renderHooksApp({ h, useAtom, useActions, useDispatch, root })
+  const { atom, stats } = renderHooksApp({ h, useSelector, useActions, useDispatch, root })
 
   await frame()
 
@@ -97,16 +95,16 @@ test.serial('a race condition between commit phase/observing and atom changing',
   global.document = dom.window.document
   const root = document.getElementById('root')
 
-  const atom = createAtom({ state: { count: 0, extra: 0 } })
+  const atom = createStore({ state: { count: 0, extra: 0 } })
 
   const App = () => {
     const mapState = state => state.count + state.extra
-    const count = useAtom(mapState, { observe: true })
+    const count = useSelector(mapState, { observe: true })
     return h('div', {}, [h('div', { key: 'a', id: 'count-outer' }, count), h(Child, { key: 'b' })])
   }
 
   const Child = () => {
-    const count = useAtom(state => state.count, { observe: true })
+    const count = useSelector(state => state.count, { observe: true })
     return h('div', { id: 'count-inner' }, count)
   }
 
@@ -135,16 +133,16 @@ test.serial('edge case where we rerender via parent and then via observation', a
   global.document = dom.window.document
   const root = document.getElementById('root')
 
-  const atom = createAtom({ state: { count: 0, extra: 0 } })
+  const atom = createStore({ state: { count: 0, extra: 0 } })
 
   const App = () => {
     const mapState = state => state.count + state.extra
-    const count = useAtom(mapState, { observe: true })
+    const count = useSelector(mapState, { observe: true })
     return h('div', {}, [h('div', { key: 'a', id: 'count-outer' }, count), h(Child, { key: 'b' })])
   }
 
   const Child = () => {
-    const count = useAtom(state => state.count, { observe: true })
+    const count = useSelector(state => state.count, { observe: true })
     return h('div', { id: 'count-inner' }, count)
   }
 

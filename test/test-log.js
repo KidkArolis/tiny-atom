@@ -1,5 +1,5 @@
-const test = require('ava')
-const createLog = require('../src/log')
+import test from 'ava'
+import { createLog } from '../src/log'
 
 test('logs out formatted messages', async function(t) {
   const buffer = []

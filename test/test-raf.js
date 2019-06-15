@@ -1,6 +1,6 @@
-const test = require('ava')
-const { JSDOM } = require('jsdom')
-const raf = require('../src/raf')
+import test from 'ava'
+import { JSDOM } from 'jsdom'
+import { raf } from '../src/core/raf'
 
 test('calls functions at most once a frame', async function(t) {
   const dom = new JSDOM()

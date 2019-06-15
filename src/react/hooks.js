@@ -1,6 +1,7 @@
-const { useContext, useEffect, useState, useRef, useCallback } = require('react')
-const { AtomContext, differ } = require('../react')
-const raf = require('../raf')
+import { useContext, useEffect, useState, useRef, useCallback } from 'react'
+import { StoreContext } from './context'
+import { differs } from './differs'
+import { raf } from '../core/raf'
 
 const isServer = typeof navigator === 'undefined'
 const identity = x => x
@@ -10,10 +11,10 @@ const delayed = fn => raf(fn)()
 let i = 0
 const nextOrder = () => ++i
 
-function useAtom(selectorFn = identity, options = {}) {
+export function useSelector(selectorFn = identity, options = {}) {
   const { sync = false, pure = true, observe = !isServer } = options
 
-  const { atom } = useContext(AtomContext)
+  const { atom } = useContext(StoreContext)
   assert(atom, 'No atom found in context, did you forget to wrap your app in <Provider atom={atom} />?')
 
   // cache the schedule and selector functions
@@ -77,7 +78,7 @@ function useAtom(selectorFn = identity, options = {}) {
         cancelUpdate.current = schedule(function scheduledOnChange() {
           cancelUpdate.current = null
           const nextMappedProps = selector(atom.get())
-          if (!pure || differ(mappedProps.current, nextMappedProps)) {
+          if (!pure || differs(mappedProps.current, nextMappedProps)) {
             rerender({})
           }
         })
@@ -97,13 +98,13 @@ function useAtom(selectorFn = identity, options = {}) {
   return mappedProps.current
 }
 
-function useActions() {
-  const { atom } = useContext(AtomContext)
+export function useActions() {
+  const { atom } = useContext(StoreContext)
   return atom.actions
 }
 
-function useDispatch() {
-  const { atom } = useContext(AtomContext)
+export function useDispatch() {
+  const { atom } = useContext(StoreContext)
   return atom.dispatch
 }
 
@@ -119,5 +120,3 @@ function invoke(ref) {
     ref.current = null
   }
 }
-
-module.exports = { useAtom, useActions, useDispatch }

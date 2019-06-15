@@ -31,6 +31,9 @@
     "deep-diff": "^1.0.2"
   },
   "devDependencies": {
+    "@babel/plugin-transform-react-jsx": "^7.3.0",
+    "@babel/preset-env": "^7.4.5",
+    "@babel/register": "^7.4.4",
     "ava": "^2.1.0",
     "buble": "^0.19.7",
     "execa": "^1.0.0",
@@ -53,9 +56,15 @@
     "files": [
       "test/test-*.js"
     ],
-    "require": "./test/helpers/setup.js",
-    "babel": false,
-    "compileEnhancements": false
+    "require": [
+      "@babel/register",
+      "./test/helpers/setup.js"
+    ],
+    "babel": {
+      "testOptions": {
+        "babelrc": false
+      }
+    }
   },
   "np": {
     "releaseDraft": false

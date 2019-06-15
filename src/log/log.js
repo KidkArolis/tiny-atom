@@ -7,7 +7,7 @@ const dictionary = {
   A: { color: '#2196F3', text: 'ARRAY' }
 }
 
-module.exports = (options = {}) => {
+export const createLog = (options = {}) => {
   options.diff = typeof options.diff === 'undefined' ? true : options.diff
   options.actions = typeof options.actions === 'undefined' ? false : options.actions
   options.updates = typeof options.updates === 'undefined' ? true : options.updates

@@ -1,13 +1,15 @@
-const { JSDOM } = require('jsdom')
-const createAtom = require('../src')
+import { JSDOM } from 'jsdom'
+import { createStore } from '../src/core'
 
-module.exports = function app({ h, Provider, Consumer, connect, createContext }) {
+/** @jsx h */
+
+module.exports = function app({ h, Provider, Consumer, connect, createContext, createConnect, createConsumer }) {
   const dom = new JSDOM('<!doctype html><div id="root"></div>')
   global.window = dom.window
   global.document = dom.window.document
   const root = document.getElementById('root')
 
-  const atom = createAtom({
+  const atom = createStore({
     state: {
       count: 0,
       unrelated: 1
@@ -25,8 +27,8 @@ module.exports = function app({ h, Provider, Consumer, connect, createContext })
   if (createContext) {
     const context = createContext(atom)
     Provider = context.Provider
-    Consumer = context.Consumer
-    connect = context.connect
+    Consumer = createConsumer(context.StoreContext)
+    connect = createConnect(Consumer)
   }
 
   const App = () => {
