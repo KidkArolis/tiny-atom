@@ -91,6 +91,7 @@ export function createStore({ state = {}, actions = {}, ...options } = {}) {
     sourceActions = sourceActions || []
     return function set(update, options = {}) {
       options = typeof options === 'string' ? { message: options } : options
+      update = typeof update === 'function' ? update(state) : update
       let action = { payload: update }
       let prevState = state
       state = swap ? action.payload : Object.assign({}, state, action.payload)

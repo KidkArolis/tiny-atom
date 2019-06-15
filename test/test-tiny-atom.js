@@ -19,6 +19,19 @@ test('does not mutate the state object', t => {
   t.not(atom.get(), initialState)
 })
 
+test('set can be be passed an updating function', t => {
+  const initialState = { count: 0 }
+  const increment = ({ set }, payload = 1) => set(state => ({ count: state.count + payload, t: 2 }))
+  const atom = createStore({ state: initialState, actions: { increment } })
+
+  t.deepEqual(atom.get(), { count: 0 })
+  t.is(atom.get(), initialState)
+
+  atom.dispatch('increment', 5)
+  t.deepEqual(atom.get(), { count: 5, t: 2 })
+  t.not(atom.get(), initialState)
+})
+
 test.cb('async action updates the state', t => {
   const changes = []
   const atom = createStore({ state: { count: 0 }, actions: { increment } })
