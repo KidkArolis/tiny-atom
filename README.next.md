@@ -17,7 +17,7 @@ date: '2019-06-15'
 
 \$ npm install tiny-atom
 
-## Usage
+## createStore
 
 ```js
 import { createStore, Provider } from 'tiny-atom'
@@ -43,27 +43,44 @@ ReactDOM.render(
 )
 ```
 
+## Provider
+
 ## useSelector
 
 ## useActions
 
-## useStore
+## useStore - a complementary local component store
 
-## Logging
+## logger - print messages with each set
+
+## async actions - easy
+
+## useStoreInstance
+
+## preact support
+
+## devtools
+
+# Recipes
+
+## Using with Immutable
+
+## Using with zaphod
+
+## Using with router
+
+## Using with immer
+
+# advanced usage (separate page per each)
+
+## Consumer / connect
+
+## createContext / createConsumer / createConnect
+
+## custom evolve
+
+## custom bindActions
+
+## useDispatch
 
 ## Other
-
-import { Consumer, connect }
-
-createStore
-Provider
-StoreContext
-createContext
-useSelector
-useActions
-useDispatch
-useStore
-Consumer
-createConsumer
-connect
-createConnect
