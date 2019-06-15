@@ -1,11 +1,13 @@
 {
   "name": "tiny-atom",
   "version": "4.2.2",
-  "description": "Minimal, yet awesome, state management.",
+  "description": "Pragmatic and concise state management.",
   "main": "index.js",
   "scripts": {
     "coverage": "nyc --reporter html ava",
-    "test": "standard && nyc ava",
+    "test": "npm run lint && nyc ava",
+    "lint": "healthier && prettier --check '**/*.{js,json,css,yml}'",
+    "format": "prettier --write '**/*.{js,json,css,yml}'",
     "build": "node ./tasks/build.js",
     "version": "npm run build",
     "release": "np --contents dist",
@@ -20,18 +22,22 @@
     "Alan Clarke <alan@qubit.com>"
   ],
   "license": "ISC",
+  "dependencies": {
+    "deep-diff": "^1.0.2"
+  },
   "devDependencies": {
-    "ava": "^1.3.1",
-    "buble": "^0.19.6",
+    "ava": "^2.1.0",
+    "buble": "^0.19.7",
     "execa": "^1.0.0",
-    "jetpack": "^0.13.0",
-    "jsdom": "^13.2.0",
-    "np": "^4.0.2",
-    "nyc": "^13.3.0",
+    "healthier": "^2.0.0",
+    "jetpack": "^0.16.0",
+    "jsdom": "^15.1.1",
+    "np": "^5.0.3",
+    "nyc": "^14.1.1",
     "preact": "^8.4.2",
-    "react": "^16.8.4",
-    "react-dom": "^16.8.4",
-    "standard": "^12.0.1"
+    "prettier": "^1.18.2",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
   },
   "standard": {
     "ignore": [
@@ -39,10 +45,12 @@
     ]
   },
   "ava": {
-    "files": "test/test-*.js",
+    "files": [
+      "test/test-*.js"
+    ],
     "require": "./test/helpers/setup.js"
   },
-  "dependencies": {
-    "deep-diff": "^1.0.2"
+  "np": {
+    "releaseDraft": false
   }
 }

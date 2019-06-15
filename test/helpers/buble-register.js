@@ -9,10 +9,11 @@ var nodeModulesPattern = path.sep === '/' ? /\/node_modules\// : /\\node_modules
 
 var options = {
   objectAssign: 'Object.assign',
+  transforms: { asyncAwait: false },
   jsx: 'h'
 }
 
-require.extensions[ '.js' ] = function (m, filename) {
+require.extensions['.js'] = function(m, filename) {
   if (nodeModulesPattern.test(filename)) return original(m, filename)
 
   var source = fs.readFileSync(filename, 'utf-8')
