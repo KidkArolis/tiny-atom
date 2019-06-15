@@ -1,6 +1,6 @@
 {
   "name": "tiny-atom",
-  "version": "4.2.2",
+  "version": "5.0.0-pre.0",
   "description": "Pragmatic and concise state management.",
   "main": "tiny-atom.js",
   "module": "tiny-atom.module.js",
