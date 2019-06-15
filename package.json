@@ -58,12 +58,7 @@
     "require": [
       "@babel/register",
       "./test/helpers/setup.js"
-    ],
-    "babel": {
-      "testOptions": {
-        "babelrc": false
-      }
-    }
+    ]
   },
   "np": {
     "releaseDraft": false

@@ -1,28 +1,45 @@
 /**
  * A component local store.
- * A great compliment to the global store.
+ * A great complement to the global store.
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { createStore } from '../core'
 
 export function useStore(setup, deps) {
-  const [atom] = useState(() => {
-    const { state, ...actions } = setup()
-    return createStore(state, actions)
-  })
+  const config = useMemo(() => {
+    if (typeof setup === 'function') {
+      return setup()
+    } else {
+      return null
+    }
+  }, deps || [])
+
+  const [atom] = useState(() => (config ? createStore(config) : setup))
+  const [actions, setActions] = useState(() => atom.actions)
   const [state, setState] = useState(() => atom.get())
 
   useEffect(() => {
+    let didUnmount = false
     const unobserve = atom.observe(() => {
-      setState(atom.get())
+      if (!didUnmount) {
+        setState(atom.get())
+      }
     })
-    return unobserve
+    return () => {
+      didUnmount = true
+      unobserve()
+    }
   }, [atom])
+
+  useEffect(() => {
+    atom.fuse({ actions: config.actions })
+    setActions(atom.actions)
+  }, [config.actions])
 
   // todo, we could allow dynamically swapping actions
   // based on a deps array, for that we'd need to store
   // actions in useState, etc.
 
-  return [state, atom.actions]
+  return [state, actions, atom]
 }
