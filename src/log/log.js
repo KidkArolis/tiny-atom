@@ -1,4 +1,4 @@
-const computeDiff = require('deep-diff')
+import computeDiff from 'deep-diff'
 
 const dictionary = {
   N: { color: '#4CAF50', text: 'ADDED', atext: 'added' },

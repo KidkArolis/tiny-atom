@@ -1,6 +1,6 @@
 import React from 'react'
 import { differs } from './differs'
-import { raf } from '../core/raf'
+import { raf } from './raf'
 import { StoreContext } from './context'
 
 const isServer = typeof navigator === 'undefined'

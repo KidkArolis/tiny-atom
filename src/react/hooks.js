@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState, useRef, useCallback } from 'react'
 import { StoreContext } from './context'
 import { differs } from './differs'
-import { raf } from '../core/raf'
+import { raf } from './raf'
 
 const isServer = typeof navigator === 'undefined'
 const identity = x => x

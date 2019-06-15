@@ -2,7 +2,10 @@
   "name": "tiny-atom",
   "version": "4.2.2",
   "description": "Pragmatic and concise state management.",
-  "main": "index.js",
+  "main": "tiny-atom.js",
+  "module": "tiny-atom.module.js",
+  "modern": "tiny-atom.modern.js",
+  "sideEffects": false,
   "scripts": {
     "coverage": "nyc --reporter html ava",
     "test": "npm run lint && nyc ava",
@@ -11,12 +14,7 @@
     "build": "node ./tasks/build.js",
     "version": "npm run build",
     "release": "np --contents dist",
-    "release-beta": "np --tag=beta --contents=dist",
-    "build2": "npm-run-all --parallel build:*",
-    "build2:core": "microbundle build --raw -cwd src/core",
-    "build2:debug": "microbundle build --raw --cwd src/debug",
-    "build2:log": "microbundle build --raw --cwd src/log",
-    "build2:preact": "microbundle build --raw --cwd src/preact"
+    "release-beta": "np --tag=beta --contents=dist"
   },
   "repository": {
     "type": "git",
@@ -31,11 +29,12 @@
     "deep-diff": "^1.0.2"
   },
   "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.5",
     "@babel/plugin-transform-react-jsx": "^7.3.0",
     "@babel/preset-env": "^7.4.5",
     "@babel/register": "^7.4.4",
     "ava": "^2.1.0",
-    "buble": "^0.19.7",
     "execa": "^1.0.0",
     "healthier": "^2.0.0",
     "jetpack": "^0.16.0",

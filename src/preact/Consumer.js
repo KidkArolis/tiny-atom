@@ -1,6 +1,6 @@
 import Preact from 'preact'
 import { differs } from '../react/differs'
-import { raf } from '../core/raf'
+import { raf } from '../react/raf'
 
 const canUseDOM = !!(typeof window !== 'undefined' && window.document && window.document.createElement)
 
