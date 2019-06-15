@@ -29,7 +29,7 @@ const App = () => (
               this.$input = el
             }}
             onChange={e => updateItem(e.target.value)}
-            value={todo.input}
+            value={todo.input || ''}
           />
         </form>
 

@@ -2,7 +2,7 @@
  * Minimal state management.
  *
  * const actions = { inc: (atom, payload) => {} }
- * const atom = createAtom({ count: 1 }, actions)
+ * const atom = createAtom({ state: { count: 1 }, actions })
  *
  * atom.observe(atom => console.log(atom.get()))
  *
@@ -10,31 +10,22 @@
  * atom.dispatch('increment') // action
  * atom.dispatch('increment', { by: 2 }) // action with payload
  */
-module.exports = function createAtom(initialState = {}, actions = {}, options = {}) {
-  let state = initialState
+
+module.exports = function createAtom({
+  state = {},
+  actions = {},
+  evolve = defaultEvolve,
+  bindActions = defaultBindActions,
+  debug
+} = {}) {
   let actionSeq = 0
   const listeners = []
-  const debug = options.debug
   const get = () => state
   const set = createSet()
   const swap = createSwap()
   const dispatch = createDispatch()
-  const bindActions = options.bindActions || defaultBindActions
   const atom = { get, set, swap, dispatch, observe, fuse, actions: bindActions(dispatch, actions) }
-  const evolve = options.evolve || defaultEvolve
   return atom
-
-  function defaultEvolve(atom, action, actions) {
-    if (!actions[action.type]) throw new Error(`Missing action: ${action.type}`)
-    return actions[action.type](atom, action.payload)
-  }
-
-  function defaultBindActions(dispatch, actions) {
-    return Object.keys(actions).reduce((boundActions, actionType) => {
-      boundActions[actionType] = payload => dispatch(actionType, payload)
-      return boundActions
-    }, {})
-  }
 
   function insert(listeners, f, i) {
     if (typeof i !== 'undefined') {
@@ -60,10 +51,12 @@ module.exports = function createAtom(initialState = {}, actions = {}, options = 
     }
   }
 
-  function fuse(moreState, moreActions) {
-    Object.assign(actions, moreActions)
-    atom.actions = bindActions(dispatch, actions)
-    if (moreState) set(moreState)
+  function fuse({ state, actions: moreActions } = {}) {
+    if (moreActions) {
+      Object.assign(actions, moreActions)
+      atom.actions = bindActions(dispatch, actions)
+    }
+    if (state) set(state, { silent: true })
   }
 
   function createDispatch(sourceActions) {
@@ -89,10 +82,11 @@ module.exports = function createAtom(initialState = {}, actions = {}, options = 
   function createSet(sourceActions, { swap = false } = {}) {
     sourceActions = sourceActions || []
     return function set(update, options = {}) {
+      options = typeof options === 'string' ? { message: options } : options
       let action = { payload: update }
       let prevState = state
       state = swap ? action.payload : Object.assign({}, state, action.payload)
-      if (debug) report('update', action, sourceActions, prevState)
+      if (debug) report('update', action, sourceActions, prevState, options)
       listeners.forEach(l => l.f(atom))
     }
   }
@@ -101,9 +95,21 @@ module.exports = function createAtom(initialState = {}, actions = {}, options = 
     return createSet(sourceActions, { swap: true })
   }
 
-  function report(type, action, sourceActions, prevState) {
-    const info = { type: type, action: action, sourceActions: sourceActions, atom: atom }
+  function report(type, action, sourceActions, prevState, options) {
+    const info = { ...options, type: type, action: action, sourceActions: sourceActions, atom: atom }
     if (prevState) info.prevState = prevState
     typeof debug === 'function' ? debug(info) : debug.forEach(debug => debug(info))
   }
+}
+
+function defaultEvolve(atom, action, actions) {
+  if (!actions[action.type]) throw new Error(`Missing action: ${action.type}`)
+  return actions[action.type](atom, action.payload)
+}
+
+function defaultBindActions(dispatch, actions) {
+  return Object.keys(actions).reduce((boundActions, actionType) => {
+    boundActions[actionType] = payload => dispatch(actionType, payload)
+    return boundActions
+  }, {})
 }

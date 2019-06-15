@@ -9,7 +9,7 @@ test('can be initialised with no initial state or actions', t => {
 test('does not mutate the state object', t => {
   const initialState = { count: 0 }
   const increment = ({ get, set }, payload = 1) => set({ count: get().count + payload })
-  const atom = createAtom(initialState, { increment })
+  const atom = createAtom({ state: initialState, actions: { increment } })
 
   t.deepEqual(atom.get(), { count: 0 })
   t.is(atom.get(), initialState)
@@ -21,7 +21,7 @@ test('does not mutate the state object', t => {
 
 test.cb('async action updates the state', t => {
   const changes = []
-  const atom = createAtom({ count: 0 }, { increment })
+  const atom = createAtom({ state: { count: 0 }, actions: { increment } })
   atom.observe(onChange)
 
   function increment({ get, set }) {
@@ -49,7 +49,7 @@ test.cb('async action updates the state', t => {
 
 test('can be used in a mutating manner', t => {
   const initialState = { count: 0 }
-  const atom = createAtom(initialState, { increment })
+  const atom = createAtom({ state: initialState, actions: { increment } })
 
   function increment({ get, swap }, payload) {
     const state = get()
@@ -77,7 +77,7 @@ test.cb('debug provides action and update details', t => {
     }
   }
 
-  const atom = createAtom({ count: 0 }, actions, { debug })
+  const atom = createAtom({ state: { count: 0 }, actions, debug })
 
   function debug(info) {
     history.push(Object.assign(info, { currState: atom.get() }))
@@ -88,10 +88,10 @@ test.cb('debug provides action and update details', t => {
     }
   }
 
-  atom.fuse({ count: 1 })
+  atom.fuse({ state: { count: 1 } })
   atom.dispatch('dec', 1)
   atom.dispatch('inc', 2)
-  atom.fuse({ count: 4 })
+  atom.fuse({ state: { count: 4 } })
   atom.dispatch('asyncInc', 10)
   atom.dispatch('inc', 100)
 })
@@ -103,7 +103,7 @@ test.cb('debug can be an array of functions', t => {
     inc: ({ get, set }, payload) => set({ count: get().count + payload })
   }
 
-  const atom = createAtom({ count: 0 }, actions, { debug: [debugOne, debugTwo] })
+  const atom = createAtom({ state: { count: 0 }, actions, debug: [debugOne, debugTwo] })
 
   function debugOne(info) {
     history.push(['debugOne', info])
@@ -119,7 +119,7 @@ test.cb('debug can be an array of functions', t => {
   }
 
   atom.dispatch('inc', 2)
-  atom.fuse({ done: true })
+  atom.fuse({ state: { done: true } })
 })
 
 test('observe callback is called on each update', t => {
@@ -129,14 +129,14 @@ test('observe callback is called on each update', t => {
   const unobserveA = atom.observe(atom => observations.push('a' + atom.get().v))
   const unobserveB = atom.observe(atom => observations.push('b' + atom.get().v))
 
-  atom.fuse({ v: 6 })
+  atom.fuse({ state: { v: 6 } })
   t.deepEqual(observations, ['a6', 'b6'])
 
   unobserveB()
   unobserveB()
   const unobserveC = atom.observe(atom => observations.push('c' + atom.get().v))
 
-  atom.fuse({ v: 7 })
+  atom.fuse({ state: { v: 7 } })
   t.deepEqual(observations, ['a6', 'b6', 'a7', 'c7'])
 
   unobserveB()
@@ -145,7 +145,8 @@ test('observe callback is called on each update', t => {
 })
 
 test('missing actions', t => {
-  const atom = createAtom({ count: 0 }, {})
+  const state = { count: 0 }
+  const atom = createAtom({ state })
 
   try {
     atom.dispatch('i-dont-exist')
@@ -156,7 +157,8 @@ test('missing actions', t => {
 })
 
 test('custom evolve', t => {
-  const atom = createAtom({ count: 0 }, {}, { evolve })
+  const state = { count: 0 }
+  const atom = createAtom({ state, evolve })
 
   function evolve({ get, set }, { type, payload }) {
     if (type === 'increment') {
@@ -177,10 +179,12 @@ test('custom evolve', t => {
 test('fuse extends the state and actions', t => {
   const increment = ({ get, set }, payload = 1) => set({ count: get().count + payload })
   const decrement = ({ get, set }, payload = 1) => set({ count: get().count - payload })
-  const atom = createAtom({ count: 0 }, { increment })
+  const state = { count: 0 }
+  const actions = { increment }
+  const atom = createAtom({ state, actions })
 
-  atom.fuse({ meta: 1 }, { decrement })
-  atom.fuse({ base: 2 })
+  atom.fuse({ state: { meta: 1 }, actions: { decrement } })
+  atom.fuse({ state: { base: 2 } })
   atom.fuse()
 
   atom.dispatch('increment')
@@ -214,7 +218,7 @@ test('async actions are testable', async function(t) {
   function setup() {
     history = []
     const onChange = ({ type, atom }) => (type === 'update' ? history.push(atom.get()) : null)
-    return createAtom({}, actions, { debug: onChange })
+    return createAtom({ actions, debug: onChange })
   }
 
   // success case

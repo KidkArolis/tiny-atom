@@ -11,7 +11,12 @@
     "build": "node ./tasks/build.js",
     "version": "npm run build",
     "release": "np --contents dist",
-    "release-beta": "np --tag=beta --contents=dist"
+    "release-beta": "np --tag=beta --contents=dist",
+    "build2": "npm-run-all --parallel build:*",
+    "build2:core": "microbundle build --raw -cwd src/core",
+    "build2:debug": "microbundle build --raw --cwd src/debug",
+    "build2:log": "microbundle build --raw --cwd src/log",
+    "build2:preact": "microbundle build --raw --cwd src/preact"
   },
   "repository": {
     "type": "git",
@@ -48,7 +53,9 @@
     "files": [
       "test/test-*.js"
     ],
-    "require": "./test/helpers/setup.js"
+    "require": "./test/helpers/setup.js",
+    "babel": false,
+    "compileEnhancements": false
   },
   "np": {
     "releaseDraft": false

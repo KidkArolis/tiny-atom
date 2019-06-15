@@ -97,7 +97,7 @@ test.serial('a race condition between commit phase/observing and atom changing',
   global.document = dom.window.document
   const root = document.getElementById('root')
 
-  const atom = createAtom({ count: 0, extra: 0 })
+  const atom = createAtom({ state: { count: 0, extra: 0 } })
 
   const App = () => {
     const mapState = state => state.count + state.extra
@@ -135,7 +135,7 @@ test.serial('edge case where we rerender via parent and then via observation', a
   global.document = dom.window.document
   const root = document.getElementById('root')
 
-  const atom = createAtom({ count: 0, extra: 0 })
+  const atom = createAtom({ state: { count: 0, extra: 0 } })
 
   const App = () => {
     const mapState = state => state.count + state.extra

@@ -5,9 +5,13 @@ const { Provider } = require('../src/react')
 module.exports = function renderHooksApp({ h, root, useAtom, useActions, useDispatch }) {
   const stats = {}
 
-  const atom = createAtom(
-    { count: 0, unrelated: 1, user: { loggedIn: true } },
-    {
+  const atom = createAtom({
+    state: {
+      count: 0,
+      unrelated: 1,
+      user: { loggedIn: true }
+    },
+    actions: {
       increment: ({ get, set }, payload = 1) => {
         set({ count: get().count + payload })
       },
@@ -21,7 +25,7 @@ module.exports = function renderHooksApp({ h, root, useAtom, useActions, useDisp
         set({ user })
       }
     }
-  )
+  })
 
   stats.appRenderCount = 0
   const App = () => {

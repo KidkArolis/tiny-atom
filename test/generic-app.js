@@ -7,9 +7,12 @@ module.exports = function app({ h, Provider, Consumer, connect, createContext })
   global.document = dom.window.document
   const root = document.getElementById('root')
 
-  const atom = createAtom(
-    { count: 0, unrelated: 1 },
-    {
+  const atom = createAtom({
+    state: {
+      count: 0,
+      unrelated: 1
+    },
+    actions: {
       increment: ({ get, set }, payload = 1) => {
         set({ count: get().count + payload })
       },
@@ -17,7 +20,7 @@ module.exports = function app({ h, Provider, Consumer, connect, createContext })
         set({ unrelated: get().unrelated + 1 })
       }
     }
-  )
+  })
 
   if (createContext) {
     const context = createContext(atom)

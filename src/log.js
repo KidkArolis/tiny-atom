@@ -13,6 +13,8 @@ module.exports = (options = {}) => {
   options.updates = typeof options.updates === 'undefined' ? true : options.updates
   options.include = options.include || []
   options.exclude = options.exclude || []
+  options.level = options.level || 'loud'
+
   const logger = options.logger || console
 
   const tryCatch = (fn, elseFn) => {
@@ -26,10 +28,14 @@ module.exports = (options = {}) => {
   const groupStart = (...args) => tryCatch(() => logger.groupCollapsed(...args), () => logger.log(...args))
   const groupEnd = () => tryCatch(() => logger.groupEnd(), () => {})
 
-  return ({ type, atom, action, sourceActions, prevState }) => {
+  return ({ type, atom, action, sourceActions, prevState, message, silent }) => {
+    if (options.level === 'none') return
+
     const sourceAction = type === 'action' ? action : sourceActions[sourceActions.length - 1] || {}
     if (options.include.length && !options.include.includes(sourceAction.type)) return
     if (options.exclude.length && options.exclude.includes(sourceAction.type)) return
+
+    if (silent && options.level !== 'verbose') return
 
     if (type === 'action' && options.actions) {
       const actions = sourceActions.concat(action)
@@ -57,7 +63,7 @@ module.exports = (options = {}) => {
         }
       }
 
-      groupStart(`🙌 ${sourceActions.map(a => a.type).join(' → ') || '–'} »`, diffSummary.join(', '))
+      groupStart(`🙌 ${sourceActions.map(a => a.type).join(' → ') || '–'}`, message ? '»' : '', message || '')
       log('curr', atom.get())
       log('prev', prevState)
       log('update', action.payload)
