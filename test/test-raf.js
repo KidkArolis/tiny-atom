@@ -1,6 +1,6 @@
 import test from 'ava'
 import { JSDOM } from 'jsdom'
-import { raf } from '../src/react/raf'
+import { raf } from '../src/react'
 
 test('calls functions at most once a frame', async function(t) {
   const dom = new JSDOM()

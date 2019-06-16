@@ -1,5 +1,5 @@
 // the actual tiny-atom
-export { createStore } from '../core'
+export { createStore } from '../../core'
 
 // provider component and the hooks for interfacing with the global store
 export { Provider, AtomContext, createContext } from './context'
@@ -11,3 +11,7 @@ export { useAtom } from './useAtom'
 // kinda legacyish
 export { Consumer, createConsumer } from './Consumer'
 export { connect, createConnect } from './connect'
+
+// internals
+export { raf } from './raf'
+export { differs } from './differs'

@@ -4,7 +4,7 @@
  */
 
 import { useState, useMemo, useEffect } from 'react'
-import { createStore } from '../core'
+import { createStore } from '../../core'
 
 export function useAtom(setup, deps) {
   const config = useMemo(() => {

@@ -18,13 +18,14 @@ const files = ['package.json', 'package-lock.json', 'LICENSE', 'CHANGELOG.md', '
   const pkg = require('../package.json')
   const subdirs = ['core', 'devtools', 'log', 'preact', 'react']
 
-  await sh(`./node_modules/.bin/babel --no-babelrc src/index.js -o dist/${pkg.main} --config-file=./.babelrc-cjs`)
-  await sh(`./node_modules/.bin/babel --no-babelrc src/index.js -o dist/${pkg.module} --config-file=./.babelrc-esm`)
-  await sh(`./node_modules/.bin/babel --no-babelrc src/index.js -o dist/${pkg.modern} --config-file=./.babelrc-mdn`)
+  const babel = './node_modules/.bin/babel'
+  await sh(`${babel} --no-babelrc src/index.js -o dist/${pkg.main} --config-file=./.babelrc-cjs`)
+  await sh(`${babel} --no-babelrc src/index.js -o dist/${pkg.module} --config-file=./.babelrc-esm`)
+  await sh(`${babel} --no-babelrc src/index.js -o dist/${pkg.modern} --config-file=./.babelrc-mdn`)
   for (let subdir of subdirs) {
-    await sh(`./node_modules/.bin/babel --no-babelrc src/${subdir} -d dist/${subdir}/cjs --config-file=./.babelrc-cjs`)
-    await sh(`./node_modules/.bin/babel --no-babelrc src/${subdir} -d dist/${subdir}/esm --config-file=./.babelrc-esm`)
-    await sh(`./node_modules/.bin/babel --no-babelrc src/${subdir} -d dist/${subdir}/mdn --config-file=./.babelrc-mdn`)
+    await sh(`${babel} --no-babelrc src/${subdir}/src -d dist/${subdir}/cjs --config-file=./.babelrc-cjs`)
+    await sh(`${babel} --no-babelrc src/${subdir}/src -d dist/${subdir}/esm --config-file=./.babelrc-esm`)
+    await sh(`${babel} --no-babelrc src/${subdir}/src -d dist/${subdir}/mdn --config-file=./.babelrc-mdn`)
     fs.writeFileSync(
       path.join(process.cwd(), 'dist', subdir, 'package.json'),
       JSON.stringify(
