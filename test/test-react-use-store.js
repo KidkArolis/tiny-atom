@@ -3,9 +3,9 @@ import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom'
 import { act } from 'react-dom/test-utils'
 import { JSDOM } from 'jsdom'
-import { useStore } from '../src'
+import { useAtom } from '../src'
 
-test.serial('useStore usage', async function(t) {
+test.serial('useAtom usage', async function(t) {
   const dom = new JSDOM('<!doctype html><div id="root"></div>')
   global.window = dom.window
   global.document = dom.window.document
@@ -14,7 +14,7 @@ test.serial('useStore usage', async function(t) {
   let s
 
   const App = () => {
-    const [state, actions, atom] = useStore(() => ({
+    const [state, actions, atom] = useAtom(() => ({
       state: { count: 0, extra: 0 },
       actions: {
         increment: ({ set }) => set(state => ({ count: state.count + 1 })),
@@ -40,7 +40,7 @@ test.serial('useStore usage', async function(t) {
   t.is(document.getElementById('count-outer').innerHTML, String(1))
 })
 
-test.serial('useStore allows recreating actions based on deps', async function(t) {
+test.serial('useAtom allows recreating actions based on deps', async function(t) {
   const dom = new JSDOM('<!doctype html><div id="root"></div>')
   global.window = dom.window
   global.document = dom.window.document
@@ -51,7 +51,7 @@ test.serial('useStore allows recreating actions based on deps', async function(t
   const App = () => {
     const [item, setItem] = useState('item-1')
 
-    const [state, actions] = useStore(
+    const [state, actions] = useAtom(
       () => ({
         state: { fetched: null, extra: 0 },
         actions: {

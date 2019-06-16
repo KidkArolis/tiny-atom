@@ -27,7 +27,7 @@ module.exports = function app({ h, Provider, Consumer, connect, createContext, c
   if (createContext) {
     const context = createContext(atom)
     Provider = context.Provider
-    Consumer = createConsumer(context.StoreContext)
+    Consumer = createConsumer(context.AtomContext)
     connect = createConnect(Consumer)
   }
 

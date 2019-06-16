@@ -6,7 +6,7 @@
 import { useState, useMemo, useEffect } from 'react'
 import { createStore } from '../core'
 
-export function useStore(setup, deps) {
+export function useAtom(setup, deps) {
   const config = useMemo(() => {
     if (typeof setup === 'function') {
       return setup()

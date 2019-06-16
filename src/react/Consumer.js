@@ -1,7 +1,7 @@
 import React from 'react'
 import { differs } from './differs'
 import { raf } from './raf'
-import { StoreContext } from './context'
+import { AtomContext } from './context'
 
 const isServer = typeof navigator === 'undefined'
 
@@ -101,8 +101,8 @@ ConsumerInner.getDerivedStateFromProps = (props, state) => {
   return Object.assign({}, originalProps, map ? map(atom.get(), originalProps) : {})
 }
 
-export const createConsumer = StoreContext => props => (
-  <StoreContext.Consumer>{({ atom }) => <ConsumerInner {...props} atom={atom} />}</StoreContext.Consumer>
+export const createConsumer = AtomContext => props => (
+  <AtomContext.Consumer>{({ atom }) => <ConsumerInner {...props} atom={atom} />}</AtomContext.Consumer>
 )
 
-export const Consumer = createConsumer(StoreContext)
+export const Consumer = createConsumer(AtomContext)

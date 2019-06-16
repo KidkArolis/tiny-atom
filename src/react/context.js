@@ -1,17 +1,17 @@
 import React, { useMemo } from 'react'
 
 export function createContext() {
-  const StoreContext = React.createContext()
+  const AtomContext = React.createContext()
 
   function Provider({ atom, children }) {
     const value = useMemo(() => ({ atom }), [atom])
-    return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>
+    return <AtomContext.Provider value={value}>{children}</AtomContext.Provider>
   }
 
-  return { StoreContext, Provider }
+  return { AtomContext, Provider }
 }
 
 const context = createContext()
 
-export const StoreContext = context.StoreContext
+export const AtomContext = context.AtomContext
 export const Provider = context.Provider

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState, useRef, useCallback } from 'react'
-import { StoreContext } from './context'
+import { AtomContext } from './context'
 import { differs } from './differs'
 import { raf } from './raf'
 
@@ -14,7 +14,7 @@ const nextOrder = () => ++i
 export function useSelector(selectorFn = identity, options = {}) {
   const { sync = false, pure = true, observe = !isServer } = options
 
-  const { atom } = useContext(StoreContext)
+  const atom = useAtomInstance()
   assert(atom, 'No atom found in context, did you forget to wrap your app in <Provider atom={atom} />?')
 
   // cache the schedule and selector functions
@@ -22,7 +22,7 @@ export function useSelector(selectorFn = identity, options = {}) {
   const selector = useCallback(selectorFn, options.deps || [])
 
   // we use a state to trigger a rerender when relevant atom
-  // state changes, we don't store the actual mapped atom state
+  // state changes, we don't atom the actual mapped atom state
   // here, because that is only 1 of 2 ways that the component
   // gets rerendered, the other way is being rerended by parent
   const [, rerender] = useState({})
@@ -42,7 +42,7 @@ export function useSelector(selectorFn = identity, options = {}) {
     order.current = nextOrder()
   }
 
-  // store current mapped state on each render
+  // atom current mapped state on each render
   // so we can diff when atom triggers callbacks
   mappedProps.current = selector(atom.get())
 
@@ -70,7 +70,7 @@ export function useSelector(selectorFn = identity, options = {}) {
       function onChange() {
         if (didUnobserve) return
 
-        // take into account store updates happening in rapid sequence
+        // take into account atom updates happening in rapid sequence
         // cancel each previously scheduled one and reschedule
         invoke(cancelUpdate)
 
@@ -99,13 +99,18 @@ export function useSelector(selectorFn = identity, options = {}) {
 }
 
 export function useActions() {
-  const { atom } = useContext(StoreContext)
-  return atom.actions
+  const atom = useAtomInstance()
+  return atom && atom.actions
 }
 
 export function useDispatch() {
-  const { atom } = useContext(StoreContext)
-  return atom.dispatch
+  const atom = useAtomInstance()
+  return atom && atom.dispatch
+}
+
+export function useAtomInstance() {
+  const { atom } = useContext(AtomContext)
+  return atom
 }
 
 function assert(cond, error) {
