@@ -1,8 +1,8 @@
 const fs = require('fs')
 const path = require('path')
-const shell = require('execa').shell
+const execa = require('execa')
 
-const sh = (...args) => shell(...args, { stdio: 'inherit' })
+const sh = (...args) => execa(...args, { stdio: 'inherit', shell: true })
 
 const files = ['package.json', 'package-lock.json', 'LICENSE', 'CHANGELOG.md', 'README.md']
 
