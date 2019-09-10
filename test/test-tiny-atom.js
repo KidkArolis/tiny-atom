@@ -46,7 +46,7 @@ test.cb('async action updates the state', t => {
   }
 
   function onChange(atom) {
-    let state = atom.get()
+    const state = atom.get()
     changes.push(1)
     if (changes.length === 1) t.deepEqual(state, { count: 1 })
     if (changes.length === 2) t.deepEqual(state, { count: 2, async: true })
@@ -242,7 +242,7 @@ test('async actions are testable', async function(t) {
 
   // error case
   atom = setup()
-  let err = new Error('Fetch failed')
+  const err = new Error('Fetch failed')
   axios = { get: path => Promise.reject(err) }
   await atom.dispatch('fetchMetrics', 57)
   t.deepEqual(history, [{ loading: true }, { loading: false }, { loading: false, error: 'Fetch failed' }])

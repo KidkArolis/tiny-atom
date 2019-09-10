@@ -47,8 +47,8 @@ export const createLog = (options = {}) => {
 
     if (type === 'update' && options.updates) {
       let diff
-      let diffSummaryMap = {}
-      let diffSummary = []
+      const diffSummaryMap = {}
+      const diffSummary = []
       if (options.diff) {
         diff = computeDiff(prevState, atom.get())
         if (diff) {

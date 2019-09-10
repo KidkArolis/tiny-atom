@@ -70,7 +70,7 @@ export function createAtom({ state = {}, actions = {}, ...options } = {}) {
   function createDispatch(sourceActions) {
     sourceActions = sourceActions || []
     return function dispatch(type, payload) {
-      let action = { seq: ++actionSeq, type: type }
+      const action = { seq: ++actionSeq, type: type }
       if (typeof payload !== 'undefined') action.payload = payload
       if (debug) {
         report('action', action, sourceActions)
@@ -92,8 +92,8 @@ export function createAtom({ state = {}, actions = {}, ...options } = {}) {
     return function set(update, options = {}) {
       options = typeof options === 'string' ? { message: options } : options
       update = typeof update === 'function' ? update(state) : update
-      let action = { payload: update }
-      let prevState = state
+      const action = { payload: update }
+      const prevState = state
       state = swap ? action.payload : Object.assign({}, state, action.payload)
       if (debug) report('update', action, sourceActions, prevState, options)
       listeners.forEach(l => l.f(atom))

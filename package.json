@@ -30,25 +30,27 @@
     "deep-diff": "^1.0.2"
   },
   "devDependencies": {
-    "@babel/cli": "^7.4.4",
-    "@babel/core": "^7.4.5",
+    "@babel/cli": "^7.6.0",
+    "@babel/core": "^7.6.0",
     "@babel/plugin-transform-react-jsx": "^7.3.0",
-    "@babel/preset-env": "^7.4.5",
-    "@babel/register": "^7.4.4",
+    "@babel/preset-env": "^7.6.0",
+    "@babel/register": "^7.6.0",
     "ava": "^2.3.0",
-    "execa": "^1.0.0",
-    "healthier": "^2.0.0",
-    "jetpack": "^0.16.0",
+    "babel-eslint": "^10.0.3",
+    "execa": "^2.0.4",
+    "healthier": "^3.2.0",
+    "jetpack": "^0.17.0",
     "jsdom": "^15.1.1",
     "np": "^5.0.3",
     "nyc": "^14.1.1",
-    "preact": "^8.4.2",
+    "preact": "^8.5.2",
     "prettier": "^1.18.2",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
     "sitedown": "^3.3.2"
   },
   "healthier": {
+    "parser": "babel-eslint",
     "ignore": [
       "docs/public"
     ]

@@ -1,3 +1,4 @@
+import React from 'react'
 import ArrowForwardIcon from 'react-icons/lib/md/arrow-forward'
 
 import { rhythm, scale } from '../utils/typography'

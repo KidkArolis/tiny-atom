@@ -10,7 +10,7 @@ const files = ['package.json', 'package-lock.json', 'LICENSE', 'CHANGELOG.md', '
   await sh('rm -rf dist')
   await sh('mkdir -p dist')
 
-  for (let file of files) {
+  for (const file of files) {
     await sh(`cp ${file} dist`)
   }
   await sh(`cp -R src dist/src`)
@@ -22,7 +22,7 @@ const files = ['package.json', 'package-lock.json', 'LICENSE', 'CHANGELOG.md', '
   await sh(`${babel} --no-babelrc src/index.js -o dist/${pkg.main} --config-file=./.babelrc-cjs`)
   await sh(`${babel} --no-babelrc src/index.js -o dist/${pkg.module} --config-file=./.babelrc-esm`)
   await sh(`${babel} --no-babelrc src/index.js -o dist/${pkg.modern} --config-file=./.babelrc-mdn`)
-  for (let subdir of subdirs) {
+  for (const subdir of subdirs) {
     await sh(`${babel} --no-babelrc src/${subdir}/src -d dist/${subdir}/cjs --config-file=./.babelrc-cjs`)
     await sh(`${babel} --no-babelrc src/${subdir}/src -d dist/${subdir}/esm --config-file=./.babelrc-esm`)
     await sh(`${babel} --no-babelrc src/${subdir}/src -d dist/${subdir}/mdn --config-file=./.babelrc-mdn`)

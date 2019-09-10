@@ -55,7 +55,7 @@ class DefaultLayout extends React.Component {
 
     return (
       <div>
-        <Helmet defaultTitle={`Tiny Atom`} titleTemplate={`%s | Tiny Atom`}>
+        <Helmet defaultTitle="Tiny Atom" titleTemplate="%s | Tiny Atom">
           <html lang='en' />
         </Helmet>
         <Header pathname={this.props.location.pathname} />

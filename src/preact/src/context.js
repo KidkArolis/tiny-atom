@@ -6,6 +6,7 @@ export class Provider extends Preact.Component {
       atom: this.props.atom
     }
   }
+
   render() {
     return this.props.children[0]
   }

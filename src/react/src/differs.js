@@ -8,10 +8,10 @@ export function differs(mappedProps, nextMappedProps) {
   if (!isObject(mappedProps) || !isObject(nextMappedProps)) {
     return true
   }
-  for (let i in mappedProps) {
+  for (const i in mappedProps) {
     if (mappedProps[i] !== nextMappedProps[i]) return true
   }
-  for (let i in nextMappedProps) {
+  for (const i in nextMappedProps) {
     if (!(i in mappedProps)) return true
   }
   return false

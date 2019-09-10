@@ -68,7 +68,7 @@ test.serial('useAtom allows recreating actions based on deps', async function(t)
 
     renders.push(state)
 
-    return <div id='item'></div>
+    return <div id='item' />
   }
 
   act(() => {

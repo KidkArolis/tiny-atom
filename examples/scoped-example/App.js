@@ -1,3 +1,5 @@
+/** @jsx Preact.h */
+
 const Preact = require('preact') //eslint-disable-line
 const { Consumer } = require('tiny-atom/preact')
 require('./App.css')
@@ -25,7 +27,7 @@ module.exports = () => (
         </form>
 
         {state.todo.items.map((item, i) => (
-          <div className='Todo' onClick={() => dispatch('todo.done', i)}>
+          <div key={i} className='Todo' onClick={() => dispatch('todo.done', i)}>
             <span className='Todo-done'>☐</span>
             {item}
           </div>
