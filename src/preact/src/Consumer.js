@@ -20,8 +20,6 @@ export class Consumer extends Preact.Component {
       this.cancelUpdate = this.scheduleUpdate()
     })
     this.observedAtom = atom
-    delete this.boundActions
-    delete this.boundActionsSpec
   }
 
   componentWillUnmount() {
@@ -30,8 +28,6 @@ export class Consumer extends Preact.Component {
     delete this.unobserve
     delete this.cancelUpdate
     delete this.observedAtom
-    delete this.boundActions
-    delete this.boundActionsSpec
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -82,27 +78,14 @@ export class Consumer extends Preact.Component {
     this.setState(nextMappedProps)
   }
 
-  bindActions(actions, dispatch, mappedProps) {
-    if (!actions) return { dispatch }
-    if (typeof actions === 'function') return actions(dispatch, mappedProps)
-    if (!this.boundActions || this.boundActionsSpec !== actions) {
-      this.boundActionsSpec = actions
-      this.boundActions = actions.reduce((acc, action) => {
-        acc[action] = payload => dispatch(action, payload)
-        return acc
-      }, {})
-    }
-    return this.boundActions
-  }
-
-  render({ actions, originalProps, render, children }, state, { atom }) {
+  render({ originalProps, render, children }, state, { atom }) {
     // do this in render, because:
     //  doing in constructor would cause memory leaks in SSR
     //  doing in componentDidMount leads to the wrong order of subscriptions
     //  we don't have another hook in Preact's context to check if atom was swapped
-    if (!this.unobserve || this.observedAtom !== this.context.atom) this.observe()
+    if (!this.unobserve || this.observedAtom !== atom) this.observe()
+    const { actions, dispatch } = atom
     const mappedProps = this.state
-    const boundActions = this.bindActions(actions, atom.dispatch, mappedProps)
-    return (render || children[0])(Object.assign({}, originalProps, mappedProps, boundActions))
+    return (render || children[0])(Object.assign({}, originalProps, { actions, dispatch }, mappedProps))
   }
 }

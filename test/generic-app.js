@@ -36,17 +36,13 @@ module.exports = function app({ h, Provider, Consumer, connect, createContext, c
       count: state.count
     })
 
-    const actions = dispatch => ({
-      inc: x => dispatch('increment', x)
-    })
-
     return (
       <Provider atom={atom}>
-        <Consumer map={map} actions={actions} observe>
-          {({ count, inc }) => (
+        <Consumer map={map} observe>
+          {({ count, actions }) => (
             <div>
               <div id='count-outer'>{count}</div>
-              <button id='increment-outer' onClick={() => inc()} />
+              <button id='increment-outer' onClick={() => actions.increment()} />
               <ChildWithRenderProp multiplier={10} />
               <ChildWithConnect id='connected' multiplier={50} />
             </div>
@@ -76,7 +72,6 @@ module.exports = function app({ h, Provider, Consumer, connect, createContext, c
 
   const ChildWithConnect = connect(
     ({ count }) => ({ count }),
-    null,
     { observe: true }
   )(({ multiplier, count, dispatch }) => {
     childWithConnectRenderCount++

@@ -3,13 +3,12 @@ import { Consumer } from './Consumer'
 
 /** @jsx h */
 
-export function connect(map, actions, options = {}) {
+export function connect(map, options = {}) {
   return function connectComponent(Component) {
     const render = mappedProps => <Component {...mappedProps} />
     const Connected = props => (
       <Consumer
         map={map}
-        actions={actions}
         pure={options.pure}
         sync={options.sync}
         observe={options.observe}

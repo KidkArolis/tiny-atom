@@ -21,8 +21,6 @@ class ConsumerInner extends React.Component {
       this.cancelUpdate = this.scheduleUpdate()
     })
     this.observedAtom = this.props.atom
-    delete this.boundActions
-    delete this.boundActionsSpec
   }
 
   componentWillUnmount() {
@@ -31,8 +29,6 @@ class ConsumerInner extends React.Component {
     delete this.unobserve
     delete this.cancelUpdate
     delete this.observedAtom
-    delete this.boundActions
-    delete this.boundActionsSpec
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -71,28 +67,15 @@ class ConsumerInner extends React.Component {
     this.setState({})
   }
 
-  bindActions(actions, dispatch, mappedProps) {
-    if (!actions) return { dispatch }
-    if (typeof actions === 'function') return actions(dispatch, mappedProps)
-    if (!this.boundActions || this.boundActionsSpec !== actions) {
-      this.boundActionsSpec = actions
-      this.boundActions = actions.reduce((acc, action) => {
-        acc[action] = payload => dispatch(action, payload)
-        return acc
-      }, {})
-    }
-    return this.boundActions
-  }
-
   render() {
     // do this in render, because:
     //  doing in constructor would cause memory leaks in SSR
     //  doing in componentDidMount leads to the wrong order of subscriptions
     if (!this.unobserve || this.observedAtom !== this.props.atom) this.observe()
-    const { atom, actions, originalProps, render, children } = this.props
+    const { atom, originalProps, render, children } = this.props
+    const { actions } = atom
     const mappedProps = this.state
-    const boundActions = this.bindActions(actions, atom.dispatch, mappedProps)
-    return (render || children)(Object.assign({}, originalProps, mappedProps, boundActions))
+    return (render || children)(Object.assign({}, originalProps, { actions }, mappedProps))
   }
 }
 
