@@ -17,12 +17,12 @@ date: '2019-06-15'
 
 \$ npm install tiny-atom
 
-## createStore
+## createAtom
 
 ```js
-import { createStore, Provider } from 'tiny-atom'
+import { createAtom, Provider } from 'tiny-atom'
 
-const store = createStore({
+const atom = createAtom({
   state: {
     user: null,
     route: null
@@ -37,7 +37,7 @@ const store = createStore({
 })
 
 ReactDOM.render(
-  <Provider store={store}>
+  <Provider atom={atom}>
     <App />
   </Provider>
 )
@@ -92,9 +92,9 @@ Support for async actions.
 ```js
 import React, { useEffect } from 'react'
 import ReactDOM from 'react-dom'
-import { createStore, Provider, useSelector, useActions } from 'tiny-atom'
+import { createAtom, Provider, useSelector, useActions } from 'tiny-atom'
 
-const store = createStore({
+const store = createAtom({
   state: { user: null },
   actions: {
     async authenticate({ set }) {
