@@ -3,7 +3,7 @@
  *
  * const state = { count: 1 }
  * const actions = { inc: (atom, payload) => {} }
- * const atom = createStore({ state, actions })
+ * const atom = createAtom({ state, actions })
  *
  * atom.observe(atom => console.log(atom.get()))
  *
@@ -12,7 +12,7 @@
  * atom.dispatch('increment', { by: 2 }) // action with payload
  */
 
-export function createStore({ state = {}, actions = {}, ...options } = {}) {
+export function createAtom({ state = {}, actions = {}, ...options } = {}) {
   let actionSeq = 0
   const listeners = []
   const get = () => state

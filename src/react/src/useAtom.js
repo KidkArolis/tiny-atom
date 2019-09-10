@@ -4,7 +4,7 @@
  */
 
 import { useState, useMemo, useEffect } from 'react'
-import { createStore } from '../../core'
+import { createAtom } from '../../core'
 
 export function useAtom(setup, deps) {
   const config = useMemo(() => {
@@ -15,7 +15,7 @@ export function useAtom(setup, deps) {
     }
   }, deps || [])
 
-  const [atom] = useState(() => (config ? createStore(config) : setup))
+  const [atom] = useState(() => (config ? createAtom(config) : setup))
   const [actions, setActions] = useState(() => atom.actions)
   const [state, setState] = useState(() => atom.get())
 

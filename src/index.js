@@ -1,10 +1,10 @@
 export {
-  createStore,
+  createAtom,
   useSelector,
   useActions,
   useDispatch,
   useAtom,
-  useAtomInstance,
+  useAtomContext,
   AtomContext,
   Provider,
   Consumer,

@@ -2,7 +2,7 @@ import test from 'ava'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { JSDOM } from 'jsdom'
-import { createStore, Provider, useSelector, useActions, useDispatch } from '../src'
+import { createAtom, Provider, useSelector, useActions, useDispatch } from '../src'
 import renderHooksApp from './hooks-app'
 
 test.serial.only('usage', async function(t) {
@@ -95,7 +95,7 @@ test.serial('a race condition between commit phase/observing and atom changing',
   global.document = dom.window.document
   const root = document.getElementById('root')
 
-  const atom = createStore({ state: { count: 0, extra: 0 } })
+  const atom = createAtom({ state: { count: 0, extra: 0 } })
 
   const App = () => {
     const mapState = state => state.count + state.extra
@@ -133,7 +133,7 @@ test.serial('edge case where we rerender via parent and then via observation', a
   global.document = dom.window.document
   const root = document.getElementById('root')
 
-  const atom = createStore({ state: { count: 0, extra: 0 } })
+  const atom = createAtom({ state: { count: 0, extra: 0 } })
 
   const App = () => {
     const mapState = state => state.count + state.extra

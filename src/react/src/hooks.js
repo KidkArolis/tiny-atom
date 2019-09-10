@@ -14,7 +14,7 @@ const nextOrder = () => ++i
 export function useSelector(selectorFn = identity, options = {}) {
   const { sync = false, pure = true, observe = !isServer } = options
 
-  const atom = useAtomInstance()
+  const atom = useAtomContext()
   assert(atom, 'No atom found in context, did you forget to wrap your app in <Provider atom={atom} />?')
 
   // cache the schedule and selector functions
@@ -99,16 +99,16 @@ export function useSelector(selectorFn = identity, options = {}) {
 }
 
 export function useActions() {
-  const atom = useAtomInstance()
+  const atom = useAtomContext()
   return atom && atom.actions
 }
 
 export function useDispatch() {
-  const atom = useAtomInstance()
+  const atom = useAtomContext()
   return atom && atom.dispatch
 }
 
-export function useAtomInstance() {
+export function useAtomContext() {
   const { atom } = useContext(AtomContext)
   return atom
 }

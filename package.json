@@ -35,7 +35,7 @@
     "@babel/plugin-transform-react-jsx": "^7.3.0",
     "@babel/preset-env": "^7.4.5",
     "@babel/register": "^7.4.4",
-    "ava": "^2.1.0",
+    "ava": "^2.3.0",
     "execa": "^1.0.0",
     "healthier": "^2.0.0",
     "jetpack": "^0.16.0",

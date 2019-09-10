@@ -1,12 +1,12 @@
 import ReactDOM from 'react-dom'
-import { createStore, Provider } from '../src'
+import { createAtom, Provider } from '../src'
 
 /** @jsx h */
 
 module.exports = function renderHooksApp({ h, root, useSelector, useActions, useDispatch }) {
   const stats = {}
 
-  const atom = createStore({
+  const atom = createAtom({
     state: {
       count: 0,
       unrelated: 1,

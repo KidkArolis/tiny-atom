@@ -1,15 +1,15 @@
 import test from 'ava'
-import { createStore } from '../src/core'
+import { createAtom } from '../src/core'
 
 test('can be initialised with no initial state or actions', t => {
-  const atom = createStore()
+  const atom = createAtom()
   t.deepEqual(atom.get(), {})
 })
 
 test('does not mutate the state object', t => {
   const initialState = { count: 0 }
   const increment = ({ get, set }, payload = 1) => set({ count: get().count + payload })
-  const atom = createStore({ state: initialState, actions: { increment } })
+  const atom = createAtom({ state: initialState, actions: { increment } })
 
   t.deepEqual(atom.get(), { count: 0 })
   t.is(atom.get(), initialState)
@@ -22,7 +22,7 @@ test('does not mutate the state object', t => {
 test('set can be be passed an updating function', t => {
   const initialState = { count: 0 }
   const increment = ({ set }, payload = 1) => set(state => ({ count: state.count + payload, t: 2 }))
-  const atom = createStore({ state: initialState, actions: { increment } })
+  const atom = createAtom({ state: initialState, actions: { increment } })
 
   t.deepEqual(atom.get(), { count: 0 })
   t.is(atom.get(), initialState)
@@ -34,7 +34,7 @@ test('set can be be passed an updating function', t => {
 
 test.cb('async action updates the state', t => {
   const changes = []
-  const atom = createStore({ state: { count: 0 }, actions: { increment } })
+  const atom = createAtom({ state: { count: 0 }, actions: { increment } })
   atom.observe(onChange)
 
   function increment({ get, set }) {
@@ -62,7 +62,7 @@ test.cb('async action updates the state', t => {
 
 test('can be used in a mutating manner', t => {
   const initialState = { count: 0 }
-  const atom = createStore({ state: initialState, actions: { increment } })
+  const atom = createAtom({ state: initialState, actions: { increment } })
 
   function increment({ get, swap }, payload) {
     const state = get()
@@ -90,7 +90,7 @@ test.cb('debug provides action and update details', t => {
     }
   }
 
-  const atom = createStore({ state: { count: 0 }, actions, debug })
+  const atom = createAtom({ state: { count: 0 }, actions, debug })
 
   function debug(info) {
     history.push(Object.assign(info, { currState: atom.get() }))
@@ -116,7 +116,7 @@ test.cb('debug can be an array of functions', t => {
     inc: ({ get, set }, payload) => set({ count: get().count + payload })
   }
 
-  const atom = createStore({ state: { count: 0 }, actions, debug: [debugOne, debugTwo] })
+  const atom = createAtom({ state: { count: 0 }, actions, debug: [debugOne, debugTwo] })
 
   function debugOne(info) {
     history.push(['debugOne', info])
@@ -137,7 +137,7 @@ test.cb('debug can be an array of functions', t => {
 
 test('observe callback is called on each update', t => {
   const observations = []
-  const atom = createStore()
+  const atom = createAtom()
 
   const unobserveA = atom.observe(atom => observations.push('a' + atom.get().v))
   const unobserveB = atom.observe(atom => observations.push('b' + atom.get().v))
@@ -159,7 +159,7 @@ test('observe callback is called on each update', t => {
 
 test('missing actions', t => {
   const state = { count: 0 }
-  const atom = createStore({ state })
+  const atom = createAtom({ state })
 
   try {
     atom.dispatch('i-dont-exist')
@@ -171,7 +171,7 @@ test('missing actions', t => {
 
 test('custom evolve', t => {
   const state = { count: 0 }
-  const atom = createStore({ state, evolve })
+  const atom = createAtom({ state, evolve })
 
   function evolve({ get, set }, { type, payload }) {
     if (type === 'increment') {
@@ -194,7 +194,7 @@ test('fuse extends the state and actions', t => {
   const decrement = ({ get, set }, payload = 1) => set({ count: get().count - payload })
   const state = { count: 0 }
   const actions = { increment }
-  const atom = createStore({ state, actions })
+  const atom = createAtom({ state, actions })
 
   atom.fuse({ state: { meta: 1 }, actions: { decrement } })
   atom.fuse({ state: { base: 2 } })
@@ -231,7 +231,7 @@ test('async actions are testable', async function(t) {
   function setup() {
     history = []
     const onChange = ({ type, atom }) => (type === 'update' ? history.push(atom.get()) : null)
-    return createStore({ actions, debug: onChange })
+    return createAtom({ actions, debug: onChange })
   }
 
   // success case

@@ -1,9 +1,9 @@
 // the actual tiny-atom
-export { createStore } from '../../core'
+export { createAtom } from '../../core'
 
 // provider component and the hooks for interfacing with the global store
 export { Provider, AtomContext, createContext } from './context'
-export { useSelector, useActions, useDispatch, useAtomInstance } from './hooks'
+export { useSelector, useActions, useDispatch, useAtomContext } from './hooks'
 
 // inline component local store
 export { useAtom } from './useAtom'

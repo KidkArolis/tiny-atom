@@ -1,5 +1,5 @@
 import { JSDOM } from 'jsdom'
-import { createStore } from '../src/core'
+import { createAtom } from '../src/core'
 
 /** @jsx h */
 
@@ -9,7 +9,7 @@ module.exports = function app({ h, Provider, Consumer, connect, createContext, c
   global.document = dom.window.document
   const root = document.getElementById('root')
 
-  const atom = createStore({
+  const atom = createAtom({
     state: {
       count: 0,
       unrelated: 1
