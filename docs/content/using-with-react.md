@@ -11,7 +11,7 @@ import { Provider, Consumer, connect } from 'tiny-atom/react'
 import { useAtom, useActions, useDispatch } from 'tiny-atom/react/hooks'
 import App from './App'
 
-ReacrDOM.render((
+ReactDOM.render((
   <Provider atom={atom}>
     <App />
   </Provider>
