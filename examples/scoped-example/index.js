@@ -9,11 +9,12 @@ const createAtom = require('./scoped-atom')
 
 const atom = (window.atom = createAtom({ debug: log() }))
 
-Object.keys(actions).forEach(pack => {
+Object.keys(actions).forEach((pack) => {
   const p = actions[pack]
   atom.fuse(pack, p.state, p.actions)
 })
 
+// eslint-disable-next-line
 Preact.render(
   <Provider atom={atom}>
     <App />

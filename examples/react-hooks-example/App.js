@@ -1,11 +1,10 @@
-const React = require('react')
-const { useAtom, useActions } = require('tiny-atom/react/hooks')
-const { useRef } = React
-require('./App.css')
+import React, { useRef } from 'react'
+import { useSelector, useActions } from 'tiny-atom'
+import './App.css'
 
-const Hint = function Hint(props) {
-  const { show, text } = useAtom(state => state.hint)
-  const count = useAtom(state => state.count)
+function Hint() {
+  const { show, text } = useSelector((state) => state.hint)
+  const count = useSelector((state) => state.count)
   console.log('Rendering Hint')
   return (
     <div className='Hint'>
@@ -15,13 +14,13 @@ const Hint = function Hint(props) {
 }
 
 const Modal = () => {
-  const count = useAtom(state => state.count)
+  const count = useSelector((state) => state.count)
   return <div style={{ position: 'absolute', top: '10px', left: '10px', background: 'wheat' }}>{count}</div>
 }
 
-const App = () => {
-  const todo = useAtom(state => state.todo)
-  const count = useAtom(state => state.count)
+export const App = () => {
+  const todo = useSelector((state) => state.todo)
+  const count = useSelector((state) => state.count)
   const input = useRef()
   const { updateItem, completeItem, addItem } = useActions()
 
@@ -36,7 +35,7 @@ const App = () => {
           className='Todo-input'
           type='text'
           ref={input}
-          onChange={e => updateItem(e.target.value)}
+          onChange={(e) => updateItem(e.target.value)}
           value={todo.input}
         />
       </form>
@@ -55,12 +54,10 @@ const App = () => {
   )
 }
 
-module.exports = App
-
 function onSubmit(addItem, $input) {
-  return function(e) {
+  return function (e) {
     e.preventDefault()
     addItem('addItem')
-    $input.focus()
+    $input.current.focus()
   }
 }

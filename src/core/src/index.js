@@ -30,7 +30,7 @@ export function createAtom({ state = {}, actions = {}, ...options } = {}) {
 
   function defaultBindActions(dispatch, actions) {
     return Object.keys(actions).reduce((boundActions, actionType) => {
-      boundActions[actionType] = payload => dispatch(actionType, payload)
+      boundActions[actionType] = (payload) => dispatch(actionType, payload)
       return boundActions
     }, {})
   }
@@ -70,7 +70,7 @@ export function createAtom({ state = {}, actions = {}, ...options } = {}) {
   function createDispatch(sourceActions) {
     sourceActions = sourceActions || []
     return function dispatch(type, payload) {
-      const action = { seq: ++actionSeq, type: type }
+      const action = { seq: ++actionSeq, type }
       if (typeof payload !== 'undefined') action.payload = payload
       if (debug) {
         report('action', action, sourceActions)
@@ -96,7 +96,7 @@ export function createAtom({ state = {}, actions = {}, ...options } = {}) {
       const prevState = state
       state = swap ? action.payload : Object.assign({}, state, action.payload)
       if (debug) report('update', action, sourceActions, prevState, options)
-      listeners.forEach(l => l.f(atom))
+      listeners.forEach((l) => l.f(atom))
     }
   }
 
@@ -105,8 +105,8 @@ export function createAtom({ state = {}, actions = {}, ...options } = {}) {
   }
 
   function report(type, action, sourceActions, prevState, options) {
-    const info = { ...options, type: type, action: action, sourceActions: sourceActions, atom: atom }
+    const info = { ...options, type, action, sourceActions, atom }
     if (prevState) info.prevState = prevState
-    typeof debug === 'function' ? debug(info) : debug.forEach(debug => debug(info))
+    typeof debug === 'function' ? debug(info) : debug.forEach((debug) => debug(info))
   }
 }

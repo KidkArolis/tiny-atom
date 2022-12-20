@@ -1,12 +1,12 @@
 import test from 'ava'
 import { createAtom } from '../src/core'
 
-test('can be initialised with no initial state or actions', t => {
+test('can be initialised with no initial state or actions', (t) => {
   const atom = createAtom()
   t.deepEqual(atom.get(), {})
 })
 
-test('does not mutate the state object', t => {
+test('does not mutate the state object', (t) => {
   const initialState = { count: 0 }
   const increment = ({ get, set }, payload = 1) => set({ count: get().count + payload })
   const atom = createAtom({ state: initialState, actions: { increment } })
@@ -19,9 +19,9 @@ test('does not mutate the state object', t => {
   t.not(atom.get(), initialState)
 })
 
-test('set can be be passed an updating function', t => {
+test('set can be be passed an updating function', (t) => {
   const initialState = { count: 0 }
-  const increment = ({ set }, payload = 1) => set(state => ({ count: state.count + payload, t: 2 }))
+  const increment = ({ set }, payload = 1) => set((state) => ({ count: state.count + payload, t: 2 }))
   const atom = createAtom({ state: initialState, actions: { increment } })
 
   t.deepEqual(atom.get(), { count: 0 })
@@ -32,35 +32,37 @@ test('set can be be passed an updating function', t => {
   t.not(atom.get(), initialState)
 })
 
-test.cb('async action updates the state', t => {
-  const changes = []
-  const atom = createAtom({ state: { count: 0 }, actions: { increment } })
-  atom.observe(onChange)
+test('async action updates the state', async (t) => {
+  await new Promise((resolve) => {
+    const changes = []
+    const atom = createAtom({ state: { count: 0 }, actions: { increment } })
+    atom.observe(onChange)
 
-  function increment({ get, set }) {
-    set({ count: get().count + 1 })
-    setTimeout(() => {
-      set({ count: get().count + 1, async: true })
-      set({ done: true })
-    }, 1)
-  }
-
-  function onChange(atom) {
-    const state = atom.get()
-    changes.push(1)
-    if (changes.length === 1) t.deepEqual(state, { count: 1 })
-    if (changes.length === 2) t.deepEqual(state, { count: 2, async: true })
-    if (state.done) {
-      t.deepEqual(state, { count: 2, async: true, done: true })
-      t.deepEqual(changes, [1, 1, 1])
-      t.end()
+    function increment({ get, set }) {
+      set({ count: get().count + 1 })
+      setTimeout(() => {
+        set({ count: get().count + 1, async: true })
+        set({ done: true })
+      }, 1)
     }
-  }
 
-  atom.dispatch('increment')
+    function onChange(atom) {
+      const state = atom.get()
+      changes.push(1)
+      if (changes.length === 1) t.deepEqual(state, { count: 1 })
+      if (changes.length === 2) t.deepEqual(state, { count: 2, async: true })
+      if (state.done) {
+        t.deepEqual(state, { count: 2, async: true, done: true })
+        t.deepEqual(changes, [1, 1, 1])
+        resolve()
+      }
+    }
+
+    atom.dispatch('increment')
+  })
 })
 
-test('can be used in a mutating manner', t => {
+test('can be used in a mutating manner', (t) => {
   const initialState = { count: 0 }
   const atom = createAtom({ state: initialState, actions: { increment } })
 
@@ -75,79 +77,83 @@ test('can be used in a mutating manner', t => {
   t.is(atom.get(), initialState)
 })
 
-test.cb('debug provides action and update details', t => {
-  const history = []
+test('debug provides action and update details', async (t) => {
+  await new Promise((resolve) => {
+    const history = []
 
-  const actions = {
-    inc: ({ get, set }, payload) => set({ count: get().count + payload }),
-    dec: ({ get, set }, payload) => set({ count: get().count - payload }),
-    asyncInc: ({ get, set, dispatch }, payload) => {
-      set({ loading: true })
-      setTimeout(() => {
-        dispatch('inc', 1)
-        set({ count: get().count + payload, loading: false, done: true })
-      }, 1)
+    const actions = {
+      inc: ({ get, set }, payload) => set({ count: get().count + payload }),
+      dec: ({ get, set }, payload) => set({ count: get().count - payload }),
+      asyncInc: ({ get, set, dispatch }, payload) => {
+        set({ loading: true })
+        setTimeout(() => {
+          dispatch('inc', 1)
+          set({ count: get().count + payload, loading: false, done: true })
+        }, 1)
+      },
     }
-  }
 
-  const atom = createAtom({ state: { count: 0 }, actions, debug })
+    const atom = createAtom({ state: { count: 0 }, actions, debug })
 
-  function debug(info) {
-    history.push(Object.assign(info, { currState: atom.get() }))
+    function debug(info) {
+      history.push(Object.assign(info, { currState: atom.get() }))
 
-    if (atom.get().done) {
-      t.snapshot(history)
-      t.end()
+      if (atom.get().done) {
+        t.snapshot(history)
+        resolve()
+      }
     }
-  }
 
-  atom.fuse({ state: { count: 1 } })
-  atom.dispatch('dec', 1)
-  atom.dispatch('inc', 2)
-  atom.fuse({ state: { count: 4 } })
-  atom.dispatch('asyncInc', 10)
-  atom.dispatch('inc', 100)
+    atom.fuse({ state: { count: 1 } })
+    atom.dispatch('dec', 1)
+    atom.dispatch('inc', 2)
+    atom.fuse({ state: { count: 4 } })
+    atom.dispatch('asyncInc', 10)
+    atom.dispatch('inc', 100)
+  })
 })
 
-test.cb('debug can be an array of functions', t => {
-  const history = []
+test('debug can be an array of functions', async (t) => {
+  await new Promise((resolve) => {
+    const history = []
 
-  const actions = {
-    inc: ({ get, set }, payload) => set({ count: get().count + payload })
-  }
-
-  const atom = createAtom({ state: { count: 0 }, actions, debug: [debugOne, debugTwo] })
-
-  function debugOne(info) {
-    history.push(['debugOne', info])
-  }
-
-  function debugTwo(info) {
-    history.push(['debugTwo', info])
-
-    if (atom.get().done) {
-      t.snapshot(history)
-      t.end()
+    const actions = {
+      inc: ({ get, set }, payload) => set({ count: get().count + payload }),
     }
-  }
 
-  atom.dispatch('inc', 2)
-  atom.fuse({ state: { done: true } })
+    const atom = createAtom({ state: { count: 0 }, actions, debug: [debugOne, debugTwo] })
+
+    function debugOne(info) {
+      history.push(['debugOne', info])
+    }
+
+    function debugTwo(info) {
+      history.push(['debugTwo', info])
+
+      if (atom.get().done) {
+        t.snapshot(history)
+        resolve()
+      }
+    }
+
+    atom.dispatch('inc', 2)
+    atom.fuse({ state: { done: true } })
+  })
 })
 
-test('observe callback is called on each update', t => {
+test('observe callback is called on each update', (t) => {
   const observations = []
   const atom = createAtom()
 
-  const unobserveA = atom.observe(atom => observations.push('a' + atom.get().v))
-  const unobserveB = atom.observe(atom => observations.push('b' + atom.get().v))
+  const unobserveA = atom.observe((atom) => observations.push('a' + atom.get().v))
+  const unobserveB = atom.observe((atom) => observations.push('b' + atom.get().v))
 
   atom.fuse({ state: { v: 6 } })
   t.deepEqual(observations, ['a6', 'b6'])
 
   unobserveB()
   unobserveB()
-  const unobserveC = atom.observe(atom => observations.push('c' + atom.get().v))
+  const unobserveC = atom.observe((atom) => observations.push('c' + atom.get().v))
 
   atom.fuse({ state: { v: 7 } })
   t.deepEqual(observations, ['a6', 'b6', 'a7', 'c7'])
@@ -157,7 +163,7 @@ test('observe callback is called on each update', t => {
   unobserveC()
 })
 
-test('missing actions', t => {
+test('missing actions', (t) => {
   const state = { count: 0 }
   const atom = createAtom({ state })
 
@@ -169,7 +175,7 @@ test('missing actions', t => {
   }
 })
 
-test('custom evolve', t => {
+test('custom evolve', (t) => {
   const state = { count: 0 }
   const atom = createAtom({ state, evolve })
 
@@ -189,7 +195,7 @@ test('custom evolve', t => {
   t.deepEqual(atom.get(), { count: 6 })
 })
 
-test('fuse extends the state and actions', t => {
+test('fuse extends the state and actions', (t) => {
   const increment = ({ get, set }, payload = 1) => set({ count: get().count + payload })
   const decrement = ({ get, set }, payload = 1) => set({ count: get().count - payload })
   const state = { count: 0 }
@@ -206,12 +212,12 @@ test('fuse extends the state and actions', t => {
   t.deepEqual(atom.get(), { count: 4, meta: 1, base: 2 })
 })
 
-test('async actions are testable', async function(t) {
+test('async actions are testable', async function (t) {
   let atom, history, axios
 
   // action under test
   const actions = {
-    fetchMetrics: async function({ get, set, dispatch }, id) {
+    fetchMetrics: async function ({ get, set, dispatch }, id) {
       set({ loading: true })
       try {
         const res = await axios.get('/metrics/' + id)
@@ -224,7 +230,7 @@ test('async actions are testable', async function(t) {
 
     trackError: ({ set }) => {
       set({ error: err.message })
-    }
+    },
   }
 
   // test boilerplate
@@ -236,14 +242,14 @@ test('async actions are testable', async function(t) {
 
   // success case
   atom = setup()
-  axios = { get: path => Promise.resolve({ data: [path, 'data'] }) }
+  axios = { get: (path) => Promise.resolve({ data: [path, 'data'] }) }
   await atom.dispatch('fetchMetrics', 57)
   t.deepEqual(history, [{ loading: true }, { loading: false, metrics: ['/metrics/57', 'data'] }])
 
   // error case
   atom = setup()
   const err = new Error('Fetch failed')
-  axios = { get: path => Promise.reject(err) }
+  axios = { get: (path) => Promise.reject(err) }
   await atom.dispatch('fetchMetrics', 57)
   t.deepEqual(history, [{ loading: true }, { loading: false }, { loading: false, error: 'Fetch failed' }])
 })

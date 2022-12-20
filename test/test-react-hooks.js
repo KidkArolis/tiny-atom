@@ -5,7 +5,7 @@ import { JSDOM } from 'jsdom'
 import { createAtom, Provider, useSelector, useActions, useDispatch } from '../src'
 import renderHooksApp from './hooks-app'
 
-test.serial.only('usage', async function(t) {
+test.serial.only('usage', async function (t) {
   const h = (global.h = React.createElement)
   const dom = new JSDOM('<!doctype html><div id="root"></div>')
   global.window = dom.window
@@ -59,7 +59,7 @@ test.serial.only('usage', async function(t) {
   ReactDOM.render(null, root)
 })
 
-test.serial('minimal rerenders required', async function(t) {
+test.serial('minimal rerenders required', async function (t) {
   const h = (global.h = React.createElement)
   const dom = new JSDOM('<!doctype html><div id="root"></div>')
   global.window = dom.window
@@ -88,7 +88,7 @@ test.serial('minimal rerenders required', async function(t) {
   ReactDOM.render(null, root)
 })
 
-test.serial('a race condition between commit phase/observing and atom changing', async function(t) {
+test.serial('a race condition between commit phase/observing and atom changing', async function (t) {
   const h = (global.h = React.createElement)
   const dom = new JSDOM('<!doctype html><div id="root"></div>')
   global.window = dom.window
@@ -98,13 +98,13 @@ test.serial('a race condition between commit phase/observing and atom changing',
   const atom = createAtom({ state: { count: 0, extra: 0 } })
 
   const App = () => {
-    const mapState = state => state.count + state.extra
+    const mapState = (state) => state.count + state.extra
     const count = useSelector(mapState, { observe: true })
     return h('div', {}, [h('div', { key: 'a', id: 'count-outer' }, count), h(Child, { key: 'b' })])
   }
 
   const Child = () => {
-    const count = useSelector(state => state.count, { observe: true })
+    const count = useSelector((state) => state.count, { observe: true })
     return h('div', { id: 'count-inner' }, count)
   }
 
@@ -126,7 +126,7 @@ test.serial('a race condition between commit phase/observing and atom changing',
   t.is(document.getElementById('count-inner').innerHTML, String(1))
 })
 
-test.serial('edge case where we rerender via parent and then via observation', async function(t) {
+test.serial('edge case where we rerender via parent and then via observation', async function (t) {
   const h = (global.h = React.createElement)
   const dom = new JSDOM('<!doctype html><div id="root"></div>')
   global.window = dom.window
@@ -136,13 +136,13 @@ test.serial('edge case where we rerender via parent and then via observation', a
   const atom = createAtom({ state: { count: 0, extra: 0 } })
 
   const App = () => {
-    const mapState = state => state.count + state.extra
+    const mapState = (state) => state.count + state.extra
     const count = useSelector(mapState, { observe: true })
     return h('div', {}, [h('div', { key: 'a', id: 'count-outer' }, count), h(Child, { key: 'b' })])
   }
 
   const Child = () => {
-    const count = useSelector(state => state.count, { observe: true })
+    const count = useSelector((state) => state.count, { observe: true })
     return h('div', { id: 'count-inner' }, count)
   }
 
@@ -187,13 +187,13 @@ function click(dom) {
   return new dom.window.MouseEvent('click', {
     view: dom.window,
     bubbles: true,
-    cancelable: true
+    cancelable: true,
   })
 }
 
 function frame() {
   flushEffects()
-  return new Promise(resolve => setTimeout(resolve, 2 * (1000 / 60)))
+  return new Promise((resolve) => setTimeout(resolve, 2 * (1000 / 60)))
 }
 
 function flushEffects() {

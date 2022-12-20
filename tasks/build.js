@@ -1,12 +1,13 @@
 const fs = require('fs')
 const path = require('path')
-const execa = require('execa')
-
-const sh = (...args) => execa(...args, { stdio: 'inherit', shell: true })
 
 const files = ['package.json', 'package-lock.json', 'LICENSE', 'CHANGELOG.md', 'README.md']
 
-;(async function() {
+;(async function () {
+  const execa = (await import('execa')).execa
+
+  const sh = (...args) => execa(...args, { stdio: 'inherit', shell: true })
+
   await sh('rm -rf dist')
   await sh('mkdir -p dist')
 
@@ -21,11 +22,9 @@ const files = ['package.json', 'package-lock.json', 'LICENSE', 'CHANGELOG.md', '
   const babel = './node_modules/.bin/babel'
   await sh(`${babel} --no-babelrc src/index.js -o dist/${pkg.main} --config-file=./.babelrc-cjs`)
   await sh(`${babel} --no-babelrc src/index.js -o dist/${pkg.module} --config-file=./.babelrc-esm`)
-  await sh(`${babel} --no-babelrc src/index.js -o dist/${pkg.modern} --config-file=./.babelrc-mdn`)
   for (const subdir of subdirs) {
     await sh(`${babel} --no-babelrc src/${subdir}/src -d dist/${subdir}/cjs --config-file=./.babelrc-cjs`)
     await sh(`${babel} --no-babelrc src/${subdir}/src -d dist/${subdir}/esm --config-file=./.babelrc-esm`)
-    await sh(`${babel} --no-babelrc src/${subdir}/src -d dist/${subdir}/mdn --config-file=./.babelrc-mdn`)
     fs.writeFileSync(
       path.join(process.cwd(), 'dist', subdir, 'package.json'),
       JSON.stringify(
@@ -34,8 +33,7 @@ const files = ['package.json', 'package-lock.json', 'LICENSE', 'CHANGELOG.md', '
           private: true,
           main: './cjs',
           module: './esm',
-          modern: './mdn',
-          sideEffects: false
+          sideEffects: false,
         },
         null,
         2

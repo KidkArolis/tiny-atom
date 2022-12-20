@@ -1,4 +1,4 @@
-export const devtools = () => info => {
+export const devtools = () => (info) => {
   const type = info.type
   const atom = info.atom
   const sourceActions = info.sourceActions
@@ -12,7 +12,7 @@ export const devtools = () => info => {
       return
     }
     atom.devtools = devExt.connect()
-    atom.devtools.subscribe(function(message) {
+    atom.devtools.subscribe(function (message) {
       if (message.type === 'DISPATCH') {
         if (message.payload.type === 'JUMP_TO_ACTION' || message.payload.type === 'JUMP_TO_STATE') {
           atom.devtools.ignoreNextUpdate = true
@@ -36,9 +36,9 @@ export const devtools = () => info => {
     const updatedKeys = !action.seq ? ' ' + ellipsis(Object.keys(action.payload || {}).join(', '), 10) : ''
     const devtoolsAction = {
       seq: action.seq,
-      sourceActions: sourceActions,
+      sourceActions,
       type: '(' + (action.seq || '-') + ') ' + action.type + updatedKeys,
-      payload: action.payload
+      payload: action.payload,
     }
 
     if (!atom.devtools.ignoreNextUpdate) {

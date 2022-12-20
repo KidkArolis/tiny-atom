@@ -1,7 +1,7 @@
 import test from 'ava'
 import { createLog } from '../src/log'
 
-test('logs out formatted messages', async function(t) {
+test('logs out formatted messages', async function (t) {
   const buffer = []
   const push = (...msg) => {
     const start = msg.slice(0, -1)
@@ -12,7 +12,7 @@ test('logs out formatted messages', async function(t) {
     groupCollapsed: push,
     group: push,
     groupEnd: () => {},
-    log: push
+    log: push,
   }
 
   const log = createLog({ actions: true, logger })
@@ -20,7 +20,7 @@ test('logs out formatted messages', async function(t) {
   log({
     type: 'action',
     action: { type: 'foo', seq: 1 },
-    sourceActions: []
+    sourceActions: [],
   })
 
   t.deepEqual(buffer, [' 🚀 foo', 'payload undefined', 'chain [{"type":"foo","seq":1}]'])
@@ -32,7 +32,7 @@ test('logs out formatted messages', async function(t) {
       action: { payload: { slice: 1 }, seq: 2 },
       sourceActions: [],
       atom,
-      prevState: { state: 0, list: [1] }
+      prevState: { state: 0, list: [1] },
     },
     logger
   )
@@ -44,6 +44,6 @@ test('logs out formatted messages', async function(t) {
     ' chain',
     '%cUPDATED color: #2196F3; font-weight: bold; state 0 → 1',
     '%cARRAY color: #2196F3; font-weight: bold; list[1] added 3',
-    '%cUPDATED color: #2196F3; font-weight: bold; list.0 1 → 2'
+    '%cUPDATED color: #2196F3; font-weight: bold; list.0 1 → 2',
   ])
 })

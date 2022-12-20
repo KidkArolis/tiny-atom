@@ -4,7 +4,7 @@ const Preact = require('preact') //eslint-disable-line
 const { Consumer } = require('tiny-atom/preact')
 require('./App.css')
 
-const map = state => {
+const map = (state) => {
   return { state }
 }
 
@@ -18,10 +18,10 @@ module.exports = () => (
           <input
             className='Todo-input'
             type='text'
-            ref={el => {
+            ref={(el) => {
               this.$input = el
             }}
-            onChange={e => dispatch('todo.update', e.target.value)}
+            onChange={(e) => dispatch('todo.update', e.target.value)}
             value={state.todo.input}
           />
         </form>
@@ -42,7 +42,7 @@ module.exports = () => (
 )
 
 function onSubmit(dispatch, $input) {
-  return function(e) {
+  return function (e) {
     e.preventDefault()
     dispatch('todo.add')
     $input && $input.focus()

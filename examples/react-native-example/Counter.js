@@ -4,7 +4,7 @@ import { connect } from 'tiny-atom/react'
 
 function mapState(state) {
   return {
-    count: state.count
+    count: state.count,
   }
 }
 
@@ -23,11 +23,7 @@ class Counter extends React.Component {
   }
 }
 
-export default connect(
-  mapState,
-  actions,
-  { sync: true }
-)(Counter)
+export default connect(mapState, actions, { sync: true })(Counter)
 
 // const styles = StyleSheet.create({
 //   container: {

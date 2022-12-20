@@ -1,7 +1,7 @@
 import test from 'ava'
 import { differs } from '../src/react'
 
-test('compares values shallowly', async function(t) {
+test('compares values shallowly', async function (t) {
   t.is(differs(1, 1), false)
   t.is(differs(1, 2), true)
   t.is(differs(0, 1), true)

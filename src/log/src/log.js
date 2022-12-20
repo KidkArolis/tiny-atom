@@ -4,7 +4,7 @@ const dictionary = {
   N: { color: '#4CAF50', text: 'ADDED', atext: 'added' },
   E: { color: '#2196F3', text: 'UPDATED' },
   D: { color: '#F44336', text: 'DELETED', atext: 'deleted' },
-  A: { color: '#2196F3', text: 'ARRAY' }
+  A: { color: '#2196F3', text: 'ARRAY' },
 }
 
 export const createLog = (options = {}) => {
@@ -25,8 +25,16 @@ export const createLog = (options = {}) => {
     }
   }
   const log = (...args) => logger.log(...args)
-  const groupStart = (...args) => tryCatch(() => logger.groupCollapsed(...args), () => logger.log(...args))
-  const groupEnd = () => tryCatch(() => logger.groupEnd(), () => {})
+  const groupStart = (...args) =>
+    tryCatch(
+      () => logger.groupCollapsed(...args),
+      () => logger.log(...args)
+    )
+  const groupEnd = () =>
+    tryCatch(
+      () => logger.groupEnd(),
+      () => {}
+    )
 
   return ({ type, atom, action, sourceActions, prevState, message, silent }) => {
     if (options.level === 'none') return
@@ -39,7 +47,7 @@ export const createLog = (options = {}) => {
 
     if (type === 'action' && options.actions) {
       const actions = sourceActions.concat(action)
-      groupStart(`🚀 ${actions.map(a => a.type).join(' → ')}`)
+      groupStart(`🚀 ${actions.map((a) => a.type).join(' → ')}`)
       log('payload', action.payload)
       log('chain', actions)
       groupEnd()
@@ -52,10 +60,10 @@ export const createLog = (options = {}) => {
       if (options.diff) {
         diff = computeDiff(prevState, atom.get())
         if (diff) {
-          diff.forEach(change => {
+          diff.forEach((change) => {
             diffSummaryMap[change.kind] = diffSummaryMap[change.kind] ? diffSummaryMap[change.kind] + 1 : 1
           })
-          Object.keys(dictionary).forEach(kind => {
+          Object.keys(dictionary).forEach((kind) => {
             if (diffSummaryMap[kind]) {
               diffSummary.push(`${diffSummaryMap[kind]} ${dictionary[kind].text.toLowerCase()}`)
             }
@@ -63,7 +71,7 @@ export const createLog = (options = {}) => {
         }
       }
 
-      groupStart(`🙌 ${sourceActions.map(a => a.type).join(' → ') || '–'}`, message ? '»' : '', message || '')
+      groupStart(`🙌 ${sourceActions.map((a) => a.type).join(' → ') || '–'}`, message ? '»' : '', message || '')
       log('curr', atom.get())
       log('prev', prevState)
       log('update', action.payload)
@@ -97,7 +105,7 @@ export const createLog = (options = {}) => {
   }
 
   function printDiff(diff) {
-    diff.forEach(elem => {
+    diff.forEach((elem) => {
       const { kind } = elem
       logger.log(`%c${dictionary[kind].text}`, style(kind), ...render(elem))
     })

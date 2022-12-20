@@ -5,8 +5,8 @@ import { Consumer } from './Consumer'
 
 export function connect(map, options = {}) {
   return function connectComponent(Component) {
-    const render = mappedProps => <Component {...mappedProps} />
-    const Connected = props => (
+    const render = (mappedProps) => <Component {...mappedProps} />
+    const Connected = (props) => (
       <Consumer
         map={map}
         pure={options.pure}

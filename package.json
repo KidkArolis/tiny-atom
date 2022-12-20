@@ -2,9 +2,8 @@
   "name": "tiny-atom",
   "version": "5.0.0-pre.2",
   "description": "Pragmatic and concise state management.",
-  "main": "tiny-atom.js",
-  "module": "tiny-atom.module.js",
-  "modern": "tiny-atom.modern.js",
+  "main": "tiny-atom.cjs.js",
+  "module": "tiny-atom.esm.js",
   "sideEffects": false,
   "scripts": {
     "coverage": "nyc --reporter html ava",
@@ -30,30 +29,22 @@
     "deep-diff": "^1.0.2"
   },
   "devDependencies": {
-    "@babel/cli": "^7.6.0",
-    "@babel/core": "^7.6.0",
-    "@babel/plugin-transform-react-jsx": "^7.3.0",
-    "@babel/preset-env": "^7.6.0",
-    "@babel/register": "^7.6.0",
-    "ava": "^2.3.0",
-    "babel-eslint": "^10.0.3",
-    "execa": "^2.0.4",
-    "healthier": "^3.2.0",
-    "jetpack": "^0.17.0",
-    "jsdom": "^15.1.1",
-    "np": "^5.0.3",
-    "nyc": "^14.1.1",
-    "preact": "^8.5.2",
-    "prettier": "^1.18.2",
-    "react": "^16.9.0",
-    "react-dom": "^16.9.0",
-    "sitedown": "^3.3.2"
-  },
-  "healthier": {
-    "parser": "babel-eslint",
-    "ignore": [
-      "docs/public"
-    ]
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.20.5",
+    "@babel/plugin-transform-react-jsx": "^7.19.0",
+    "@babel/preset-env": "^7.20.2",
+    "@babel/register": "^7.18.9",
+    "ava": "^5.1.0",
+    "execa": "^6.1.0",
+    "healthier": "^6.2.0",
+    "jetpack": "^0.22.0",
+    "jsdom": "^20.0.3",
+    "np": "^7.6.2",
+    "nyc": "^15.1.0",
+    "preact": "^10.11.3",
+    "prettier": "^2.8.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "ava": {
     "files": [

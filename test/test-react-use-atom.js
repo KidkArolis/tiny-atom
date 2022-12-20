@@ -1,15 +1,16 @@
 import test from 'ava'
 import React, { useState, useEffect } from 'react'
-import ReactDOM from 'react-dom'
+import { createRoot } from 'react-dom/client'
 import { act } from 'react-dom/test-utils'
 import { JSDOM } from 'jsdom'
 import { useAtom } from '../src'
 
-test.serial('useAtom usage', async function(t) {
+test.serial('useAtom usage', async function (t) {
   const dom = new JSDOM('<!doctype html><div id="root"></div>')
   global.window = dom.window
   global.document = dom.window.document
   const root = document.getElementById('root')
+  const container = createRoot(root)
 
   let s
 
@@ -17,9 +18,9 @@ test.serial('useAtom usage', async function(t) {
     const [state, actions, atom] = useAtom(() => ({
       state: { count: 0, extra: 0 },
       actions: {
-        increment: ({ set }) => set(state => ({ count: state.count + 1 })),
-        decemenet: ({ set }) => set(state => ({ count: state.count - 1 }))
-      }
+        increment: ({ set }) => set((state) => ({ count: state.count + 1 })),
+        decemenet: ({ set }) => set((state) => ({ count: state.count - 1 })),
+      },
     }))
 
     useEffect(() => {
@@ -33,18 +34,19 @@ test.serial('useAtom usage', async function(t) {
   }
 
   act(() => {
-    ReactDOM.render(<App />, root)
+    container.render(<App />)
   })
 
   t.deepEqual(s, { count: 1, extra: 0 })
   t.is(document.getElementById('count-outer').innerHTML, String(1))
 })
 
-test.serial('useAtom allows recreating actions based on deps', async function(t) {
+test.serial('useAtom allows recreating actions based on deps', async function (t) {
   const dom = new JSDOM('<!doctype html><div id="root"></div>')
   global.window = dom.window
   global.document = dom.window.document
   const root = document.getElementById('root')
+  const container = createRoot(root)
 
   const renders = []
 
@@ -55,8 +57,8 @@ test.serial('useAtom allows recreating actions based on deps', async function(t)
       () => ({
         state: { fetched: null, extra: 0 },
         actions: {
-          fetch: ({ get, set }) => set({ fetched: item, extra: get().extra + 1 })
-        }
+          fetch: ({ get, set }) => set({ fetched: item, extra: get().extra + 1 }),
+        },
       }),
       [item]
     )
@@ -72,21 +74,21 @@ test.serial('useAtom allows recreating actions based on deps', async function(t)
   }
 
   act(() => {
-    ReactDOM.render(<App />, root)
+    container.render(<App />)
   })
 
   t.deepEqual(renders, [
     {
       fetched: null,
-      extra: 0
+      extra: 0,
     },
     {
       fetched: 'item-1',
-      extra: 1
+      extra: 1,
     },
     {
       fetched: 'item-2',
-      extra: 2
-    }
+      extra: 2,
+    },
   ])
 })

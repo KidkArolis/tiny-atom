@@ -12,7 +12,7 @@ module.exports = function app({ h, Provider, Consumer, connect, createContext, c
   const atom = createAtom({
     state: {
       count: 0,
-      unrelated: 1
+      unrelated: 1,
     },
     actions: {
       increment: ({ get, set }, payload = 1) => {
@@ -20,8 +20,8 @@ module.exports = function app({ h, Provider, Consumer, connect, createContext, c
       },
       incrementUnrelated: ({ get, set }) => {
         set({ unrelated: get().unrelated + 1 })
-      }
-    }
+      },
+    },
   })
 
   if (createContext) {
@@ -32,8 +32,8 @@ module.exports = function app({ h, Provider, Consumer, connect, createContext, c
   }
 
   const App = () => {
-    const map = state => ({
-      count: state.count
+    const map = (state) => ({
+      count: state.count,
     })
 
     return (
@@ -53,8 +53,8 @@ module.exports = function app({ h, Provider, Consumer, connect, createContext, c
   }
 
   const ChildWithRenderProp = ({ multiplier }) => {
-    const map = state => ({
-      count: state.count
+    const map = (state) => ({
+      count: state.count,
     })
     return (
       <Consumer map={map} observe>
@@ -70,10 +70,7 @@ module.exports = function app({ h, Provider, Consumer, connect, createContext, c
 
   let childWithConnectRenderCount = 0
 
-  const ChildWithConnect = connect(
-    ({ count }) => ({ count }),
-    { observe: true }
-  )(({ multiplier, count, dispatch }) => {
+  const ChildWithConnect = connect(({ count }) => ({ count }), { observe: true })(({ multiplier, count, dispatch }) => {
     childWithConnectRenderCount++
     return (
       <div>
@@ -85,9 +82,9 @@ module.exports = function app({ h, Provider, Consumer, connect, createContext, c
 
   return {
     root,
-    render: fn => fn(App),
+    render: (fn) => fn(App),
 
-    assert: async function(t) {
+    assert: async function (t) {
       await frame()
 
       t.is(document.getElementById('count-outer').innerHTML, '0')
@@ -119,7 +116,7 @@ module.exports = function app({ h, Provider, Consumer, connect, createContext, c
       atom.dispatch('incrementUnrelated')
       await frame()
       t.is(childWithConnectRenderCount, 4)
-    }
+    },
   }
 }
 
@@ -127,10 +124,10 @@ function click(dom) {
   return new dom.window.MouseEvent('click', {
     view: dom.window,
     bubbles: true,
-    cancelable: true
+    cancelable: true,
   })
 }
 
 function frame() {
-  return new Promise(resolve => setTimeout(resolve, 2 * (1000 / 60)))
+  return new Promise((resolve) => setTimeout(resolve, 2 * (1000 / 60)))
 }

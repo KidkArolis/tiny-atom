@@ -1,9 +1,9 @@
 function getRequestAnimationFrame() {
   if (typeof window === 'undefined') {
-    return callback => callback()
+    return (callback) => callback()
   }
 
-  const polyfill = callback => {
+  const polyfill = (callback) => {
     return setTimeout(callback, 16)
   }
 

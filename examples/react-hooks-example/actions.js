@@ -1,22 +1,22 @@
-module.exports.initialState = {
+export const initialState = {
   count: 0,
 
   todo: {
     items: ['learn tiny-atom', 'use tiny-atom', 'star tiny-atom'],
-    input: ''
+    input: '',
   },
 
   hint: {
     text: 'Type + hit enter',
-    show: true
+    show: true,
   },
 
   analytics: {
-    events: []
-  }
+    events: [],
+  },
 }
 
-module.exports.actions = {
+export const actions = {
   addItem: ({ get, set, actions }, payload) => {
     const { todo } = get()
     const { items, input } = todo
@@ -51,8 +51,8 @@ module.exports.actions = {
     const nextEvents = events.concat([event])
     set({
       analytics: {
-        events: nextEvents
-      }
+        events: nextEvents,
+      },
     })
-  }
+  },
 }

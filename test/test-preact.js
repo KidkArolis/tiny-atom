@@ -3,10 +3,10 @@ import Preact from 'preact'
 import { Provider, Consumer, connect } from '../src/preact'
 import testApp from './generic-app'
 
-test.serial('usage', async function(t) {
+test.serial('usage', async function (t) {
   const h = (global.h = Preact.h)
   const { root, assert, render } = testApp({ h, Provider, Consumer, connect })
-  render(App => Preact.render(h(App), root, root.lastElementChild))
+  render((App) => Preact.render(h(App), root, root.lastElementChild))
   await assert(t)
   Preact.render(null, root)
 })

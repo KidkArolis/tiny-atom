@@ -5,13 +5,13 @@ require('./App.css')
 const map = ({ todo, hint }) => {
   return {
     todo,
-    hint
+    hint,
   }
 }
 
 const actions = ['updateItem', 'completeItem', 'addItem']
 
-const Hint = connect(state => ({ hint: state.hint }))(function Hint(props) {
+const Hint = connect((state) => ({ hint: state.hint }))(function Hint(props) {
   return <div className='Hint'>{props.hint.show ? props.hint.text : ''}</div>
 })
 
@@ -25,10 +25,10 @@ const App = () => (
           <input
             className='Todo-input'
             type='text'
-            ref={el => {
+            ref={(el) => {
               this.$input = el
             }}
-            onChange={e => updateItem(e.target.value)}
+            onChange={(e) => updateItem(e.target.value)}
             value={todo.input || ''}
           />
         </form>
@@ -51,7 +51,7 @@ const App = () => (
 module.exports = App
 
 function onSubmit(addItem, $input) {
-  return function(e) {
+  return function (e) {
     e.preventDefault()
     addItem('addItem')
     $input.focus()

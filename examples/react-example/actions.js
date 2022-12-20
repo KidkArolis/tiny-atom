@@ -1,17 +1,17 @@
 module.exports.initialState = {
   todo: {
     items: ['learn tiny-atom', 'use tiny-atom', 'star tiny-atom'],
-    input: ''
+    input: '',
   },
 
   hint: {
     text: 'Type + hit enter',
-    show: true
+    show: true,
   },
 
   analytics: {
-    events: []
-  }
+    events: [],
+  },
 }
 
 module.exports.actions = {
@@ -48,10 +48,10 @@ module.exports.actions = {
     set(
       {
         analytics: {
-          events: nextEvents
-        }
+          events: nextEvents,
+        },
       },
       event.type
     )
-  }
+  },
 }

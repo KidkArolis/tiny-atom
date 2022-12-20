@@ -5,7 +5,7 @@
   <br>
 </h1>
 
-<h5 align="center">Pragmatic and concise state management.</h5>
+<h5 align="center">Pragmatic state management.</h5>
 <br />
 
 <p align="center">

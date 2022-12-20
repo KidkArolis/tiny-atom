@@ -4,9 +4,9 @@ import { differs } from './differs'
 import { raf } from './raf'
 
 const isServer = typeof navigator === 'undefined'
-const identity = x => x
-const immediate = fn => fn()
-const delayed = fn => raf(fn)()
+const identity = (x) => x
+const immediate = (fn) => fn()
+const delayed = (fn) => raf(fn)()
 
 let i = 0
 const nextOrder = () => ++i

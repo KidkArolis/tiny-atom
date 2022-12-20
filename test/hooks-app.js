@@ -1,4 +1,4 @@
-import ReactDOM from 'react-dom'
+import { createRoot } from 'react-dom/client'
 import { createAtom, Provider } from '../src'
 
 /** @jsx h */
@@ -6,11 +6,13 @@ import { createAtom, Provider } from '../src'
 module.exports = function renderHooksApp({ h, root, useSelector, useActions, useDispatch }) {
   const stats = {}
 
+  const container = createRoot(root)
+
   const atom = createAtom({
     state: {
       count: 0,
       unrelated: 1,
-      user: { loggedIn: true }
+      user: { loggedIn: true },
     },
     actions: {
       increment: ({ get, set }, payload = 1) => {
@@ -24,14 +26,14 @@ module.exports = function renderHooksApp({ h, root, useSelector, useActions, use
       },
       replaceUser({ get, set }, user) {
         set({ user })
-      }
-    }
+      },
+    },
   })
 
   stats.appRenderCount = 0
   const App = () => {
     stats.appRenderCount++
-    const count = useSelector(state => state.count, { observe: true })
+    const count = useSelector((state) => state.count, { observe: true })
     const { increment } = useActions()
 
     return (
@@ -46,8 +48,8 @@ module.exports = function renderHooksApp({ h, root, useSelector, useActions, use
   stats.childRenderCount = 0
   const Child = ({ multiplier }) => {
     stats.childRenderCount++
-    const count = useSelector(state => state.count, { observe: true })
-    const user = useSelector(state => state.user, { observe: true })
+    const count = useSelector((state) => state.count, { observe: true })
+    const user = useSelector((state) => state.user, { observe: true })
     const dispatch = useDispatch()
     return (
       <div>
@@ -58,11 +60,10 @@ module.exports = function renderHooksApp({ h, root, useSelector, useActions, use
     )
   }
 
-  ReactDOM.render(
+  container.render(
     <Provider atom={atom}>
       <App />
-    </Provider>,
-    root
+    </Provider>
   )
 
   return { atom, stats }
