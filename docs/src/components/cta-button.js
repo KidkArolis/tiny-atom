@@ -1,10 +1,11 @@
+import React from 'react'
 import Link from 'gatsby-link'
 import { rhythm, scale, options } from '../utils/typography'
 import presets from '../utils/presets'
 
 import { css } from 'glamor'
 
-let stripeAnimation = css.keyframes({
+const stripeAnimation = css.keyframes({
   '0%': { backgroundPosition: `0 0` },
   '100%': { backgroundPosition: `30px 60px` }
 })

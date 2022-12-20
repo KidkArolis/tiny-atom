@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import { Button, Text } from 'react-native'
 import { connect } from 'tiny-atom/react'
 
@@ -14,11 +14,11 @@ class Counter extends React.Component {
   render() {
     const { count, inc, dec } = this.props
     return (
-      <Fragment>
+      <>
         <Text>Count: {count}</Text>
         <Button title='Increment' onPress={inc} />
         <Button title='Decrement' onPress={dec} />
-      </Fragment>
+      </>
     )
   }
 }

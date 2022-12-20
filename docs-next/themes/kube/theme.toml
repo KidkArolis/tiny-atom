@@ -1,0 +1,10 @@
+name = "HuDoc"
+license = "MIT"
+description = "HuDoc theme is great for single page documentation sites"
+tags = ["documentation"]
+min_version = 0.62.0
+
+[author]
+  name = "Karolis Narkevicius"
+  homepage = "https://kn8.lt"
+ 

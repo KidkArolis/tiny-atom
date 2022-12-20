@@ -1,14 +1,18 @@
 {
   "name": "tiny-atom",
-  "version": "4.2.2",
+  "version": "5.0.0-pre.2",
   "description": "Pragmatic and concise state management.",
-  "main": "index.js",
+  "main": "tiny-atom.js",
+  "module": "tiny-atom.module.js",
+  "modern": "tiny-atom.modern.js",
+  "sideEffects": false,
   "scripts": {
     "coverage": "nyc --reporter html ava",
     "test": "npm run lint && nyc ava",
     "lint": "healthier && prettier --check '**/*.{js,json,css,yml}'",
     "format": "prettier --write '**/*.{js,json,css,yml}'",
     "build": "node ./tasks/build.js",
+    "build:docs": "sitedown . -b docs-next --layout layout.html",
     "version": "npm run build",
     "release": "np --contents dist",
     "release-beta": "np --tag=beta --contents=dist"
@@ -26,20 +30,27 @@
     "deep-diff": "^1.0.2"
   },
   "devDependencies": {
-    "ava": "^2.1.0",
-    "buble": "^0.19.7",
-    "execa": "^1.0.0",
-    "healthier": "^2.0.0",
-    "jetpack": "^0.16.0",
+    "@babel/cli": "^7.6.0",
+    "@babel/core": "^7.6.0",
+    "@babel/plugin-transform-react-jsx": "^7.3.0",
+    "@babel/preset-env": "^7.6.0",
+    "@babel/register": "^7.6.0",
+    "ava": "^2.3.0",
+    "babel-eslint": "^10.0.3",
+    "execa": "^2.0.4",
+    "healthier": "^3.2.0",
+    "jetpack": "^0.17.0",
     "jsdom": "^15.1.1",
     "np": "^5.0.3",
     "nyc": "^14.1.1",
-    "preact": "^8.4.2",
+    "preact": "^8.5.2",
     "prettier": "^1.18.2",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
+    "sitedown": "^3.3.2"
   },
   "healthier": {
+    "parser": "babel-eslint",
     "ignore": [
       "docs/public"
     ]
@@ -48,7 +59,10 @@
     "files": [
       "test/test-*.js"
     ],
-    "require": "./test/helpers/setup.js"
+    "require": [
+      "@babel/register",
+      "./test/helpers/setup.js"
+    ]
   },
   "np": {
     "releaseDraft": false

@@ -6,7 +6,7 @@ const log = require('tiny-atom/log')
 const App = require('./App')
 const { initialState, actions } = require('./actions')
 
-const atom = (window.atom = createAtom(initialState, actions, { debug: log() }))
+const atom = (window.atom = createAtom({ state: initialState, actions, debug: log() }))
 
 ReactDOM.render(
   <Provider atom={atom}>

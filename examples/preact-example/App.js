@@ -1,6 +1,10 @@
+/** @jsx h */
+
 const Preact = require('preact') // eslint-disable-line
 const { Consumer } = require('tiny-atom/preact')
 require('./App.css')
+
+const { h } = Preact
 
 const map = ({ todo, hint }) => {
   return {

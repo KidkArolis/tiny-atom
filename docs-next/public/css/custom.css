@@ -1,0 +1,39 @@
+.github {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+@media (min-width: 768px) {
+  .github {
+    box-sizing: border-box;
+    position: fixed;
+    top: 40px;
+    right: 0;
+    width: 200px;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    border-bottom: none;
+  }
+}
+
+.github svg {
+  margin-right: 4px;
+  margin-top: -2px;
+}
+
+.github a {
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  align-items: center;
+  text-decoration: none;
+  color: black;
+}
+
+.github:hover a {
+  color: #ff4800;
+}

@@ -1,1 +1,1 @@
-require('./buble-register')
+process.env.NODE_ENV = 'test'

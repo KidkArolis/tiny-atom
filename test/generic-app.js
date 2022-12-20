@@ -1,15 +1,20 @@
-const { JSDOM } = require('jsdom')
-const createAtom = require('../src')
+import { JSDOM } from 'jsdom'
+import { createAtom } from '../src/core'
 
-module.exports = function app({ h, Provider, Consumer, connect, createContext }) {
+/** @jsx h */
+
+module.exports = function app({ h, Provider, Consumer, connect, createContext, createConnect, createConsumer }) {
   const dom = new JSDOM('<!doctype html><div id="root"></div>')
   global.window = dom.window
   global.document = dom.window.document
   const root = document.getElementById('root')
 
-  const atom = createAtom(
-    { count: 0, unrelated: 1 },
-    {
+  const atom = createAtom({
+    state: {
+      count: 0,
+      unrelated: 1
+    },
+    actions: {
       increment: ({ get, set }, payload = 1) => {
         set({ count: get().count + payload })
       },
@@ -17,13 +22,13 @@ module.exports = function app({ h, Provider, Consumer, connect, createContext })
         set({ unrelated: get().unrelated + 1 })
       }
     }
-  )
+  })
 
   if (createContext) {
     const context = createContext(atom)
     Provider = context.Provider
-    Consumer = context.Consumer
-    connect = context.connect
+    Consumer = createConsumer(context.AtomContext)
+    connect = createConnect(Consumer)
   }
 
   const App = () => {
@@ -31,17 +36,13 @@ module.exports = function app({ h, Provider, Consumer, connect, createContext })
       count: state.count
     })
 
-    const actions = dispatch => ({
-      inc: x => dispatch('increment', x)
-    })
-
     return (
       <Provider atom={atom}>
-        <Consumer map={map} actions={actions} observe>
-          {({ count, inc }) => (
+        <Consumer map={map} observe>
+          {({ count, actions }) => (
             <div>
               <div id='count-outer'>{count}</div>
-              <button id='increment-outer' onClick={() => inc()} />
+              <button id='increment-outer' onClick={() => actions.increment()} />
               <ChildWithRenderProp multiplier={10} />
               <ChildWithConnect id='connected' multiplier={50} />
             </div>
@@ -71,7 +72,6 @@ module.exports = function app({ h, Provider, Consumer, connect, createContext })
 
   const ChildWithConnect = connect(
     ({ count }) => ({ count }),
-    null,
     { observe: true }
   )(({ multiplier, count, dispatch }) => {
     childWithConnectRenderCount++

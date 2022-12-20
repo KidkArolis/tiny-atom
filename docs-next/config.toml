@@ -1,0 +1,11 @@
+baseURL = "https://kidkarolis.github.io/tiny-atom/"
+languageCode = "en-us"
+title = "tiny-atom"
+description = "Tiny Atom – React state and context enhanced"
+theme = "kube"
+
+[markup]
+  [markup.highlight]
+    noClasses = false
+    tabWidth = 4
+

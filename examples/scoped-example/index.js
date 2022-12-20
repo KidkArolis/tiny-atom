@@ -1,3 +1,5 @@
+/** @jsx Preact.h */
+
 const Preact = require('preact')
 const { Provider } = require('tiny-atom/preact')
 const log = require('tiny-atom/log')
