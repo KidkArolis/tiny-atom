@@ -13,6 +13,12 @@ date: '2019-06-15'
 - beautiful console logger
 - battle tested and hardened
 
+* tiny-atom’s goal was always to allow very efficiently passing contextual data/state to the whole application
+* in subscription based stores, which are stores that tell you when they changed via some .onChange(cb) - if you subscribe to the store in many components in your application, you need to make sure they re-render in the right order (parent first, then children, etc.)
+* and you also need to make sure that that doesn’t cause redundant re-rendering, e.g. say parent component ’s onChange is called first, and causes a re-render, then if child component’s onChange is called right after (because of the same store change) you don’t want to re-render, since the parent cause that to happen already
+* batching - so that for example 10 synchronous state changes would cause only 1 re-render instead of 10
+* making sure that if selected state (computed by useSelector) did not change (that is store change is not relevant to this particular subscription), that component does not needlessly re-render
+
 ## Installation
 
 \$ npm install tiny-atom
@@ -25,15 +31,15 @@ import { createAtom, Provider } from 'tiny-atom'
 const atom = createAtom({
   state: {
     user: null,
-    route: null
+    route: null,
   },
   actions: {
     async auth({ set }) {
       const token = localStorage.getItem('access-token')
-      const { user } = await fetch('/authenticate', { token }).then(res => res.json())
+      const { user } = await fetch('/authenticate', { token }).then((res) => res.json())
       set({ user })
-    }
-  }
+    },
+  },
 })
 
 ReactDOM.render(
@@ -99,14 +105,14 @@ const store = createAtom({
   actions: {
     async authenticate({ set }) {
       const token = localStorage.getItem('access-token')
-      const { user } = await fetch('/authenticate', { token }).then(res => res.json())
+      const { user } = await fetch('/authenticate', { token }).then((res) => res.json())
       set({ user })
-    }
-  }
+    },
+  },
 })
 
 function App() {
-  const user = useSelector(state => state.user)
+  const user = useSelector((state) => state.user)
   const { authenticate } = useActions()
 
   useEffect(() => {
@@ -136,12 +142,12 @@ export function User({ id }) {
     actions: {
       async fetchUser({ get, set }, id) {
         set({ fetching: id })
-        const { user } = await fetch(`/users/${id}`).then(res => res.json())
+        const { user } = await fetch(`/users/${id}`).then((res) => res.json())
         if (user.id === get().fetching) {
           set({ user, fetching: false })
         }
-      }
-    }
+      },
+    },
   }))
 
   useEffect(() => {
