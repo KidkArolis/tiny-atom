@@ -1,6 +1,6 @@
 ## 5.0.0
 
-- An overdue (by a few years) release of tiny-atom 5.0.0 that has been stable and used in production for a while.
+- An overdue (by about 5 years) release of tiny-atom 5.0.0 that has been stable all along
 - Remove the docs site in favor of documenting the API in the README
 - Upgrade all dependencies
 
@@ -51,7 +51,7 @@ And with more details:
 import { useAtom, useActions } from 'tiny-atom/react/hooks'
 
 export default function Card() {
-  const { name, role } = useAtom(state => state.user)
+  const { name, role } = useAtom((state) => state.user)
   const { message } = useActions()
 
   return (
@@ -87,7 +87,7 @@ If you do want to keep the old behaviour, you can through implementing a custom 
 
 ```js
 function evolve({ get, set, swap, dispatch }, action) {
-  set = update => deepMerge(get(), update)
+  set = (update) => deepMerge(get(), update)
   actions[action.type]({ get, set, swap, dispatch }, action.payload)
 }
 ```
@@ -162,7 +162,7 @@ The main change is that `split` has been .. split into `set` and `dispatch`. Thi
 createAtom(
   { count: 0 },
   {
-    increment: ({ get, set, dispatch }, payload) => {}
+    increment: ({ get, set, dispatch }, payload) => {},
   }
 )
 ```

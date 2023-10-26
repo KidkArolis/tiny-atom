@@ -1,6 +1,6 @@
-# react-example
+# react-hooks
 
-A small example of using `tiny-atom` with `preact`.
+A small example of using `tiny-atom` with `react` hooks.
 
 ## Running
 

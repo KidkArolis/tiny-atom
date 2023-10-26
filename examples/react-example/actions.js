@@ -1,4 +1,6 @@
-module.exports.initialState = {
+export const initialState = {
+  count: 0,
+
   todo: {
     items: ['learn tiny-atom', 'use tiny-atom', 'star tiny-atom'],
     input: '',
@@ -14,44 +16,43 @@ module.exports.initialState = {
   },
 }
 
-module.exports.actions = {
-  addItem: ({ get, set, dispatch }, payload) => {
-    const { items, input } = get().todo
+export const actions = {
+  addItem: ({ get, set, actions }, payload) => {
+    const { todo } = get()
+    const { items, input } = todo
     const nextItems = items.concat([input])
-    set({ todo: { items: nextItems, input: '' } }, input)
-    dispatch('hideHint')
-    dispatch('trackEvent', { type: 'added' })
+    set({ todo: { ...todo, items: nextItems, input: '' } })
+    actions.hideHint()
+    actions.trackEvent({ type: 'added' })
   },
 
-  completeItem: ({ get, set, dispatch }, index) => {
-    const { items } = get().todo
+  completeItem: ({ get, set, actions }, index) => {
+    const { todo } = get()
+    const { items } = todo
     const nextItems = items.filter((item, i) => i !== index)
-    set({ todo: { items: nextItems } }, `completed item ${index}`)
-    dispatch('trackEvent', { user: 'anonymous', type: 'completed' })
+    set({ todo: { ...todo, items: nextItems } })
+    actions.trackEvent({ user: 'anonymous', type: 'completed' })
   },
 
   updateItem: ({ get, set }, input) => {
-    set({ todo: { ...get().todo, input } }, { silence: true })
+    set({ todo: { ...get().todo, input } })
   },
 
-  showHint: ({ set }) => {
-    set({ hint: { show: true } })
+  showHint: ({ get, set }) => {
+    set({ hint: { ...get().hint, show: true } })
   },
 
-  hideHint: ({ set }) => {
-    set({ hint: { show: false } })
+  hideHint: ({ get, set }) => {
+    set({ hint: { ...get().hint, show: false } })
   },
 
   trackEvent: ({ get, set }, event) => {
     const { events } = get().analytics
     const nextEvents = events.concat([event])
-    set(
-      {
-        analytics: {
-          events: nextEvents,
-        },
+    set({
+      analytics: {
+        events: nextEvents,
       },
-      event.type
-    )
+    })
   },
 }

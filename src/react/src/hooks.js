@@ -15,7 +15,7 @@ export function createHooks(AtomContext) {
   function useSelector(selectorFn = identity, options = {}) {
     const { sync = false, pure = true, observe = !isServer } = options
 
-    const atom = useAtomContext()
+    const atom = useAtom()
     assert(atom, 'No atom found in context, did you forget to wrap your app in <Provider atom={atom} />?')
 
     // cache the schedule and selector functions
@@ -100,21 +100,21 @@ export function createHooks(AtomContext) {
   }
 
   function useActions() {
-    const atom = useAtomContext()
+    const atom = useAtom()
     return atom && atom.actions
   }
 
   function useDispatch() {
-    const atom = useAtomContext()
+    const atom = useAtom()
     return atom && atom.dispatch
   }
 
-  function useAtomContext() {
+  function useAtom() {
     const { atom } = useContext(AtomContext)
     return atom
   }
 
-  return { useSelector, useActions, useDispatch, useAtomContext }
+  return { useSelector, useActions, useDispatch, useAtom }
 }
 
 function assert(cond, error) {
@@ -132,7 +132,7 @@ function invoke(ref) {
 
 const hooks = createHooks(AtomContext)
 
+export const useAtom = hooks.useAtom
 export const useSelector = hooks.useSelector
 export const useActions = hooks.useActions
 export const useDispatch = hooks.useDispatch
-export const useAtomContext = hooks.useAtomContext

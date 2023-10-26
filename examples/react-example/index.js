@@ -1,12 +1,11 @@
-const React = require('react')
-const ReactDOM = require('react-dom')
-const createAtom = require('tiny-atom')
-const { Provider } = require('tiny-atom/react')
-const log = require('tiny-atom/log')
-const App = require('./App')
-const { initialState, actions } = require('./actions')
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { createAtom, Provider } from 'tiny-atom'
+import { createLog } from 'tiny-atom/log'
+import { App } from './App'
+import { initialState, actions } from './actions'
 
-const atom = (window.atom = createAtom(initialState, actions, { debug: log() }))
+const atom = (window.atom = createAtom({ state: initialState, actions, debug: createLog() }))
 
 ReactDOM.render(
   <Provider atom={atom}>
