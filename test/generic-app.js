@@ -3,7 +3,7 @@ import { createAtom } from '../src/core'
 
 /** @jsx h */
 
-module.exports = function app({ h, Provider, Consumer, connect, createContext, createConnect, createConsumer }) {
+module.exports = function app({ h, Provider, Consumer, connect, createContext, createConnect, createConsumer, act }) {
   const dom = new JSDOM('<!doctype html><div id="root"></div>')
   global.window = dom.window
   global.document = dom.window.document
@@ -82,7 +82,8 @@ module.exports = function app({ h, Provider, Consumer, connect, createContext, c
 
   return {
     root,
-    render: (fn) => fn(App),
+    render: (fn) => act(() => fn(App)),
+    unmount: (root) => act(() => root.unmount()),
 
     assert: async function (t) {
       await frame()
@@ -92,29 +93,38 @@ module.exports = function app({ h, Provider, Consumer, connect, createContext, c
       t.is(document.getElementById('count-inner-2').innerHTML, '0')
       t.is(childWithConnectRenderCount, 1)
 
-      atom.dispatch('increment')
-      await frame()
+      await act(async () => {
+        atom.dispatch('increment')
+        await frame()
+      })
+
       t.is(document.getElementById('count-outer').innerHTML, '1')
       t.is(document.getElementById('count-inner').innerHTML, '10')
       t.is(document.getElementById('count-inner-2').innerHTML, '50')
       t.is(childWithConnectRenderCount, 2)
 
       atom.dispatch('increment')
-      await frame()
+      await act(async () => {
+        await frame()
+      })
       t.is(document.getElementById('count-outer').innerHTML, '2')
       t.is(document.getElementById('count-inner').innerHTML, '20')
       t.is(document.getElementById('count-inner-2').innerHTML, '100')
       t.is(childWithConnectRenderCount, 3)
 
-      document.getElementById('increment-outer').dispatchEvent(click(dom))
-      await frame()
+      await act(async () => {
+        document.getElementById('increment-outer').dispatchEvent(click(dom))
+        await frame()
+      })
       t.is(document.getElementById('count-outer').innerHTML, '3')
       t.is(document.getElementById('count-inner').innerHTML, '30')
       t.is(document.getElementById('count-inner-2').innerHTML, '150')
       t.is(childWithConnectRenderCount, 4)
 
       atom.dispatch('incrementUnrelated')
-      await frame()
+      await act(async () => {
+        await frame()
+      })
       t.is(childWithConnectRenderCount, 4)
     },
   }

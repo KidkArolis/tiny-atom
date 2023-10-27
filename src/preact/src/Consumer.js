@@ -56,6 +56,7 @@ export class Consumer extends Component {
     this.cancelUpdate && this.cancelUpdate()
   }
 
+  // eslint-disable-next-line react/no-deprecated
   componentWillReceiveProps(nextProps) {
     const { atom } = this.context
     const nextMappedProps = this.map(atom.get(), nextProps)

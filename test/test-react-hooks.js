@@ -1,22 +1,21 @@
 import test from 'ava'
 import React from 'react'
 import { createRoot } from 'react-dom/client'
+import { act } from 'react-dom/test-utils'
 import { JSDOM } from 'jsdom'
 import { createAtom, Provider, useSelector, useActions, useDispatch } from '../src'
 import renderHooksApp from './hooks-app'
 
-test.serial.only('usage', async function (t) {
+test.serial('usage', async function (t) {
   const h = (global.h = React.createElement)
   const dom = new JSDOM('<!doctype html><div id="root"></div>')
   global.window = dom.window
   global.document = dom.window.document
   const container = document.getElementById('root')
-  const root = createRoot(container)
 
-  const { atom, stats } = renderHooksApp({ h, useSelector, useActions, useDispatch, root })
+  const { atom, stats, unmount } = renderHooksApp({ h, useSelector, useActions, useDispatch, container })
 
   await frame()
-
   t.is(document.getElementById('count-outer').innerHTML, '0')
   t.is(document.getElementById('count-inner').innerHTML, '0')
   t.is(stats.childRenderCount, 1)
@@ -57,7 +56,7 @@ test.serial.only('usage', async function (t) {
   await frame()
   t.is(stats.childRenderCount, 6)
 
-  root.render(null)
+  unmount()
 })
 
 test.serial('minimal rerenders required', async function (t) {
@@ -66,9 +65,8 @@ test.serial('minimal rerenders required', async function (t) {
   global.window = dom.window
   global.document = dom.window.document
   const container = document.getElementById('root')
-  const root = createRoot(container)
 
-  const { atom, stats } = renderHooksApp({ h, useSelector, useActions, useDispatch, root })
+  const { atom, stats, unmount } = renderHooksApp({ h, useSelector, useActions, useDispatch, container })
 
   await frame()
 
@@ -87,7 +85,7 @@ test.serial('minimal rerenders required', async function (t) {
     t.is(stats.childRenderCount, i)
   }
 
-  root.render(null)
+  unmount()
 })
 
 test.serial('a race condition between commit phase/observing and atom changing', async function (t) {
@@ -111,7 +109,9 @@ test.serial('a race condition between commit phase/observing and atom changing',
     return h('div', { id: 'count-inner' }, count)
   }
 
-  root.render(h(Provider, { atom }, h(App)))
+  act(() => {
+    root.render(h(Provider, { atom }, h(App)))
+  })
 
   // assert
   t.is(atom.get().count, 0)
@@ -150,7 +150,9 @@ test.serial('edge case where we rerender via parent and then via observation', a
     return h('div', { id: 'count-inner' }, count)
   }
 
-  root.render(h(Provider, { atom }, h(App)))
+  act(() => {
+    root.render(h(Provider, { atom }, h(App)))
+  })
 
   // note, update atom immediately after render
   // this "reveals" an edge case where changes to atom
@@ -184,7 +186,9 @@ test.serial('edge case where we rerender via parent and then via observation', a
   t.is(document.getElementById('count-outer').innerHTML, String(2))
   t.is(document.getElementById('count-inner').innerHTML, String(1))
 
-  root.render(null)
+  act(() => {
+    root.render(null)
+  })
 })
 
 function click(dom) {
@@ -195,13 +199,15 @@ function click(dom) {
   })
 }
 
-function frame() {
-  flushEffects()
-  return new Promise((resolve) => setTimeout(resolve, 2 * (1000 / 60)))
+async function frame() {
+  // flushEffects()
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 2 * (1000 / 60)))
+  })
 }
 
-function flushEffects() {
-  const container = document.createElement('template')
-  const root = createRoot(container)
-  root.render(null)
-}
+// function flushEffects() {
+//   const container = document.createElement('template')
+//   const root = createRoot(container)
+//   root.render(null)
+// }

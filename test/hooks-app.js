@@ -1,12 +1,13 @@
 import { createRoot } from 'react-dom/client'
+import { act } from 'react-dom/test-utils'
 import { createAtom, Provider } from '../src'
 
 /** @jsx h */
 
-module.exports = function renderHooksApp({ h, root, useSelector, useActions, useDispatch }) {
+module.exports = function renderHooksApp({ h, container, useSelector, useActions, useDispatch }) {
   const stats = {}
 
-  const container = createRoot(root)
+  const root = createRoot(container)
 
   const atom = createAtom({
     state: {
@@ -60,11 +61,19 @@ module.exports = function renderHooksApp({ h, root, useSelector, useActions, use
     )
   }
 
-  container.render(
-    <Provider atom={atom}>
-      <App />
-    </Provider>,
-  )
+  act(() => {
+    root.render(
+      <Provider atom={atom}>
+        <App />
+      </Provider>,
+    )
+  })
 
-  return { atom, stats }
+  function unmount() {
+    act(() => {
+      root.unmount()
+    })
+  }
+
+  return { atom, stats, unmount }
 }
