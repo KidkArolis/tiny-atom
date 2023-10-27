@@ -1,6 +1,6 @@
 {
   "name": "tiny-atom",
-  "version": "5.0.0-pre.2",
+  "version": "5.0.0",
   "description": "Pragmatic and concise state management.",
   "main": "tiny-atom.cjs.js",
   "module": "tiny-atom.esm.js",
