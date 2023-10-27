@@ -23,7 +23,7 @@ Tiny Atom achieved enhanced efficiency through:
 - tracking and deduping nested subscription updates
 - re-rendering only when there's a change in the computed state selection
 
-However, with the introduction of [`useSyncExternalStore`](https://react.dev/reference/react/useSyncExternalStore), React now inherently encompasses the first two aforementioned optimizations. This has somewhat diminished the need for Tiny Atom. At the same time the global state approach has been slowly falling out of fashion in favor of using higher level state abstractions like Suspense, Relay, React Query and most recently React Server Components as well as more atomic and modular strategies such as Recoil.
+However, with the introduction of [`useSyncExternalStore`](https://react.dev/reference/react/useSyncExternalStore), React now inherently encompasses the first two aforementioned optimizations. At the same time the global state approach has been slowly falling out of fashion in favor of using higher level state abstractions like Suspense, Relay, React Query and most recently React Server Components as well as more atomic and modular strategies such as Recoil.
 
 Although tiny-atom remains a robust and battle tested solution, it's worth considering contemporary alternatives. For instance, [Zustand](https://github.com/pmndrs/zustand) embodies similar global store concepts in a more modern package. Meanwhile, [Kinfolk](https://github.com/KidkArolis/kinfolk) is a spiritual successor to tiny-atom offering more streamlined and powerful alternative for managing shared application state.
 
