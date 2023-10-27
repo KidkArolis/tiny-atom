@@ -28,12 +28,12 @@ export const createLog = (options = {}) => {
   const groupStart = (...args) =>
     tryCatch(
       () => logger.groupCollapsed(...args),
-      () => logger.log(...args)
+      () => logger.log(...args),
     )
   const groupEnd = () =>
     tryCatch(
       () => logger.groupEnd(),
-      () => {}
+      () => {},
     )
 
   return ({ type, atom, action, sourceActions, prevState, message, silent }) => {

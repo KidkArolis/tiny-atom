@@ -1,20 +1,18 @@
 /** @jsx h */
-const Preact = require('preact')
-const createAtom = require('tiny-atom')
+import { h, render } from 'preact'
+const { createAtom } = require('tiny-atom')
 const { Provider } = require('tiny-atom/preact')
-const log = require('tiny-atom/log')
+const { createLog } = require('tiny-atom/log')
 const App = require('./App')
 const { initialState, actions } = require('./actions')
 
-const { h } = Preact
-
 require('preact/debug')
 
-const atom = (window.atom = createAtom(initialState, actions, { debug: log() }))
+const atom = (window.atom = createAtom(initialState, actions, { debug: createLog() }))
 
-Preact.render(
+render(
   <Provider atom={atom}>
     <App />
   </Provider>,
-  document.querySelector('#root')
+  document.querySelector('#root'),
 )

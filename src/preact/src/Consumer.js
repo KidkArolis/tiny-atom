@@ -1,9 +1,9 @@
-import Preact from 'preact'
+import { Component } from 'preact'
 import { raf, differs } from '../../react'
 
 const canUseDOM = !!(typeof window !== 'undefined' && window.document && window.document.createElement)
 
-export class Consumer extends Preact.Component {
+export class Consumer extends Component {
   constructor(props, { atom }) {
     super()
     this.state = this.map(atom.get(), props)

@@ -60,7 +60,7 @@ test.serial('useAtom allows recreating actions based on deps', async function (t
           fetch: ({ get, set }) => set({ fetched: item, extra: get().extra + 1 }),
         },
       }),
-      [item]
+      [item],
     )
 
     useEffect(() => {

@@ -36,8 +36,8 @@ const files = ['package.json', 'package-lock.json', 'LICENSE', 'CHANGELOG.md', '
           sideEffects: false,
         },
         null,
-        2
-      )
+        2,
+      ),
     )
   }
 })()

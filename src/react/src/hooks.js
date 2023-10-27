@@ -91,7 +91,7 @@ export function createHooks(AtomContext) {
           invoke(cancelUpdate)
         }
       },
-      [atom, observe, selector, schedule, order, mappedProps, cancelUpdate, rerender]
+      [atom, observe, selector, schedule, order, mappedProps, cancelUpdate, rerender],
     )
 
     // always return fresh mapped props, in case

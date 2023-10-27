@@ -63,7 +63,7 @@ module.exports = function renderHooksApp({ h, root, useSelector, useActions, use
   container.render(
     <Provider atom={atom}>
       <App />
-    </Provider>
+    </Provider>,
   )
 
   return { atom, stats }

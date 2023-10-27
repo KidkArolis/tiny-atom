@@ -1,6 +1,6 @@
-import Preact from 'preact'
+import { Component } from 'preact'
 
-export class Provider extends Preact.Component {
+export class Provider extends Component {
   getChildContext() {
     return {
       atom: this.props.atom,

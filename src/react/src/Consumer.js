@@ -81,7 +81,8 @@ ConsumerInner.getDerivedStateFromProps = (props, state) => {
   return Object.assign({}, originalProps, map ? map(atom.get(), originalProps) : {})
 }
 
-export const createConsumer = (AtomContext) => (props) =>
+export const createConsumer = (AtomContext) => (props) => (
   <AtomContext.Consumer>{({ atom }) => <ConsumerInner {...props} atom={atom} />}</AtomContext.Consumer>
+)
 
 export const Consumer = createConsumer(AtomContext)

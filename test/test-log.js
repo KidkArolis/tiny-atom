@@ -34,7 +34,7 @@ test('logs out formatted messages', async function (t) {
       atom,
       prevState: { state: 0, list: [1] },
     },
-    logger
+    logger,
   )
 
   t.deepEqual(buffer.slice(4), [
