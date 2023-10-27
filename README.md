@@ -1,15 +1,13 @@
-<h1 align="center">
+<p align="center">
   <br>
   <img src="https://user-images.githubusercontent.com/324440/32469476-cf1a8918-c34a-11e7-8ad2-c7a0c33d373c.png" alt="tiny-atom logo" title="tiny-atom logo" width='140px'>
   <br>
   <br>
-</h1>
+</p>
 
-<div align="center">
-<div>🏄 global store for sharing application state easily</div>
-<div>⚡️ highly optimised subscriptions and selectors</div>
-<div>⚛️ supports React and Preact</div>
-</div>
+> 🏄 global store for sharing application state easily<br />
+> ⚡️ highly optimised subscriptions and selectors<br />
+> ⚛️ supports React and Preact<br />
 
 ## History
 
