@@ -7,7 +7,6 @@ export class Consumer extends Preact.Component {
   constructor(props, { atom }) {
     super()
     this.state = this.map(atom.get(), props)
-    this.isPure = typeof props.pure === 'undefined' ? true : props.pure
     this.shouldObserve = typeof props.observe === 'undefined' ? canUseDOM : props.observe
     this.scheduleUpdate = props.sync ? () => this.update() : raf(() => this.update())
   }

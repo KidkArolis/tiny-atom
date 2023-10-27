@@ -13,7 +13,7 @@ const nextOrder = () => ++i
 
 export function createHooks(AtomContext) {
   function useSelector(selectorFn = identity, options = {}) {
-    const { sync = false, pure = true, observe = !isServer } = options
+    const { sync = false, observe = !isServer } = options
 
     const atom = useAtom()
     assert(atom, 'No atom found in context, did you forget to wrap your app in <Provider atom={atom} />?')
@@ -79,7 +79,7 @@ export function createHooks(AtomContext) {
           cancelUpdate.current = schedule(function scheduledOnChange() {
             cancelUpdate.current = null
             const nextMappedProps = selector(atom.get())
-            if (!pure || differs(mappedProps.current, nextMappedProps)) {
+            if (differs(mappedProps.current, nextMappedProps)) {
               rerender({})
             }
           })
@@ -91,7 +91,7 @@ export function createHooks(AtomContext) {
           invoke(cancelUpdate)
         }
       },
-      [atom, observe, pure, selector, schedule, order, mappedProps, cancelUpdate, rerender]
+      [atom, observe, selector, schedule, order, mappedProps, cancelUpdate, rerender]
     )
 
     // always return fresh mapped props, in case

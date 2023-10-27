@@ -9,7 +9,6 @@ export function connect(map, options = {}) {
     const Connected = (props) => (
       <Consumer
         map={map}
-        pure={options.pure}
         sync={options.sync}
         observe={options.observe}
         originalProps={props}

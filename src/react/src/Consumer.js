@@ -9,7 +9,6 @@ class ConsumerInner extends React.Component {
   constructor(props) {
     super()
     this.state = {}
-    this.isPure = typeof props.pure === 'undefined' ? true : props.pure
     this.shouldObserve = typeof props.observe === 'undefined' ? !isServer : props.observe
     this.scheduleUpdate = props.sync ? () => this.update() : raf(() => this.update())
   }
@@ -32,8 +31,6 @@ class ConsumerInner extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    if (!this.isPure) return true
-
     // if it's <Consumer> with dynamic children, shortcut the check
     if (this.props.children !== nextProps.children) {
       return true
