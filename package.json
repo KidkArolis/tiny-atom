@@ -5,6 +5,9 @@
   "main": "tiny-atom.cjs.js",
   "module": "tiny-atom.esm.js",
   "sideEffects": false,
+  "engines": {
+    "node": ">=16"
+  },
   "scripts": {
     "coverage": "nyc --reporter html ava",
     "test": "npm run lint && nyc ava",
