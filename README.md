@@ -11,17 +11,17 @@
 
 ## History
 
-Tiny atom has been around and used in production since 2017. The original goals of the project were to provide:
+Created in 2017, Tiny Atom aimed to offer:
 
-- a streamlined and user-friendly alternative to Redux
-- compatibility with both React and Preact
-- efficient re-rendering
+- A streamlined and user-friendly alternative to Redux
+- Compatibility with both React and Preact
+- Efficient re-rendering.
 
 Tiny Atom achieved enhanced efficiency through:
 
-- batching multiple state changes within a request animation frame
-- tracking and deduping nested subscription updates
-- re-rendering only when there's a change in the computed state selection
+- Batching multiple state changes within a request animation frame
+- Tracking and deduping nested subscription updates
+- Re-rendering only when there's a change in the computed state selection.
 
 However, with the introduction of [`useSyncExternalStore`](https://react.dev/reference/react/useSyncExternalStore), React now inherently encompasses the first two aforementioned optimizations. At the same time the global state approach has been slowly falling out of fashion in favor of using higher level state abstractions like Suspense, Relay, React Query and most recently React Server Components as well as more atomic and modular strategies such as Recoil.
 
