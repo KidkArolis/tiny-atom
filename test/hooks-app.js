@@ -17,16 +17,16 @@ module.exports = function renderHooksApp({ h, container, useSelector, useActions
     },
     actions: {
       increment: ({ get, set }, payload = 1) => {
-        set({ count: get().count + payload })
+        act(() => set({ count: get().count + payload }))
       },
       decrement: ({ get, set }, payload = 1) => {
-        set({ count: get().count - payload })
+        act(() => set({ count: get().count - payload }))
       },
       incrementUnrelated: ({ get, set }) => {
-        set({ unrelated: get().unrelated + 1 })
+        act(() => set({ unrelated: get().unrelated + 1 }))
       },
       replaceUser({ get, set }, user) {
-        set({ user })
+        act(() => set({ user }))
       },
     },
   })
@@ -40,7 +40,7 @@ module.exports = function renderHooksApp({ h, container, useSelector, useActions
     return (
       <div>
         <div id='count-outer'>{count}</div>
-        <button id='increment-outer' onClick={() => increment()} />
+        <button id='increment-outer' onClick={() => act(() => increment())} />
         <Child multiplier={10} />
       </div>
     )

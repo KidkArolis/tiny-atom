@@ -10,5 +10,4 @@ export { Consumer, createConsumer } from './Consumer'
 export { connect, createConnect } from './connect'
 
 // internals
-export { raf } from './raf'
 export { differs } from './differs'

@@ -1,25 +1,21 @@
 import { useContext, useEffect, useState, useRef, useCallback } from 'react'
 import { AtomContext } from './context'
 import { differs } from './differs'
-import { raf } from './raf'
 
 const isServer = typeof navigator === 'undefined'
 const identity = (x) => x
-const immediate = (fn) => fn()
-const delayed = (fn) => raf(fn)()
 
 let i = 0
 const nextOrder = () => ++i
 
 export function createHooks(AtomContext) {
   function useSelector(selectorFn = identity, options = {}) {
-    const { sync = false, observe = !isServer } = options
+    const { observe = !isServer } = options
 
     const atom = useAtom()
     assert(atom, 'No atom found in context, did you forget to wrap your app in <Provider atom={atom} />?')
 
-    // cache the schedule and selector functions
-    const schedule = useCallback(sync ? immediate : delayed, [sync])
+    // cache the selector function
     const selector = useCallback(selectorFn, options.deps || [])
 
     // we use a state to trigger a rerender when relevant atom
@@ -36,9 +32,6 @@ export function createHooks(AtomContext) {
     // keep last used props here for diffing upon each change
     const mappedProps = useRef()
 
-    // for cancelling scheduled updates in case of parent renders
-    const cancelUpdate = useRef(null)
-
     if (!order.current) {
       order.current = nextOrder()
     }
@@ -46,10 +39,6 @@ export function createHooks(AtomContext) {
     // atom current mapped state on each render
     // so we can diff when atom triggers callbacks
     mappedProps.current = selector(atom.get())
-
-    // cancel any pending scheduled updates after each render
-    // since we just go rerendered by the parent component
-    invoke(cancelUpdate)
 
     useEffect(
       function observe() {
@@ -71,27 +60,18 @@ export function createHooks(AtomContext) {
         function onChange() {
           if (didUnobserve) return
 
-          // take into account atom updates happening in rapid sequence
-          // cancel each previously scheduled one and reschedule
-          invoke(cancelUpdate)
-
-          // schedule an update
-          cancelUpdate.current = schedule(function scheduledOnChange() {
-            cancelUpdate.current = null
-            const nextMappedProps = selector(atom.get())
-            if (differs(mappedProps.current, nextMappedProps)) {
-              rerender({})
-            }
-          })
+          const nextMappedProps = selector(atom.get())
+          if (differs(mappedProps.current, nextMappedProps)) {
+            rerender({})
+          }
         }
 
         return function destroy() {
           didUnobserve = true
           unobserve()
-          invoke(cancelUpdate)
         }
       },
-      [atom, observe, selector, schedule, order, mappedProps, cancelUpdate, rerender],
+      [atom, observe, selector, order, mappedProps, rerender],
     )
 
     // always return fresh mapped props, in case
@@ -120,13 +100,6 @@ export function createHooks(AtomContext) {
 function assert(cond, error) {
   if (!cond) {
     throw new Error(error)
-  }
-}
-
-function invoke(ref) {
-  if (ref.current) {
-    ref.current()
-    ref.current = null
   }
 }
 
