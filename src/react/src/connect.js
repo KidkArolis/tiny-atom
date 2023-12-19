@@ -10,7 +10,6 @@ export function createConnect(Consumer) {
           displayName={Component.displayName || Component.name}
           map={map}
           pure={options.pure}
-          sync={options.sync}
           observe={options.observe}
           originalProps={props}
           render={render}

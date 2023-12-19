@@ -1,3 +1,7 @@
+## 6.0.0
+
+- Remove `requestAnimationFrame` based state batching to avoid state tearing issues, also `requestAnimationFrame` gets paused in inactive tabs making that not the best mechanic for implementing state update batching. See [#128](https://github.com/KidkArolis/tiny-atom/pull/128). This means the `sync: true | false` option is no longer available and all state updates are sync by default - that is we ask React to re-render after every state change.
+
 ## 5.0.0
 
 - An overdue (by about 5 years) release of tiny-atom 5.0.0 that has been stable all along

@@ -1,5 +1,5 @@
 import { Component } from 'preact'
-import { raf, differs } from '../../react'
+import { differs } from '../../react'
 
 const canUseDOM = !!(typeof window !== 'undefined' && window.document && window.document.createElement)
 
@@ -8,7 +8,7 @@ export class Consumer extends Component {
     super()
     this.state = this.map(atom.get(), props)
     this.shouldObserve = typeof props.observe === 'undefined' ? canUseDOM : props.observe
-    this.scheduleUpdate = props.sync ? () => this.update() : raf(() => this.update())
+    this.scheduleUpdate = () => this.update()
   }
 
   observe() {

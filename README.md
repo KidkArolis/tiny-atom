@@ -19,7 +19,6 @@ Created in 2017, Tiny Atom aimed to offer:
 
 Tiny Atom achieved enhanced efficiency through:
 
-- Batching multiple state changes within a request animation frame
 - Tracking and deduping nested subscription updates
 - Re-rendering only when there's a change in the computed state selection.
 
