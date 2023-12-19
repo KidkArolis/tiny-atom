@@ -1,6 +1,5 @@
 import React from 'react'
 import { differs } from './differs'
-import { raf } from './raf'
 import { AtomContext } from './context'
 
 const isServer = typeof navigator === 'undefined'
@@ -10,23 +9,20 @@ class ConsumerInner extends React.Component {
     super()
     this.state = {}
     this.shouldObserve = typeof props.observe === 'undefined' ? !isServer : props.observe
-    this.scheduleUpdate = props.sync ? () => this.update() : raf(() => this.update())
   }
 
   observe() {
     if (!this.shouldObserve) return
     this.unobserve && this.unobserve()
     this.unobserve = this.props.atom.observe(() => {
-      this.cancelUpdate = this.scheduleUpdate()
+      this.update()
     })
     this.observedAtom = this.props.atom
   }
 
   componentWillUnmount() {
     this.unobserve && this.unobserve()
-    this.cancelUpdate && this.cancelUpdate()
     delete this.unobserve
-    delete this.cancelUpdate
     delete this.observedAtom
   }
 
@@ -43,7 +39,6 @@ class ConsumerInner extends React.Component {
 
     // in connect() case don't need to diff further, no extra props
     if (this.props.originalProps) {
-      this.cancelUpdate && this.cancelUpdate()
       return false
     }
 
@@ -52,13 +47,10 @@ class ConsumerInner extends React.Component {
       return true
     }
 
-    this.cancelUpdate && this.cancelUpdate()
     return false
   }
 
-  componentDidUpdate(prevProps) {
-    this.cancelUpdate && this.cancelUpdate()
-  }
+  componentDidUpdate(prevProps) {}
 
   update() {
     this.setState({})

@@ -15,75 +15,45 @@ test.serial('usage', async function (t) {
 
   const { atom, stats, unmount } = renderHooksApp({ h, useSelector, useActions, useDispatch, container })
 
-  await frame()
   t.is(document.getElementById('count-outer').innerHTML, '0')
   t.is(document.getElementById('count-inner').innerHTML, '0')
   t.is(stats.childRenderCount, 1)
 
   atom.dispatch('increment')
-  await frame()
+
   t.is(document.getElementById('count-outer').innerHTML, '1')
   t.is(document.getElementById('count-inner').innerHTML, '10')
   t.is(stats.childRenderCount, 2)
 
   atom.dispatch('increment')
-  await frame()
+
   t.is(document.getElementById('count-outer').innerHTML, '2')
   t.is(document.getElementById('count-inner').innerHTML, '20')
   t.is(stats.childRenderCount, 3)
 
   document.getElementById('increment-outer').dispatchEvent(click(dom))
-  await frame()
+
   t.is(document.getElementById('count-outer').innerHTML, '3')
   t.is(document.getElementById('count-inner').innerHTML, '30')
   t.is(stats.childRenderCount, 4)
 
   atom.dispatch('incrementUnrelated')
-  await frame()
+
   t.is(stats.childRenderCount, 4)
 
   document.getElementById('increment-inner').dispatchEvent(click(dom))
-  await frame()
+
   t.is(document.getElementById('count-outer').innerHTML, '5')
   t.is(document.getElementById('count-inner').innerHTML, '50')
   t.is(stats.childRenderCount, 5)
 
   atom.dispatch('replaceUser', { loggedIn: true })
-  await frame()
+
   t.is(stats.childRenderCount, 5)
 
   atom.dispatch('replaceUser', { loggedIn: false })
-  await frame()
+
   t.is(stats.childRenderCount, 6)
-
-  unmount()
-})
-
-test.serial('minimal rerenders required', async function (t) {
-  const h = (global.h = React.createElement)
-  const dom = new JSDOM('<!doctype html><div id="root"></div>')
-  global.window = dom.window
-  global.document = dom.window.document
-  const container = document.getElementById('root')
-
-  const { atom, stats, unmount } = renderHooksApp({ h, useSelector, useActions, useDispatch, container })
-
-  await frame()
-
-  t.is(stats.childRenderCount, 1)
-  stats.childRenderCount = 0
-
-  for (let i = 1; i < 20; i++) {
-    atom.dispatch('increment')
-    atom.dispatch('decrement')
-    atom.dispatch('increment')
-    atom.dispatch('decrement')
-    atom.dispatch('increment')
-    await frame()
-    t.is(document.getElementById('count-outer').innerHTML, String(i))
-    t.is(document.getElementById('count-inner').innerHTML, String(i * 10))
-    t.is(stats.childRenderCount, i)
-  }
 
   unmount()
 })
@@ -119,9 +89,7 @@ test.serial('a race condition between commit phase/observing and atom changing',
   // note, update atom immediately after render
   // this "reveals" an edge case where changes to atom
   // before useEffect() is called could get missed
-  atom.set({ count: 1 })
-
-  await frame()
+  act(() => atom.set({ count: 1 }))
 
   // expect DOM to match atom, even if atom changed before useEffect/atom.observe was flushed
   t.is(atom.get().count, 1)
@@ -158,14 +126,14 @@ test.serial('edge case where we rerender via parent and then via observation', a
   // this "reveals" an edge case where changes to atom
   // before useEffect() is called, that is before React's
   // commit phase, could get missed
-  atom.set({ count: 1, extra: 0 })
-  await frame()
+  act(() => atom.set({ count: 1, extra: 0 }))
+
   t.is(atom.get().count, 1)
   t.is(document.getElementById('count-outer').innerHTML, String(1))
   t.is(document.getElementById('count-inner').innerHTML, String(1))
 
-  atom.set({ count: 2, extra: 0 })
-  await frame()
+  act(() => atom.set({ count: 2, extra: 0 }))
+
   t.is(atom.get().count, 2)
   t.is(document.getElementById('count-outer').innerHTML, String(2))
   t.is(document.getElementById('count-inner').innerHTML, String(2))
@@ -180,8 +148,8 @@ test.serial('edge case where we rerender via parent and then via observation', a
   // where Child's local state was count 1 since the first render
   // and updated state is also 1, setState(1) when it's already 1
   // was not rerendering the Child.
-  atom.set({ count: 1, extra: 1 })
-  await frame()
+  act(() => atom.set({ count: 1, extra: 1 }))
+
   t.is(atom.get().count, 1)
   t.is(document.getElementById('count-outer').innerHTML, String(2))
   t.is(document.getElementById('count-inner').innerHTML, String(1))
@@ -198,16 +166,3 @@ function click(dom) {
     cancelable: true,
   })
 }
-
-async function frame() {
-  // flushEffects()
-  await act(async () => {
-    await new Promise((resolve) => setTimeout(resolve, 2 * (1000 / 60)))
-  })
-}
-
-// function flushEffects() {
-//   const container = document.createElement('template')
-//   const root = createRoot(container)
-//   root.render(null)
-// }

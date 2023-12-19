@@ -241,13 +241,6 @@ Select a slice of state and subscribed to state changes. Full state is passed to
 
 Options:
 
-#### sync
-
-_type_: `boolean`
-_default_: `false`
-
-By default, the change listeners are debounced such that at most one render occurs per frame. Set to true to re-render immediately on change state.
-
 #### observe
 
 _type_: `boolean`
@@ -310,13 +303,6 @@ _default_: `null`
 
 Map atom state to props for your component. Upon changes to atom, the mapped props are compared to the previously mapped props and the connected component is only re-rendered if they differ. A shallow object diff is used in the comparison.
 
-#### options.sync
-
-_type_: `boolean`
-_default_: `false`
-
-By default, the change listeners are debounced such that at most one render occurs per frame. Set to true to re-render immediately on change state.
-
 #### options.observe
 
 _type_: `boolean`
@@ -324,7 +310,7 @@ _default_: `true` in the browser, `false` on the server
 
 Use this to control if the connector subscribes to the store or simply projects the state on parent re-renders.
 
-### `<Consumer map={map} sync={sync} />`
+### `<Consumer map={map} />`
 
 A render props style component that can be used inline of your component's render function to map the state similarly to how `connect` works. It supports the following props.
 
@@ -334,13 +320,6 @@ _type_: `function`
 _default_: `null`
 
 Map atom state to props for your component. Upon changes to atom, the mapped props are compared to the previously mapped props and the connected component is only re-rendered if they differ. A shallow object diff is used in the comparison.
-
-#### sync
-
-_type_: `boolean`
-_default_: `false`
-
-By default, the change listeners are debounced such that at most one render occurs per frame. Set to true to re-render immediately on change state.
 
 #### observe
 
