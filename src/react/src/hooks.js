@@ -16,6 +16,7 @@ export function createHooks(AtomContext) {
     assert(atom, 'No atom found in context, did you forget to wrap your app in <Provider atom={atom} />?')
 
     // cache the selector function
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const selector = useCallback(selectorFn, options.deps || [])
 
     // we use a state to trigger a rerender when relevant atom

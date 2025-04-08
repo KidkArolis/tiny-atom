@@ -1,3 +1,7 @@
+## 6.0.1
+
+- Upgrade all dependencies
+
 ## 6.0.0
 
 - Remove `requestAnimationFrame` based state batching to avoid state tearing issues, also `requestAnimationFrame` gets paused in inactive tabs making that not the best mechanic for implementing state update batching. See [#128](https://github.com/KidkArolis/tiny-atom/pull/128). This means the `sync: true | false` option is no longer available and all state updates are sync by default - that is we ask React to re-render after every state change.
