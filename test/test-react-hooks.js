@@ -1,7 +1,6 @@
 import test from 'ava'
-import React from 'react'
+import React, { act } from 'react'
 import { createRoot } from 'react-dom/client'
-import { act } from 'react-dom/test-utils'
 import { JSDOM } from 'jsdom'
 import { createAtom, Provider, useSelector, useActions, useDispatch } from '../src'
 import renderHooksApp from './hooks-app'

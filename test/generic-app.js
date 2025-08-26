@@ -1,6 +1,6 @@
 import { JSDOM } from 'jsdom'
 import { createAtom } from '../src/core'
-import { act } from 'react-dom/test-utils'
+import { act } from 'react'
 
 /** @jsx h */
 

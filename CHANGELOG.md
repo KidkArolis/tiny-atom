@@ -1,3 +1,7 @@
+## 6.0.2
+
+- Upgrade all dependencies
+
 ## 6.0.1
 
 - Upgrade all dependencies
