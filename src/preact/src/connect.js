@@ -1,5 +1,5 @@
 import { h } from 'preact'
-import { Consumer } from './Consumer'
+import { Consumer } from './Consumer.js'
 
 /** @jsx h */
 

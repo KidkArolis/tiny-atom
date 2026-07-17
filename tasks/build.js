@@ -2,7 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const { execFileSync } = require('child_process')
 
-const files = ['package.json', 'package-lock.json', 'LICENSE', 'CHANGELOG.md', 'README.md']
+const files = ['LICENSE', 'CHANGELOG.md', 'README.md']
 
 ;(function () {
   const root = process.cwd()
@@ -14,37 +14,37 @@ const files = ['package.json', 'package-lock.json', 'LICENSE', 'CHANGELOG.md', '
   for (const file of files) {
     fs.copyFileSync(path.join(root, file), path.join(dist, file))
   }
-  fs.cpSync(path.join(root, 'src'), path.join(dist, 'src'), { recursive: true })
-
   const pkg = require('../package.json')
-  const subdirs = ['core', 'devtools', 'log', 'preact', 'react']
+  const source = path.join(root, 'src')
 
   const swc = path.join(root, 'node_modules', '.bin', 'swc')
-  const compile = (args, options = {}) => execFileSync(swc, args, { stdio: 'inherit', ...options })
+  const compile = (format) =>
+    execFileSync(swc, ['.', '-d', path.join(dist, format), `--config-file=${path.join(root, `.swcrc-${format}`)}`], {
+      cwd: source,
+      stdio: 'inherit',
+    })
 
-  compile(['src/index.js', '-o', path.join(dist, pkg.main), '--config-file=.swcrc-cjs'])
-  compile(['src/index.js', '-o', path.join(dist, pkg.module), '--config-file=.swcrc-esm'])
-  for (const subdir of subdirs) {
-    const cwd = path.join(root, 'src', subdir, 'src')
-    compile(['.', '-d', path.join(dist, subdir, 'cjs'), `--config-file=${path.join(root, '.swcrc-cjs')}`], {
-      cwd,
-    })
-    compile(['.', '-d', path.join(dist, subdir, 'esm'), `--config-file=${path.join(root, '.swcrc-esm')}`], {
-      cwd,
-    })
-    fs.writeFileSync(
-      path.join(dist, subdir, 'package.json'),
-      JSON.stringify(
-        {
-          name: `tiny-atom-${subdir}`,
-          private: true,
-          main: './cjs',
-          module: './esm',
-          sideEffects: false,
-        },
-        null,
-        2,
-      ),
-    )
+  compile('cjs')
+  compile('esm')
+  fs.writeFileSync(path.join(dist, 'cjs', 'package.json'), '{"type":"commonjs"}\n')
+  fs.writeFileSync(path.join(dist, 'esm', 'package.json'), '{"type":"module"}\n')
+
+  const publishedPackage = {
+    name: pkg.name,
+    version: pkg.version,
+    description: pkg.description,
+    main: pkg.main,
+    module: pkg.module,
+    exports: pkg.exports,
+    files: pkg.files,
+    sideEffects: pkg.sideEffects,
+    engines: pkg.engines,
+    repository: pkg.repository,
+    contributors: pkg.contributors,
+    license: pkg.license,
+    publishConfig: pkg.publishConfig,
+    dependencies: pkg.dependencies,
   }
+
+  fs.writeFileSync(path.join(dist, 'package.json'), `${JSON.stringify(publishedPackage, null, 2)}\n`)
 })()

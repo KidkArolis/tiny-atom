@@ -2,11 +2,62 @@
   "name": "tiny-atom",
   "version": "6.0.2",
   "description": "Pragmatic and concise state management.",
-  "main": "tiny-atom.cjs.js",
-  "module": "tiny-atom.esm.js",
+  "main": "./cjs/index.js",
+  "module": "./esm/index.js",
+  "exports": {
+    ".": {
+      "import": "./esm/index.js",
+      "require": "./cjs/index.js",
+      "default": "./esm/index.js"
+    },
+    "./core": {
+      "import": "./esm/core/src/index.js",
+      "require": "./cjs/core/src/index.js",
+      "default": "./esm/core/src/index.js"
+    },
+    "./devtools": {
+      "import": "./esm/devtools/src/devtools.js",
+      "require": "./cjs/devtools/src/devtools.js",
+      "default": "./esm/devtools/src/devtools.js"
+    },
+    "./log": {
+      "import": "./esm/log/src/index.js",
+      "require": "./cjs/log/src/index.js",
+      "default": "./esm/log/src/index.js"
+    },
+    "./preact": {
+      "import": "./esm/preact/src/index.js",
+      "require": "./cjs/preact/src/index.js",
+      "default": "./esm/preact/src/index.js"
+    },
+    "./react": {
+      "import": "./esm/react/src/index.js",
+      "require": "./cjs/react/src/index.js",
+      "default": "./esm/react/src/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "cjs",
+    "esm",
+    "CHANGELOG.md"
+  ],
   "sideEffects": false,
   "engines": {
     "node": ">=20"
+  },
+  "packageManager": "npm@11.18.0",
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": ">=22",
+      "onFail": "error"
+    },
+    "packageManager": {
+      "name": "npm",
+      "version": ">=10",
+      "onFail": "error"
+    }
   },
   "scripts": {
     "coverage": "c8 --reporter html ava",
@@ -14,8 +65,11 @@
     "lint": "oxlint && oxfmt --check '**/*.{js,json,css,yml}'",
     "format": "oxfmt '**/*.{js,json,css,yml}'",
     "build": "node ./tasks/build.js",
-    "version": "npm run build",
-    "release": "np --contents dist"
+    "test:package": "npm run build && node ./tasks/test-package.js",
+    "release:check": "npm test && npm run test:package",
+    "release:preview": "npm run build && np --dry-run",
+    "version": "npm run test:package",
+    "release": "npm run build && np"
   },
   "repository": {
     "type": "git",
@@ -26,8 +80,14 @@
     "Alan Clarke <alan@qubit.com>"
   ],
   "license": "ISC",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "dependencies": {
     "deep-diff": "^1.0.2"
+  },
+  "overrides": {
+    "tmp": "^0.2.6"
   },
   "devDependencies": {
     "@swc-node/register": "^1.12.0",
@@ -36,6 +96,7 @@
     "ava": "^8.0.1",
     "c8": "^12.0.0",
     "jsdom": "^29.1.1",
+    "np": "^12.0.0",
     "oxfmt": "^0.59.0",
     "oxlint": "^1.74.0",
     "preact": "^10.29.7",
@@ -54,6 +115,7 @@
     ]
   },
   "np": {
+    "contents": "dist",
     "releaseDraft": false
   }
 }

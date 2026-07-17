@@ -1,6 +1,6 @@
 import React from 'react'
-import { differs } from './differs'
-import { AtomContext } from './context'
+import { differs } from './differs.js'
+import { AtomContext } from './context.js'
 
 const isServer = typeof navigator === 'undefined'
 

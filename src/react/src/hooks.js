@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState, useRef, useCallback } from 'react'
-import { AtomContext } from './context'
-import { differs } from './differs'
+import { AtomContext } from './context.js'
+import { differs } from './differs.js'
 
 const isServer = typeof navigator === 'undefined'
 const identity = (x) => x

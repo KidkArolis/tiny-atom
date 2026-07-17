@@ -13,6 +13,7 @@
     }
   },
   "module": {
-    "type": "es6"
+    "type": "es6",
+    "outFileExtension": "js"
   }
 }

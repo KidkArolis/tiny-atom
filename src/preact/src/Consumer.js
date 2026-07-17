@@ -1,5 +1,5 @@
 import { Component } from 'preact'
-import { differs } from '../../react'
+import { differs } from '../../react/src/differs.js'
 
 const canUseDOM = !!(typeof window !== 'undefined' && window.document && window.document.createElement)
 

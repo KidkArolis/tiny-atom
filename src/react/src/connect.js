@@ -1,5 +1,5 @@
 import React from 'react'
-import { Consumer } from './Consumer'
+import { Consumer } from './Consumer.js'
 
 export function createConnect(Consumer) {
   return function connect(map, options = {}) {
