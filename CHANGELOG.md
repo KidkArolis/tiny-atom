@@ -1,7 +1,8 @@
-## 6.0.3
+## 6.1.0
 
-- Switch to oxlint and swc stack
-- Upgrade all dependencies
+- Migrate the development toolchain to swc, oxlint, and oxfmt.
+- Modernise package exports, builds, validation, and release tooling.
+- Upgrade all dependencies to their latest versions.
 
 ## 6.0.2
 
