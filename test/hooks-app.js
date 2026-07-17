@@ -4,7 +4,7 @@ import { createAtom, Provider } from '../src'
 
 /** @jsx h */
 
-module.exports = function renderHooksApp({ h, container, useSelector, useActions, useDispatch }) {
+export default function renderHooksApp({ h, container, useSelector, useActions, useDispatch }) {
   const stats = {}
 
   const root = createRoot(container)

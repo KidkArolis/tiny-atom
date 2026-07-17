@@ -1,5 +1,0 @@
-dist
-coverage
-.nyc_output
-docs/.cache
-docs/public

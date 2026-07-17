@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "esModuleInterop": true,
+    "jsx": "react",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "target": "ES2022"
+  },
+  "include": ["src/**/*.js", "test/**/*.js"]
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://swc.rs/schema.json",
+  "jsc": {
+    "parser": {
+      "syntax": "ecmascript",
+      "jsx": true
+    },
+    "target": "es2022",
+    "transform": {
+      "react": {
+        "runtime": "classic"
+      }
+    }
+  },
+  "module": {
+    "type": "commonjs"
+  }
+}

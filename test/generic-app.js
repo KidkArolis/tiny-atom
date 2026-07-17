@@ -4,7 +4,7 @@ import { act } from 'react'
 
 /** @jsx h */
 
-module.exports = function app({ h, Provider, Consumer, connect, createContext, createConnect, createConsumer }) {
+export default function app({ h, Provider, Consumer, connect, createContext, createConnect, createConsumer }) {
   const dom = new JSDOM('<!doctype html><div id="root"></div>')
   global.window = dom.window
   global.document = dom.window.document

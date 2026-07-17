@@ -1,32 +1,39 @@
 const fs = require('fs')
 const path = require('path')
+const { execFileSync } = require('child_process')
 
 const files = ['package.json', 'package-lock.json', 'LICENSE', 'CHANGELOG.md', 'README.md']
 
-;(async function () {
-  const execa = (await import('execa')).execa
+;(function () {
+  const root = process.cwd()
+  const dist = path.join(root, 'dist')
 
-  const sh = (...args) => execa(...args, { stdio: 'inherit', shell: true })
-
-  await sh('rm -rf dist')
-  await sh('mkdir -p dist')
+  fs.rmSync(dist, { force: true, recursive: true })
+  fs.mkdirSync(dist)
 
   for (const file of files) {
-    await sh(`cp ${file} dist`)
+    fs.copyFileSync(path.join(root, file), path.join(dist, file))
   }
-  await sh(`cp -R src dist/src`)
+  fs.cpSync(path.join(root, 'src'), path.join(dist, 'src'), { recursive: true })
 
   const pkg = require('../package.json')
   const subdirs = ['core', 'devtools', 'log', 'preact', 'react']
 
-  const babel = './node_modules/.bin/babel'
-  await sh(`${babel} --no-babelrc src/index.js -o dist/${pkg.main} --config-file=./.babelrc-cjs`)
-  await sh(`${babel} --no-babelrc src/index.js -o dist/${pkg.module} --config-file=./.babelrc-esm`)
+  const swc = path.join(root, 'node_modules', '.bin', 'swc')
+  const compile = (args, options = {}) => execFileSync(swc, args, { stdio: 'inherit', ...options })
+
+  compile(['src/index.js', '-o', path.join(dist, pkg.main), '--config-file=.swcrc-cjs'])
+  compile(['src/index.js', '-o', path.join(dist, pkg.module), '--config-file=.swcrc-esm'])
   for (const subdir of subdirs) {
-    await sh(`${babel} --no-babelrc src/${subdir}/src -d dist/${subdir}/cjs --config-file=./.babelrc-cjs`)
-    await sh(`${babel} --no-babelrc src/${subdir}/src -d dist/${subdir}/esm --config-file=./.babelrc-esm`)
+    const cwd = path.join(root, 'src', subdir, 'src')
+    compile(['.', '-d', path.join(dist, subdir, 'cjs'), `--config-file=${path.join(root, '.swcrc-cjs')}`], {
+      cwd,
+    })
+    compile(['.', '-d', path.join(dist, subdir, 'esm'), `--config-file=${path.join(root, '.swcrc-esm')}`], {
+      cwd,
+    })
     fs.writeFileSync(
-      path.join(process.cwd(), 'dist', subdir, 'package.json'),
+      path.join(dist, subdir, 'package.json'),
       JSON.stringify(
         {
           name: `tiny-atom-${subdir}`,

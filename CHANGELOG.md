@@ -1,3 +1,8 @@
+## 6.0.3
+
+- Switch to oxlint and swc stack
+- Upgrade all dependencies
+
 ## 6.0.2
 
 - Upgrade all dependencies

@@ -9,10 +9,10 @@
     "node": ">=20"
   },
   "scripts": {
-    "coverage": "nyc --reporter html ava",
-    "test": "npm run lint && nyc ava",
-    "lint": "healthier && prettier --check '**/*.{js,json,css,yml}'",
-    "format": "prettier --write '**/*.{js,json,css,yml}'",
+    "coverage": "c8 --reporter html ava",
+    "test": "npm run lint && c8 ava",
+    "lint": "oxlint && oxfmt --check '**/*.{js,json,css,yml}'",
+    "format": "oxfmt '**/*.{js,json,css,yml}'",
     "build": "node ./tasks/build.js",
     "version": "npm run build",
     "release": "np --contents dist"
@@ -30,28 +30,26 @@
     "deep-diff": "^1.0.2"
   },
   "devDependencies": {
-    "@babel/cli": "^7.28.3",
-    "@babel/core": "^7.28.3",
-    "@babel/plugin-transform-react-jsx": "^7.27.1",
-    "@babel/preset-env": "^7.28.3",
-    "@babel/register": "^7.28.3",
-    "ava": "^6.4.1",
-    "execa": "^9.6.0",
-    "healthier": "^7.0.0",
-    "jetpack": "^4.2.0",
-    "jsdom": "^26.1.0",
-    "nyc": "^17.1.0",
-    "preact": "^10.27.1",
-    "prettier": "^3.6.2",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "@swc-node/register": "^1.12.0",
+    "@swc/cli": "^0.8.1",
+    "@swc/core": "^1.15.43",
+    "ava": "^8.0.1",
+    "c8": "^12.0.0",
+    "jsdom": "^29.1.1",
+    "oxfmt": "^0.59.0",
+    "oxlint": "^1.74.0",
+    "preact": "^10.29.7",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
   },
   "ava": {
     "files": [
       "test/test-*.js"
     ],
+    "nodeArguments": [
+      "--import=@swc-node/register/esm-register"
+    ],
     "require": [
-      "@babel/register",
       "./test/helpers/setup.js"
     ]
   },
